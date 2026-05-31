@@ -205,8 +205,18 @@ This is the executable slice plan for the pure-UiPath build. Each slice ends wit
 
 ---
 
-## Slice 016 — Coding-agent evidence consolidation
+## Slice 016 — Coding-agent evidence consolidation — ✅ offline channels done (video/screenshots → Slice 017)
 **Goal**: All 4 evidence channels populated; nothing left undocumented.
+
+> **Status (2026-05-31):** Channels 1–2 complete offline — `CODING_AGENTS.md` +
+> `CLAUDE_CODE_USAGE.md` (27-artifact authorship table + (a)/(b)/(c) bonus triad)
+> and 7 per-type pages under `docs/coding-agents/` + README. Channels 3–4
+> scaffolded with honest PENDING status (`docs/prompt-logs/README.md` cites the 7
+> committed `agents/prompts/*.md`; `docs/coding-agents/screenshots/README.md` is a
+> capture checklist). Gate `tests/unit/docs/test_coding_agents_evidence.py` (22
+> assertions) GREEN; full suite 494 passed; IP-safety clean. Detail in
+> `slice-016-tasks.md`. CARRIED FORWARD to Slice 017 (human capture): the 1-min
+> coding-agent reel + live-session screenshots/transcripts.
 
 **Tasks**:
 - Write `CODING_AGENTS.md` at repo root — canonical reference
