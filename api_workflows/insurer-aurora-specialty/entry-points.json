@@ -1,0 +1,67 @@
+{
+  "$schema": "https://cloud.uipath.com/draft/2024-12/entry-point",
+  "$id": "entry-points.json",
+  "entryPoints": [
+    {
+      "filePath": "main.json",
+      "uniqueId": "9663f770-cef2-592e-8215-1da3f0c5dbe0",
+      "type": "process",
+      "input": {
+        "type": "object",
+        "properties": {
+          "simulated_day": {
+            "type": "integer",
+            "default": 45
+          },
+          "conditions": {
+            "type": "array",
+            "default": [
+              "retain Northwall Forensics",
+              "no public statement without counsel review"
+            ]
+          },
+          "coverage_sub_limit_triggered": {
+            "type": "boolean",
+            "default": true
+          },
+          "required_actions": {
+            "type": "array",
+            "default": [
+              "preserve all claim-flow logs",
+              "engage Hawthorne Mercer LLP for privilege review"
+            ]
+          }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "event_type": {
+            "type": "string"
+          },
+          "source_system": {
+            "type": "string"
+          },
+          "simulated_day": {
+            "type": "integer"
+          },
+          "insurer_id": {
+            "type": "string"
+          },
+          "directive_type": {
+            "type": "string"
+          },
+          "conditions": {
+            "type": "array"
+          },
+          "coverage_sub_limit_triggered": {
+            "type": "boolean"
+          },
+          "required_actions": {
+            "type": "array"
+          }
+        }
+      }
+    }
+  ]
+}

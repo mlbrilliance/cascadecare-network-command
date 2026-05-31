@@ -1,0 +1,63 @@
+{
+  "$schema": "https://cloud.uipath.com/draft/2024-12/entry-point",
+  "$id": "entry-points.json",
+  "entryPoints": [
+    {
+      "filePath": "main.json",
+      "uniqueId": "2806323e-595b-5fed-96a8-6eac5cabbe59",
+      "type": "process",
+      "input": {
+        "type": "object",
+        "properties": {
+          "simulated_day": {
+            "type": "integer",
+            "default": 48
+          },
+          "target_provider_ids": {
+            "type": "array",
+            "default": [
+              "gamma"
+            ]
+          },
+          "contractual_basis": {
+            "type": "string",
+            "default": "independent dispute resolution stay, section 5.3"
+          },
+          "conflicts_with_baa_ids": {
+            "type": "array",
+            "default": []
+          }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "event_type": {
+            "type": "string"
+          },
+          "source_system": {
+            "type": "string"
+          },
+          "simulated_day": {
+            "type": "integer"
+          },
+          "payer_id": {
+            "type": "string"
+          },
+          "demand_type": {
+            "type": "string"
+          },
+          "target_provider_ids": {
+            "type": "array"
+          },
+          "contractual_basis": {
+            "type": "string"
+          },
+          "conflicts_with_baa_ids": {
+            "type": "array"
+          }
+        }
+      }
+    }
+  ]
+}

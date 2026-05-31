@@ -45,9 +45,17 @@ fi
 #   - Coded App (uip codedapp): apps/clearflow-network-command
 #     (blocked on a tenant OAuth External Application — see tasks.md)
 #   - Integration Service API Workflows: api_workflows/* (14 mock external-system
-#     fronts). Removed from the solution 2026-05-31: they failed Orchestrator
-#     install (entry-points metadata) and don't open in the Maestro case editor.
-#     Deploy via Integration Service separately when needed.
+#     fronts). Removed from the solution 2026-05-31 after Orchestrator install
+#     Error 2005, and they don't open in the Maestro case editor — deploy via
+#     Integration Service separately.
+#     ROOT CAUSE FIXED 2026-05-31 (Slice 015 T016/T017): the Api packager declares
+#     content/entry-points.json + content/bindings_v2.json in package-descriptor
+#     but never generates them, so install saw "entry points configuration
+#     missing" (2005). Each api_workflows/<slug>/ now commits both files (run
+#     `uv run python scripts/gen_api_entry_points.py` to regenerate from main.json);
+#     an offline pack proves all descriptor-declared files are present. Re-adding
+#     them here + the live install-confirm is a tenant-session step (carried
+#     forward) — to re-include, add rows below AND `uip solution project add` each.
 # ---------------------------------------------------------------------------
 declare -A ARTIFACTS=(
   ["clearflow-master-crisis"]="${REPO_ROOT}/maestro_case/clearflow-master-crisis"

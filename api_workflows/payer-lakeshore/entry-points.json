@@ -1,0 +1,64 @@
+{
+  "$schema": "https://cloud.uipath.com/draft/2024-12/entry-point",
+  "$id": "entry-points.json",
+  "entryPoints": [
+    {
+      "filePath": "main.json",
+      "uniqueId": "d4a7aba2-1d78-5c81-a4da-6d5aa1785bce",
+      "type": "process",
+      "input": {
+        "type": "object",
+        "properties": {
+          "simulated_day": {
+            "type": "integer",
+            "default": 52
+          },
+          "target_provider_ids": {
+            "type": "array",
+            "default": [
+              "beta",
+              "delta"
+            ]
+          },
+          "contractual_basis": {
+            "type": "string",
+            "default": "claims administration indemnity clause, section 9.4"
+          },
+          "conflicts_with_baa_ids": {
+            "type": "array",
+            "default": []
+          }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "event_type": {
+            "type": "string"
+          },
+          "source_system": {
+            "type": "string"
+          },
+          "simulated_day": {
+            "type": "integer"
+          },
+          "payer_id": {
+            "type": "string"
+          },
+          "demand_type": {
+            "type": "string"
+          },
+          "target_provider_ids": {
+            "type": "array"
+          },
+          "contractual_basis": {
+            "type": "string"
+          },
+          "conflicts_with_baa_ids": {
+            "type": "array"
+          }
+        }
+      }
+    }
+  ]
+}

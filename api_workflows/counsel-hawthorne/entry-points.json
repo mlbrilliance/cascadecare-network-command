@@ -1,0 +1,48 @@
+{
+  "$schema": "https://cloud.uipath.com/draft/2024-12/entry-point",
+  "$id": "entry-points.json",
+  "entryPoints": [
+    {
+      "filePath": "main.json",
+      "uniqueId": "96fff2d6-f689-5e8e-819b-1ff32050d787",
+      "type": "process",
+      "input": {
+        "type": "object",
+        "properties": {
+          "simulated_day": {
+            "type": "integer",
+            "default": 90
+          },
+          "privilege_flag": {
+            "type": "string",
+            "default": "attorney-client"
+          },
+          "determination": {
+            "type": "string",
+            "default": "Reclassify grandchild-case communications from operational to attorney-client following co-defendant naming; assert work-product over forensic interim reports."
+          }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "operation": {
+            "type": "string"
+          },
+          "counsel_id": {
+            "type": "string"
+          },
+          "simulated_day": {
+            "type": "integer"
+          },
+          "privilege_flag": {
+            "type": "string"
+          },
+          "determination": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  ]
+}

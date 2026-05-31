@@ -1,0 +1,67 @@
+{
+  "$schema": "https://cloud.uipath.com/draft/2024-12/entry-point",
+  "$id": "entry-points.json",
+  "entryPoints": [
+    {
+      "filePath": "main.json",
+      "uniqueId": "57c90670-ce11-5503-9ed2-e28ea7033f08",
+      "type": "process",
+      "input": {
+        "type": "object",
+        "properties": {
+          "simulated_day": {
+            "type": "integer",
+            "default": 50
+          },
+          "target_provider_ids": {
+            "type": "array",
+            "default": [
+              "northstar",
+              "epsilon"
+            ]
+          },
+          "contractual_basis": {
+            "type": "string",
+            "default": "Medicare Advantage encounter-data audit right, section 7.1"
+          },
+          "conflicts_with_baa_ids": {
+            "type": "array",
+            "default": [
+              "baa-northstar",
+              "baa-epsilon"
+            ]
+          }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "event_type": {
+            "type": "string"
+          },
+          "source_system": {
+            "type": "string"
+          },
+          "simulated_day": {
+            "type": "integer"
+          },
+          "payer_id": {
+            "type": "string"
+          },
+          "demand_type": {
+            "type": "string"
+          },
+          "target_provider_ids": {
+            "type": "array"
+          },
+          "contractual_basis": {
+            "type": "string"
+          },
+          "conflicts_with_baa_ids": {
+            "type": "array"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "$schema": "https://cloud.uipath.com/draft/2024-12/entry-point",
+  "$id": "entry-points.json",
+  "entryPoints": [
+    {
+      "filePath": "main.json",
+      "uniqueId": "77f32a65-cc8c-5839-ae76-826919be97f6",
+      "type": "process",
+      "input": {
+        "type": "object",
+        "properties": {
+          "simulated_day": {
+            "type": "integer",
+            "default": 45
+          },
+          "target_provider_ids": {
+            "type": "array",
+            "default": [
+              "northstar"
+            ]
+          },
+          "contractual_basis": {
+            "type": "string",
+            "default": "operational visibility clause, section 4.2"
+          },
+          "conflicts_with_baa_ids": {
+            "type": "array",
+            "default": [
+              "baa-northstar"
+            ]
+          }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "event_type": {
+            "type": "string"
+          },
+          "source_system": {
+            "type": "string"
+          },
+          "simulated_day": {
+            "type": "integer"
+          },
+          "payer_id": {
+            "type": "string"
+          },
+          "demand_type": {
+            "type": "string"
+          },
+          "target_provider_ids": {
+            "type": "array"
+          },
+          "contractual_basis": {
+            "type": "string"
+          },
+          "conflicts_with_baa_ids": {
+            "type": "array"
+          }
+        }
+      }
+    }
+  ]
+}

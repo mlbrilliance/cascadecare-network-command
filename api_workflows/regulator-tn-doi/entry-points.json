@@ -1,0 +1,74 @@
+{
+  "$schema": "https://cloud.uipath.com/draft/2024-12/entry-point",
+  "$id": "entry-points.json",
+  "entryPoints": [
+    {
+      "filePath": "main.json",
+      "uniqueId": "b50153e7-e294-5a6e-aa7a-e19525bf5976",
+      "type": "process",
+      "input": {
+        "type": "object",
+        "properties": {
+          "event_type": {
+            "type": "string",
+            "default": "regulatory-subpoena"
+          },
+          "simulated_day": {
+            "type": "integer",
+            "default": 30
+          },
+          "scope": {
+            "type": "string",
+            "default": "all_providers"
+          },
+          "named_provider_ids": {
+            "type": "array",
+            "default": []
+          },
+          "response_deadline_days": {
+            "type": "integer",
+            "default": 14
+          },
+          "legal_basis": {
+            "type": "string",
+            "default": "Tennessee Insurance Holding Company System Act, examination authority"
+          },
+          "event_subtype": {
+            "type": "string",
+            "default": "co_defendant_named"
+          },
+          "named_parties": {
+            "type": "array",
+            "default": [
+              "ClearFlow Health Network",
+              "Nimbus Patient Engagement Platform"
+            ]
+          },
+          "clearflow_named_co_defendant": {
+            "type": "boolean",
+            "default": true
+          },
+          "theory": {
+            "type": "string",
+            "default": "negligent monitoring"
+          },
+          "privilege_reshuffle_required": {
+            "type": "boolean",
+            "default": true
+          }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "event_type": {
+            "type": "string"
+          },
+          "source_system": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  ]
+}

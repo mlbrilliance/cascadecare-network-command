@@ -1,0 +1,58 @@
+{
+  "$schema": "https://cloud.uipath.com/draft/2024-12/entry-point",
+  "$id": "entry-points.json",
+  "entryPoints": [
+    {
+      "filePath": "main.json",
+      "uniqueId": "d6e56fe1-14ed-5611-b3b4-d5a7cb38f9cf",
+      "type": "process",
+      "input": {
+        "type": "object",
+        "properties": {
+          "simulated_day": {
+            "type": "integer",
+            "default": 1
+          },
+          "claim_drop_pct": {
+            "type": "number",
+            "default": 38.0
+          },
+          "anomaly_score": {
+            "type": "number",
+            "default": 0.74
+          },
+          "business_continuity_runway_days": {
+            "type": "integer",
+            "default": 60
+          }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "event_type": {
+            "type": "string"
+          },
+          "source_system": {
+            "type": "string"
+          },
+          "simulated_day": {
+            "type": "integer"
+          },
+          "provider_id": {
+            "type": "string"
+          },
+          "claim_drop_pct": {
+            "type": "number"
+          },
+          "anomaly_score": {
+            "type": "number"
+          },
+          "business_continuity_runway_days": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  ]
+}

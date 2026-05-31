@@ -79,11 +79,11 @@ arrangement; the hero-moment emphasis is carried instead by the Apps
 
 **Independent Test**: one API-workflow package installs without Error 2005; the master case can be triggered (CLI or Maestro UI).
 
-- [ ] T016 [US3] Author `api_workflows/<one>/entry-points.json` from that package's `main.json` input/output contract, mirroring the coded-agent shape (schema `https://cloud.uipath.com/draft/2024-12/entry-point`, `entryPoints[].{filePath,uniqueId,type,input,output}`, omit the Python-specific `graph`); pack+publish+install that ONE package — confirm Error 2005 cleared
-- [ ] T017 [US3] Fan out the validated `entry-points.json` pattern to all 14 API workflows + the BPMN package (Error 1654); re-pack + re-upload the solution
-- [ ] T018 [US3] Resolve the Maestro folder/release-key context for `case process run` OR document the Maestro-UI trigger path in `docs/demo/run-playbook.md` (R2 fallback)
+- [X] T016 [US3] **Root cause found + fixed offline (install-confirm tenant-gated).** Empirical pack probe (`uip solution pack`, offline) proved the Api packager writes a `package-descriptor.json` declaring `content/entry-points.json` + `content/bindings_v2.json` but never generates them for `Type:"Api"` projects → "entry points configuration missing" = Error 2005. Authored `api_workflows/provider-northstar/entry-points.json` (V20 shape, schema `https://cloud.uipath.com/draft/2024-12/entry-point`, `filePath:"main.json"`, `type:"process"`, `uniqueId` GUID, input/output from `main.json`) + `bindings_v2.json`; re-pack proved **all descriptor-declared files now present** in the nupkg. Live install-confirm carried forward.
+- [X] T017 [US3] Fanned out via `scripts/gen_api_entry_points.py` (deterministic `uuid5(slug)`) → all 14 `api_workflows/*` carry `entry-points.json` + `bindings_v2.json`; gate `tests/unit/api_workflows/test_entry_points.py` (57 assertions) GREEN; full suite 472 passed. **BPMN (Error 1654):** assessed — the `.bpmn` is offline-valid, carries `<uipath:entryPointId value="Entry_IdealIncidentResponse"/>` matching its `entry-points.json` `id`, with the skill-canonical shape + correct `filePath`; no offline defect found → 1654 needs a live install to reproduce (carried forward). Solution re-add + re-upload is the tenant step (pack-solution.sh note updated).
+- [X] T018 [US3] Wrote `docs/demo/run-playbook.md` — Path A (CLI folder-key → release-key → `case process run`, with the Slice-014 `-f` rejection recovery) + Path B (Maestro-UI trigger fallback) + reversal cue sheet + `docs/demo/inputs/r1-kickoff.json` (`{}` — master case takes no required start inputs).
 
-**Checkpoint**: A live R1→R5 run is launchable ✅ (unblocks Phase 6)
+**Checkpoint**: Offline run-blocker authoring DONE + proven by pack; live launch + install-confirm carried to a tenant session ⏸️ (Phase 6 stays gated).
 
 ---
 

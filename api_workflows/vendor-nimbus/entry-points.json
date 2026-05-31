@@ -1,0 +1,72 @@
+{
+  "$schema": "https://cloud.uipath.com/draft/2024-12/entry-point",
+  "$id": "entry-points.json",
+  "entryPoints": [
+    {
+      "filePath": "main.json",
+      "uniqueId": "da1f3230-70b0-5c27-ae01-fde05b43430e",
+      "type": "process",
+      "input": {
+        "type": "object",
+        "properties": {
+          "simulated_day": {
+            "type": "integer",
+            "default": 5
+          },
+          "evidence_signal_strength": {
+            "type": "string",
+            "default": "strong"
+          },
+          "connected_provider_ids": {
+            "type": "array",
+            "default": [
+              "northstar",
+              "alpha",
+              "beta",
+              "gamma",
+              "delta",
+              "epsilon"
+            ]
+          },
+          "clearflow_cleared": {
+            "type": "boolean",
+            "default": true
+          },
+          "vector_hypothesis_confidence": {
+            "type": "number",
+            "default": 0.92
+          }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "event_type": {
+            "type": "string"
+          },
+          "source_system": {
+            "type": "string"
+          },
+          "simulated_day": {
+            "type": "integer"
+          },
+          "vendor_id": {
+            "type": "string"
+          },
+          "evidence_signal_strength": {
+            "type": "string"
+          },
+          "connected_provider_ids": {
+            "type": "array"
+          },
+          "clearflow_cleared": {
+            "type": "boolean"
+          },
+          "vector_hypothesis_confidence": {
+            "type": "number"
+          }
+        }
+      }
+    }
+  ]
+}
