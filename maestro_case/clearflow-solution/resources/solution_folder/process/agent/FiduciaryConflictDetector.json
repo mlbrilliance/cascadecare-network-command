@@ -1,0 +1,39 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "FiduciaryConflictDetector",
+    "kind": "process",
+    "type": "agent",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "projectKey": "74cd0a7a-ce88-4a78-a19e-a1504693a4d1",
+    "isOverridable": true,
+    "dependencies": [
+      {
+        "kind": "package",
+        "name": "FiduciaryConflictDetector"
+      }
+    ],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "type": "Agent",
+      "name": "FiduciaryConflictDetector",
+      "package": {
+        "key": "56b1dbdf-f88d-40c0-ace7-58a467f74b94"
+      },
+      "inputArguments": "{}",
+      "targetFrameworkValue": "Portable",
+      "retentionAction": "Delete",
+      "retentionPeriod": 30,
+      "staleRetentionAction": "Delete",
+      "staleRetentionPeriod": 180
+    },
+    "locks": [],
+    "key": "93f73714-06b6-47cd-b85a-57bcc4eac5ea",
+    "files": []
+  }
+}

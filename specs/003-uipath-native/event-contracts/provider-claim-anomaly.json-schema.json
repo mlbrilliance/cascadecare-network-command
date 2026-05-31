@@ -1,0 +1,67 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cascadecare.local/event-contracts/provider-claim-anomaly.json",
+  "title": "Provider Claim Anomaly Event",
+  "description": "Emitted by a provider-{id} Integration Service API Workflow when claim telemetry drops past the anomaly threshold. Triggers the Claim Flow Anomaly Detector in the Multi-Customer Investigation stage.",
+  "type": "object",
+  "required": ["event_type", "source_system", "simulated_day", "provider_id", "claim_drop_pct", "anomaly_score"],
+  "additionalProperties": false,
+  "properties": {
+    "event_type": {
+      "type": "string",
+      "const": "provider-claim-anomaly"
+    },
+    "source_system": {
+      "type": "string",
+      "description": "The Integration Service API Workflow that emits this event.",
+      "enum": [
+        "provider-northstar",
+        "provider-alpha",
+        "provider-beta",
+        "provider-gamma",
+        "provider-delta",
+        "provider-epsilon"
+      ]
+    },
+    "simulated_day": {
+      "type": "integer",
+      "description": "Demo timeline day (0–90).",
+      "minimum": 0,
+      "maximum": 90
+    },
+    "provider_id": {
+      "type": "string",
+      "description": "Which provider is reporting the anomaly. Must match a vocabulary.stakeholders.providers id.",
+      "enum": ["northstar", "alpha", "beta", "gamma", "delta", "epsilon"]
+    },
+    "claim_drop_pct": {
+      "type": "number",
+      "description": "Percentage drop in claim volume relative to 30-day baseline.",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "anomaly_score": {
+      "type": "number",
+      "description": "Pre-computed anomaly score from ClaimTelemetry Data Fabric entity. 0.0 = normal, 1.0 = certain anomaly.",
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "business_continuity_runway_days": {
+      "type": "integer",
+      "description": "How many days the provider can sustain claim flow disruption before liquidity crisis.",
+      "minimum": 1
+    }
+  },
+  "maestro_trigger_filter_hint": {
+    "description": "Paste this as the Maestro Trigger FilterTree JSON when wiring this event type to a trigger in Slice 010/012. The trigger should route to Claim Flow Anomaly Detection task (tTNOuRcy1) in Multi-Customer Investigation stage (Stage_jsrEfr).",
+    "filterTree": {
+      "operator": "AND",
+      "conditions": [
+        { "field": "event_type", "operator": "eq", "value": "provider-claim-anomaly" },
+        { "field": "anomaly_score", "operator": "gte", "value": 0.7 }
+      ]
+    },
+    "routes_to_task": "tTNOuRcy1",
+    "routes_to_stage": "Stage_jsrEfr"
+  }
+}

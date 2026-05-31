@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Pre-push hook: run the AI skill-based security review.
+# Install by copying to .git/hooks/pre-push (the install script does this),
+# or pre-commit can manage it with `pre-commit install --hook-type pre-push`.
+#
+# Advisory by default (won't block). Set REVIEW_BLOCKING=1 to require signoff.
+python3 .agent-os/security/security_review.py

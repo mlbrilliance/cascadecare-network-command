@@ -1,0 +1,6 @@
+{
+  "Name": "counsel-hawthorne",
+  "ProjectType": "Api",
+  "Description": "Privilege Determination Utility (NON-EVENT) API Workflow for source_system 'counsel-hawthorne'.",
+  "main": "main.json"
+}

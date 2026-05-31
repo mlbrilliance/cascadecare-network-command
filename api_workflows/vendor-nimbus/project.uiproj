@@ -1,0 +1,6 @@
+{
+  "Name": "vendor-nimbus",
+  "ProjectType": "Api",
+  "Description": "Vendor Attribution Event Emitter API Workflow for source_system 'vendor-nimbus'.",
+  "main": "main.json"
+}

@@ -1,0 +1,40 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "clearflow-demo-driver",
+    "kind": "process",
+    "type": "flow",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "projectKey": "77a02903-c6ea-4ea6-b5df-42fcaaf0fe71",
+    "isOverridable": true,
+    "dependencies": [
+      {
+        "kind": "package",
+        "name": "clearflow-demo-driver"
+      }
+    ],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "type": "Flow",
+      "name": "clearflow-demo-driver",
+      "package": {
+        "key": "8d3a2c30-b68a-4614-ae22-4858acdead12"
+      },
+      "packageName": "clearflow-solution.flow.clearflow-demo-driver",
+      "inputArguments": "{}",
+      "targetFrameworkValue": "Portable",
+      "retentionAction": "Delete",
+      "retentionPeriod": 30,
+      "staleRetentionAction": "Delete",
+      "staleRetentionPeriod": 180
+    },
+    "locks": [],
+    "key": "fc5d3d11-0f76-4fd6-a21d-17dbaf7ff211",
+    "files": []
+  }
+}

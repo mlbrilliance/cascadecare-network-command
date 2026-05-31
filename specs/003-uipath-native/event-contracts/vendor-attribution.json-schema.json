@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cascadecare.local/event-contracts/vendor-attribution.json",
+  "title": "Vendor Attribution Event",
+  "description": "Emitted by the vendor-nimbus Integration Service API Workflow when the Vector Hypothesis Agent has established sufficient evidence that Nimbus Patient Engagement Platform is the shared attack vector. This drives Reversal 2 — ClearFlow confirmed not the vector; Nimbus identified as the shared upstream cause.",
+  "type": "object",
+  "required": ["event_type", "source_system", "simulated_day", "vendor_id", "evidence_signal_strength", "connected_provider_ids"],
+  "additionalProperties": false,
+  "properties": {
+    "event_type": {
+      "type": "string",
+      "const": "vendor-attribution"
+    },
+    "source_system": {
+      "type": "string",
+      "description": "The vendor Integration Service API Workflow.",
+      "enum": ["vendor-nimbus"]
+    },
+    "simulated_day": {
+      "type": "integer",
+      "description": "Demo timeline day (0–90).",
+      "minimum": 0,
+      "maximum": 90
+    },
+    "vendor_id": {
+      "type": "string",
+      "description": "The attributed vendor. Must match vocabulary.stakeholders.vendor id.",
+      "const": "nimbus"
+    },
+    "evidence_signal_strength": {
+      "type": "string",
+      "description": "How strong the attribution evidence is. Starts 'weak' at Day 1; reaches 'strong' by Day 5.",
+      "enum": ["weak", "moderate", "strong"]
+    },
+    "connected_provider_ids": {
+      "type": "array",
+      "description": "Provider IDs using this vendor (from Data Fabric Vendor.connected_providers).",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "enum": ["northstar", "alpha", "beta", "gamma", "delta", "epsilon"]
+      },
+      "uniqueItems": true
+    },
+    "clearflow_cleared": {
+      "type": "boolean",
+      "description": "Whether the Forensic Self-Exam Agent has cleared ClearFlow as the breach vector."
+    },
+    "vector_hypothesis_confidence": {
+      "type": "number",
+      "description": "Confidence score from Vector Hypothesis Agent (0.0–1.0).",
+      "minimum": 0.0,
+      "maximum": 1.0
+    }
+  },
+  "maestro_trigger_filter_hint": {
+    "description": "Paste this as the Maestro Trigger FilterTree JSON when wiring this event to a stage transition in Slice 010/012. Routes to edge_ALryM7 (Multi-Customer Investigation → Vector Isolation).",
+    "filterTree": {
+      "operator": "AND",
+      "conditions": [
+        { "field": "event_type", "operator": "eq", "value": "vendor-attribution" },
+        { "field": "vendor_id", "operator": "eq", "value": "nimbus" },
+        { "field": "evidence_signal_strength", "operator": "in", "value": ["moderate", "strong"] }
+      ]
+    },
+    "routes_to_transition": "edge_ALryM7",
+    "sets_variable": { "ReversalNumber": 2, "ClearFlowVectorStatus": "cleared" }
+  }
+}

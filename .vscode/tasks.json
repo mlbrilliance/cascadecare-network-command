@@ -1,0 +1,40 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "run-tests",
+      "type": "shell",
+      "command": "uv run pytest",
+      "detail": "Run all unit tests (dev-time wrappers, event contracts, case vocabulary)",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "lint",
+      "type": "shell",
+      "command": "uv run ruff check .",
+      "detail": "Run ruff linter on all Python source files",
+      "group": "none",
+      "problemMatcher": []
+    },
+    {
+      "label": "typecheck",
+      "type": "shell",
+      "command": "uv run mypy src/",
+      "detail": "Run mypy type checker on source directory",
+      "group": "none",
+      "problemMatcher": []
+    },
+    {
+      "label": "pack-solution",
+      "type": "shell",
+      "command": "bash scripts/pack-solution.sh",
+      "detail": "Assemble the clearflow-solution package from canonical case sources",
+      "group": "none",
+      "problemMatcher": []
+    }
+  ]
+}

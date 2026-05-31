@@ -1,0 +1,18 @@
+[project]
+name = "forensic-self-exam-agent"
+version = "0.1.0"
+description = "Coordinates the ClearFlow internal investigation, routing and setting vector status (CascadeCare Network Command, Slice 009)."
+authors = [{ name = "CascadeCare Network Command contributors" }]
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic>=2.0",
+    "uipath>=2.10",
+]
+
+[dependency-groups]
+dev = [
+    "uipath-dev",
+]
+
+[tool.uipath]
+type = "agent"

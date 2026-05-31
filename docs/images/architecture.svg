@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <defs>
+    <style>
+      .layer-bg { fill: #16213e; stroke: #0f3460; stroke-width: 1.5; rx: 6; }
+      .layer-label { fill: #ffffff; font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; font-weight: 600; }
+      .layer-detail { fill: #a8b2d1; font-family: 'Segoe UI', Arial, sans-serif; font-size: 10.5px; }
+      .highlight { fill: #e94560; }
+      .connector { stroke: #0f3460; stroke-width: 2; stroke-dasharray: 6,3; }
+      .connector-solid { stroke: #e94560; stroke-width: 2; }
+      .section-label { fill: #e94560; font-family: 'Segoe UI', Arial, sans-serif; font-size: 9px; font-weight: 600; letter-spacing: 1.5px; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="600" fill="#1a1a2e" rx="0"/>
+
+  <!-- Title -->
+  <text x="400" y="32" text-anchor="middle" fill="#ffffff" font-family="'Segoe UI', Arial, sans-serif" font-size="16" font-weight="700">CascadeCare Network Command — System Architecture</text>
+
+  <!-- Layer 1: Presentation -->
+  <rect x="40" y="52" width="720" height="80" class="layer-bg"/>
+  <text x="60" y="72" class="section-label">PRESENTATION LAYER</text>
+  <text x="60" y="92" class="layer-label">Next.js Command Center</text>
+  <text x="60" y="108" class="layer-detail">8 views: Command Center | Timeline | Case Board | Participants | Evidence | Agents | Decisions | Brief</text>
+  <text x="460" y="92" class="layer-label">Process Apps (HITL)</text>
+  <text x="460" y="108" class="layer-detail">Action Center approval gates</text>
+  <text x="660" y="92" class="layer-label">Executive Brief</text>
+  <text x="660" y="108" class="layer-detail">Board-ready output</text>
+
+  <!-- Connector 1-2 -->
+  <line x1="400" y1="132" x2="400" y2="148" class="connector-solid"/>
+  <text x="410" y="143" class="layer-detail" font-size="8">REST + WebSocket</text>
+
+  <!-- Layer 2: Orchestration -->
+  <rect x="40" y="148" width="720" height="80" class="layer-bg"/>
+  <text x="60" y="168" class="section-label">ORCHESTRATION LAYER</text>
+  <text x="60" y="188" class="layer-label">UiPath Maestro Case (Cloud)</text>
+  <text x="60" y="204" class="layer-detail">Three-level case nesting: Master → Parent → Grandchild</text>
+  <text x="460" y="188" class="layer-label">FastAPI Shim (Local)</text>
+  <text x="460" y="204" class="layer-detail">Webhook bridge | Demo event injection | Mock proxy</text>
+
+  <!-- Connector 2-3 -->
+  <line x1="400" y1="228" x2="400" y2="244" class="connector-solid"/>
+  <text x="410" y="239" class="layer-detail" font-size="8">Webhooks + Agent calls</text>
+
+  <!-- Layer 3: Intelligence -->
+  <rect x="40" y="244" width="720" height="140" class="layer-bg"/>
+  <text x="60" y="264" class="section-label">INTELLIGENCE LAYER</text>
+  <text x="60" y="284" class="layer-label">LangGraph Agent Runtime (Python + Claude API)</text>
+
+  <!-- Master agent box -->
+  <rect x="60" y="294" width="180" height="36" fill="#0f3460" stroke="#e94560" stroke-width="1" rx="4"/>
+  <text x="150" y="310" text-anchor="middle" class="layer-label" font-size="10">Master Case Manager</text>
+  <text x="150" y="324" text-anchor="middle" class="layer-detail" font-size="9">Top-level graph</text>
+
+  <!-- Signature agent box -->
+  <rect x="254" y="294" width="180" height="36" fill="#0f3460" stroke="#e94560" stroke-width="1.5" rx="4"/>
+  <text x="344" y="310" text-anchor="middle" fill="#e94560" font-family="'Segoe UI', Arial, sans-serif" font-size="10" font-weight="700">Multi-Customer Pattern Detector</text>
+  <text x="344" y="324" text-anchor="middle" class="layer-detail" font-size="9">SIGNATURE AGENT</text>
+
+  <!-- BAA Reasoner box -->
+  <rect x="448" y="294" width="150" height="36" fill="#0f3460" stroke="#e94560" stroke-width="1" rx="4"/>
+  <text x="523" y="310" text-anchor="middle" class="layer-label" font-size="10">BAA Boundary Reasoner</text>
+  <text x="523" y="324" text-anchor="middle" class="layer-detail" font-size="9">Claude (BYO-LLM)</text>
+
+  <!-- Other agents -->
+  <rect x="612" y="294" width="136" height="36" fill="#0f3460" stroke="#0f3460" stroke-width="1" rx="4"/>
+  <text x="680" y="310" text-anchor="middle" class="layer-label" font-size="10">+14 Specialized</text>
+  <text x="680" y="324" text-anchor="middle" class="layer-detail" font-size="9">Agents</text>
+
+  <!-- Child case managers -->
+  <rect x="60" y="340" width="688" height="30" fill="#0f3460" stroke="#0f3460" stroke-width="0.5" rx="3"/>
+  <text x="70" y="359" class="layer-detail" font-size="9.5">Child Case Managers: Provider Crisis (x6) | Forensic Self-Exam | Vendor Attribution | Regulatory | Contract Collision | Litigation | Market Posture</text>
+
+  <!-- Connector 3-4 -->
+  <line x1="400" y1="384" x2="400" y2="400" class="connector-solid"/>
+  <text x="410" y="395" class="layer-detail" font-size="8">SQLAlchemy + In-process</text>
+
+  <!-- Layer 4: Data -->
+  <rect x="40" y="400" width="720" height="72" class="layer-bg"/>
+  <text x="60" y="420" class="section-label">DATA LAYER</text>
+  <text x="60" y="440" class="layer-label">PostgreSQL</text>
+  <text x="60" y="456" class="layer-detail">Case state | 3-level relationships | Participants | SLAs | Evidence metadata</text>
+  <text x="460" y="440" class="layer-label">LanceDB</text>
+  <text x="460" y="456" class="layer-detail">Vector embeddings | Evidence similarity | Cross-case correlation</text>
+
+  <!-- Connector 4-5 -->
+  <line x1="400" y1="472" x2="400" y2="488" class="connector-solid"/>
+  <text x="410" y="483" class="layer-detail" font-size="8">HTTP (localhost)</text>
+
+  <!-- Layer 5: Mock External Systems -->
+  <rect x="40" y="488" width="720" height="72" class="layer-bg"/>
+  <text x="60" y="508" class="section-label">MOCK EXTERNAL SYSTEMS</text>
+  <text x="60" y="528" class="layer-label">Providers (x6)</text>
+  <text x="60" y="544" class="layer-detail">Northstar | Alpha-Epsilon</text>
+  <text x="210" y="528" class="layer-label">Payers (x4)</text>
+  <text x="210" y="544" class="layer-detail">Apex | SummitBlue | ...</text>
+  <text x="360" y="528" class="layer-label">Nimbus SaaS</text>
+  <text x="360" y="544" class="layer-detail">Attack vector</text>
+  <text x="490" y="528" class="layer-label">Regulators</text>
+  <text x="490" y="544" class="layer-detail">TN DOI | HHS OCR | ...</text>
+  <text x="620" y="528" class="layer-label">Aurora Specialty</text>
+  <text x="620" y="544" class="layer-detail">Cyber insurer</text>
+
+  <!-- UiPath Robots sidebar indicator -->
+  <rect x="40" y="570" width="720" height="22" fill="#0f3460" stroke="#e94560" stroke-width="1" rx="3"/>
+  <text x="400" y="585" text-anchor="middle" class="layer-detail" font-size="9.5" fill="#e94560">UiPath Robots (BPMN): Subpoena Distribution | Regulator Notification | BAA Check | Evidence Export | Insurance Filing | Comms</text>
+</svg>

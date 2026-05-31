@@ -1,0 +1,58 @@
+{
+  "$schema": "https://cloud.uipath.com/draft/2024-12/entry-point",
+  "$id": "entry-points.json",
+  "entryPoints": [
+    {
+      "filePath": "/content/agent.json",
+      "uniqueId": "789f449b-7d7d-4dae-bd70-32a1039b6eef",
+      "type": "agent",
+      "input": {
+        "type": "object",
+        "properties": {
+          "litigation_event": {
+            "type": "string",
+            "description": "Description of the litigation event naming ClearFlow under a negligent-monitoring theory."
+          },
+          "monitoring_history": {
+            "type": "string",
+            "description": "ClearFlow's monitoring/detection history relevant to the co-defendant exposure assessment."
+          },
+          "named_parties": {
+            "type": "array",
+            "description": "Entities named in the litigation action (approved fictional display names only).",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "litigation_event",
+          "monitoring_history",
+          "named_parties"
+        ]
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "exposure_level": {
+            "type": "string",
+            "description": "ClearFlow's co-defendant exposure level.",
+            "enum": [
+              "low",
+              "moderate",
+              "high"
+            ]
+          },
+          "privilege_reshuffle_required": {
+            "type": "boolean",
+            "description": "Whether grandchild-case privilege flags must move from operational to privileged classification."
+          },
+          "rationale": {
+            "type": "string",
+            "description": "Decision-support draft explaining the exposure assessment and any privilege reshuffle, for counsel review."
+          }
+        }
+      }
+    }
+  ]
+}

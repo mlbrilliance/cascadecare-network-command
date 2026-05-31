@@ -1,0 +1,23 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "ClearFlowIdealIncidentResponse",
+    "kind": "package",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "projectKey": "e4656843-1743-4a8f-88c3-cf6c3205265c",
+    "isOverridable": true,
+    "dependencies": [],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "name": "ClearFlowIdealIncidentResponse"
+    },
+    "locks": [],
+    "key": "48d499e1-650d-4078-b1a5-d221217ac055",
+    "files": []
+  }
+}

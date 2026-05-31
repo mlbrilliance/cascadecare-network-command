@@ -1,0 +1,669 @@
+{
+  "id": "25cf5328-5653-4d41-a9fd-9f38bbd3897a",
+  "version": "1.0.0",
+  "name": "clearflow-demo-driver",
+  "nodes": [
+    {
+      "id": "start",
+      "type": "core.trigger.manual",
+      "typeVersion": "1.0.0",
+      "display": { "label": "Start Demo Driver" },
+      "inputs": {
+        "entryPointId": "31d7abaa-8d53-461a-9d25-58a9a4ebcedc"
+      },
+      "outputs": {
+        "output": {
+          "type": "object",
+          "description": "Data passed when manually triggering the demo driver.",
+          "source": "=result.response",
+          "var": "output"
+        }
+      }
+    },
+
+    {
+      "id": "waitNorthstar",
+      "type": "core.logic.delay",
+      "typeVersion": "1.0.0",
+      "display": { "label": "Wait → t+10s (Day 1)" },
+      "inputs": {
+        "timerType": "timeDuration",
+        "timerPreset": "custom",
+        "timerValue": "PT10S"
+      }
+    },
+    {
+      "id": "fireNorthstar",
+      "type": "core.action.script",
+      "typeVersion": "1.0.0",
+      "display": { "label": "Fire provider-northstar → provider-claim-anomaly [R1 setup]" },
+      "inputs": {
+        "script": "return { target_api_workflow: 'provider-northstar', event_type: 'provider-claim-anomaly', source_system: 'provider-northstar', simulated_day: 1, provider_id: 'northstar', claim_drop_pct: 47.5, anomaly_score: 0.82, business_continuity_runway_days: 45 };"
+      },
+      "outputs": {
+        "output": { "type": "object", "description": "The return value of the script", "source": "=result.response", "var": "output" },
+        "error": { "type": "object", "description": "Error information if the script fails", "source": "=result.Error", "var": "error" }
+      }
+    },
+
+    {
+      "id": "waitAlpha",
+      "type": "core.logic.delay",
+      "typeVersion": "1.0.0",
+      "display": { "label": "Wait → t+11s" },
+      "inputs": {
+        "timerType": "timeDuration",
+        "timerPreset": "custom",
+        "timerValue": "PT1S"
+      }
+    },
+    {
+      "id": "fireAlpha",
+      "type": "core.action.script",
+      "typeVersion": "1.0.0",
+      "display": { "label": "Fire provider-alpha → provider-claim-anomaly [R1 setup]" },
+      "inputs": {
+        "script": "return { target_api_workflow: 'provider-alpha', event_type: 'provider-claim-anomaly', source_system: 'provider-alpha', simulated_day: 1, provider_id: 'alpha', claim_drop_pct: 41.2, anomaly_score: 0.78, business_continuity_runway_days: 60 };"
+      },
+      "outputs": {
+        "output": { "type": "object", "description": "The return value of the script", "source": "=result.response", "var": "output" },
+        "error": { "type": "object", "description": "Error information if the script fails", "source": "=result.Error", "var": "error" }
+      }
+    },
+
+    {
+      "id": "waitBeta",
+      "type": "core.logic.delay",
+      "typeVersion": "1.0.0",
+      "display": { "label": "Wait → t+12s" },
+      "inputs": {
+        "timerType": "timeDuration",
+        "timerPreset": "custom",
+        "timerValue": "PT1S"
+      }
+    },
+    {
+      "id": "fireBeta",
+      "type": "core.action.script",
+      "typeVersion": "1.0.0",
+      "display": { "label": "Fire provider-beta → provider-claim-anomaly [R1 setup]" },
+      "inputs": {
+        "script": "return { target_api_workflow: 'provider-beta', event_type: 'provider-claim-anomaly', source_system: 'provider-beta', simulated_day: 1, provider_id: 'beta', claim_drop_pct: 53.9, anomaly_score: 0.88, business_continuity_runway_days: 10 };"
+      },
+      "outputs": {
+        "output": { "type": "object", "description": "The return value of the script", "source": "=result.response", "var": "output" },
+        "error": { "type": "object", "description": "Error information if the script fails", "source": "=result.Error", "var": "error" }
+      }
+    },
+
+    {
+      "id": "waitGamma",
+      "type": "core.logic.delay",
+      "typeVersion": "1.0.0",
+      "display": { "label": "Wait → t+13s" },
+      "inputs": {
+        "timerType": "timeDuration",
+        "timerPreset": "custom",
+        "timerValue": "PT1S"
+      }
+    },
+    {
+      "id": "fireGamma",
+      "type": "core.action.script",
+      "typeVersion": "1.0.0",
+      "display": { "label": "Fire provider-gamma → provider-claim-anomaly [R1 setup]" },
+      "inputs": {
+        "script": "return { target_api_workflow: 'provider-gamma', event_type: 'provider-claim-anomaly', source_system: 'provider-gamma', simulated_day: 1, provider_id: 'gamma', claim_drop_pct: 44.6, anomaly_score: 0.80, business_continuity_runway_days: 30 };"
+      },
+      "outputs": {
+        "output": { "type": "object", "description": "The return value of the script", "source": "=result.response", "var": "output" },
+        "error": { "type": "object", "description": "Error information if the script fails", "source": "=result.Error", "var": "error" }
+      }
+    },
+
+    {
+      "id": "waitDelta",
+      "type": "core.logic.delay",
+      "typeVersion": "1.0.0",
+      "display": { "label": "Wait → t+14s" },
+      "inputs": {
+        "timerType": "timeDuration",
+        "timerPreset": "custom",
+        "timerValue": "PT1S"
+      }
+    },
+    {
+      "id": "fireDelta",
+      "type": "core.action.script",
+      "typeVersion": "1.0.0",
+      "display": { "label": "Fire provider-delta → provider-claim-anomaly [R1 setup]" },
+      "inputs": {
+        "script": "return { target_api_workflow: 'provider-delta', event_type: 'provider-claim-anomaly', source_system: 'provider-delta', simulated_day: 1, provider_id: 'delta', claim_drop_pct: 49.1, anomaly_score: 0.84, business_continuity_runway_days: 20 };"
+      },
+      "outputs": {
+        "output": { "type": "object", "description": "The return value of the script", "source": "=result.response", "var": "output" },
+        "error": { "type": "object", "description": "Error information if the script fails", "source": "=result.Error", "var": "error" }
+      }
+    },
+
+    {
+      "id": "waitEpsilon",
+      "type": "core.logic.delay",
+      "typeVersion": "1.0.0",
+      "display": { "label": "Wait → t+15s" },
+      "inputs": {
+        "timerType": "timeDuration",
+        "timerPreset": "custom",
+        "timerValue": "PT1S"
+      }
+    },
+    {
+      "id": "fireEpsilon",
+      "type": "core.action.script",
+      "typeVersion": "1.0.0",
+      "display": { "label": "Fire provider-epsilon → provider-claim-anomaly [R1 setup]" },
+      "inputs": {
+        "script": "return { target_api_workflow: 'provider-epsilon', event_type: 'provider-claim-anomaly', source_system: 'provider-epsilon', simulated_day: 1, provider_id: 'epsilon', claim_drop_pct: 46.3, anomaly_score: 0.81, business_continuity_runway_days: 15 };"
+      },
+      "outputs": {
+        "output": { "type": "object", "description": "The return value of the script", "source": "=result.response", "var": "output" },
+        "error": { "type": "object", "description": "Error information if the script fails", "source": "=result.Error", "var": "error" }
+      }
+    },
+
+    {
+      "id": "waitCorrelation",
+      "type": "core.logic.delay",
+      "typeVersion": "1.0.0",
+      "display": { "label": "Wait → t+20s (Day 1)" },
+      "inputs": {
+        "timerType": "timeDuration",
+        "timerPreset": "custom",
+        "timerValue": "PT5S"
+      }
+    },
+    {
+      "id": "fireCorrelationR1",
+      "type": "core.action.script",
+      "typeVersion": "1.0.0",
+      "display": { "label": "Fire multi-customer-pattern-detector → multi-customer-correlation [R1 DRIVER]" },
+      "inputs": {
+        "script": "return { target_api_workflow: 'multi-customer-pattern-detector', event_type: 'multi-customer-correlation', source_system: 'multi-customer-pattern-detector', simulated_day: 1, affected_provider_ids: ['northstar','alpha','beta','gamma','delta','epsilon'], correlation_confidence: 0.91, drives_reversal: 1 };"
+      },
+      "outputs": {
+        "output": { "type": "object", "description": "The return value of the script", "source": "=result.response", "var": "output" },
+        "error": { "type": "object", "description": "Error information if the script fails", "source": "=result.Error", "var": "error" }
+      }
+    },
+
+    {
+      "id": "waitChildPhi",
+      "type": "core.logic.delay",
+      "typeVersion": "1.0.0",
+      "display": { "label": "Wait → t+45s (Day 3)" },
+      "inputs": {
+        "timerType": "timeDuration",
+        "timerPreset": "custom",
+        "timerValue": "PT25S"
+      }
+    },
+    {
+      "id": "fireChildPhi",
+      "type": "core.action.script",
+      "typeVersion": "1.0.0",
+      "display": { "label": "Fire provider-northstar → phi-exfiltration-signal [Child: BA Exposure]" },
+      "inputs": {
+        "script": "return { target_api_workflow: 'provider-northstar', event_type: 'provider-claim-anomaly', event_subtype: 'phi_exfiltration_signal', source_system: 'provider-northstar', simulated_day: 3, provider_id: 'northstar', child_case_beat: 'business-associate-exposure', drives_reversal: 0 };"
+      },
+      "outputs": {
+        "output": { "type": "object", "description": "The return value of the script", "source": "=result.response", "var": "output" },
+        "error": { "type": "object", "description": "Error information if the script fails", "source": "=result.Error", "var": "error" }
+      }
+    },
+
+    {
+      "id": "waitVendor",
+      "type": "core.logic.delay",
+      "typeVersion": "1.0.0",
+      "display": { "label": "Wait → t+70s (Day 5)" },
+      "inputs": {
+        "timerType": "timeDuration",
+        "timerPreset": "custom",
+        "timerValue": "PT25S"
+      }
+    },
+    {
+      "id": "fireVendorR2",
+      "type": "core.action.script",
+      "typeVersion": "1.0.0",
+      "display": { "label": "Fire vendor-nimbus → vendor-attribution [R2 DRIVER]" },
+      "inputs": {
+        "script": "return { target_api_workflow: 'vendor-nimbus', event_type: 'vendor-attribution', source_system: 'vendor-nimbus', simulated_day: 5, evidence_signal_strength: 'strong', connected_provider_ids: ['northstar','alpha','beta','gamma','delta','epsilon'], clearflow_cleared: true, vector_hypothesis_confidence: 0.87, drives_reversal: 2 };"
+      },
+      "outputs": {
+        "output": { "type": "object", "description": "The return value of the script", "source": "=result.response", "var": "output" },
+        "error": { "type": "object", "description": "Error information if the script fails", "source": "=result.Error", "var": "error" }
+      }
+    },
+
+    {
+      "id": "waitChildLiquidity",
+      "type": "core.logic.delay",
+      "typeVersion": "1.0.0",
+      "display": { "label": "Wait → t+100s (Day 14)" },
+      "inputs": {
+        "timerType": "timeDuration",
+        "timerPreset": "custom",
+        "timerValue": "PT30S"
+      }
+    },
+    {
+      "id": "fireChildLiquidity",
+      "type": "core.action.script",
+      "typeVersion": "1.0.0",
+      "display": { "label": "Fire provider-northstar → liquidity-stress [Child: Payment Continuity]" },
+      "inputs": {
+        "script": "return { target_api_workflow: 'provider-northstar', event_type: 'provider-claim-anomaly', event_subtype: 'liquidity_stress', source_system: 'provider-northstar', simulated_day: 14, provider_id: 'northstar', child_case_beat: 'payment-continuity-escalation', business_continuity_runway_days: 45, drives_reversal: 0 };"
+      },
+      "outputs": {
+        "output": { "type": "object", "description": "The return value of the script", "source": "=result.response", "var": "output" },
+        "error": { "type": "object", "description": "Error information if the script fails", "source": "=result.Error", "var": "error" }
+      }
+    },
+
+    {
+      "id": "waitSubpoena",
+      "type": "core.logic.delay",
+      "typeVersion": "1.0.0",
+      "display": { "label": "Wait → t+150s (Day 30) — HERO" },
+      "inputs": {
+        "timerType": "timeDuration",
+        "timerPreset": "custom",
+        "timerValue": "PT50S"
+      }
+    },
+    {
+      "id": "fireSubpoenaR3",
+      "type": "core.action.script",
+      "typeVersion": "1.0.0",
+      "display": { "label": "Fire regulator-tn-doi → regulatory-subpoena [R3 HERO — 6 grandchild spawns]" },
+      "inputs": {
+        "script": "return { target_api_workflow: 'regulator-tn-doi', event_type: 'regulatory-subpoena', source_system: 'regulator-tn-doi', simulated_day: 30, scope: 'all_providers', named_provider_ids: ['northstar','alpha','beta','gamma','delta','epsilon'], response_deadline_days: 14, template_id: 'tn-doi-subpoena-2026', legal_basis: 'state_market_conduct_exam', drives_reversal: 3 };"
+      },
+      "outputs": {
+        "output": { "type": "object", "description": "The return value of the script", "source": "=result.response", "var": "output" },
+        "error": { "type": "object", "description": "Error information if the script fails", "source": "=result.Error", "var": "error" }
+      }
+    },
+
+    {
+      "id": "waitPayer",
+      "type": "core.logic.delay",
+      "typeVersion": "1.0.0",
+      "display": { "label": "Wait → t+200s (Day 45)" },
+      "inputs": {
+        "timerType": "timeDuration",
+        "timerPreset": "custom",
+        "timerValue": "PT50S"
+      }
+    },
+    {
+      "id": "firePayerR4",
+      "type": "core.action.script",
+      "typeVersion": "1.0.0",
+      "display": { "label": "Fire payer-apex → payer-demand [R4 DRIVER — tri-party HITL gate]" },
+      "inputs": {
+        "script": "return { target_api_workflow: 'payer-apex', event_type: 'payer-demand', source_system: 'payer-apex', simulated_day: 45, demand_type: 'data_access', target_provider_ids: ['northstar','alpha','beta','gamma','delta','epsilon'], contractual_basis: 'audit_rights_clause', conflicts_with_baa_ids: ['baa-northstar','baa-alpha','baa-beta','baa-gamma','baa-delta','baa-epsilon'], drives_reversal: 4 };"
+      },
+      "outputs": {
+        "output": { "type": "object", "description": "The return value of the script", "source": "=result.response", "var": "output" },
+        "error": { "type": "object", "description": "Error information if the script fails", "source": "=result.Error", "var": "error" }
+      }
+    },
+
+    {
+      "id": "waitInsurer",
+      "type": "core.logic.delay",
+      "typeVersion": "1.0.0",
+      "display": { "label": "Wait → t+205s (Day 45)" },
+      "inputs": {
+        "timerType": "timeDuration",
+        "timerPreset": "custom",
+        "timerValue": "PT5S"
+      }
+    },
+    {
+      "id": "fireInsurerR4",
+      "type": "core.action.script",
+      "typeVersion": "1.0.0",
+      "display": { "label": "Fire insurer-aurora-specialty → insurer-directive [R4 HITL — reservation of rights]" },
+      "inputs": {
+        "script": "return { target_api_workflow: 'insurer-aurora-specialty', event_type: 'insurer-directive', source_system: 'insurer-aurora-specialty', simulated_day: 45, directive_type: 'reservation_of_rights', coverage_sub_limit_triggered: true, conditions: ['preserve_privilege','no_admission_of_liability'], required_actions: ['retain_panel_counsel','quarantine_disclosures'], drives_reversal: 4 };"
+      },
+      "outputs": {
+        "output": { "type": "object", "description": "The return value of the script", "source": "=result.response", "var": "output" },
+        "error": { "type": "object", "description": "Error information if the script fails", "source": "=result.Error", "var": "error" }
+      }
+    },
+
+    {
+      "id": "waitLitigation",
+      "type": "core.logic.delay",
+      "typeVersion": "1.0.0",
+      "display": { "label": "Wait → t+260s (Day 90)" },
+      "inputs": {
+        "timerType": "timeDuration",
+        "timerPreset": "custom",
+        "timerValue": "PT55S"
+      }
+    },
+    {
+      "id": "fireLitigationR5",
+      "type": "core.action.script",
+      "typeVersion": "1.0.0",
+      "display": { "label": "Fire regulator-tn-doi → litigation-event [R5 DRIVER — co-defendant named]" },
+      "inputs": {
+        "script": "return { target_api_workflow: 'regulator-tn-doi', event_type: 'litigation-event', source_system: 'regulator-tn-doi', simulated_day: 90, event_subtype: 'co_defendant_named', named_parties: ['ClearFlow Health Network','Nimbus Patient Engagement Platform'], clearflow_named_co_defendant: true, theory: 'negligent_monitoring', privilege_reshuffle_required: true, drives_reversal: 5 };"
+      },
+      "outputs": {
+        "output": { "type": "object", "description": "The return value of the script", "source": "=result.response", "var": "output" },
+        "error": { "type": "object", "description": "Error information if the script fails", "source": "=result.Error", "var": "error" }
+      }
+    },
+
+    {
+      "id": "end",
+      "type": "core.control.end",
+      "typeVersion": "1.0.0",
+      "display": { "label": "Demo Complete (t+260s)" },
+      "inputs": {}
+    }
+  ],
+  "edges": [
+    { "id": "e-start-waitNorthstar", "sourceNodeId": "start", "sourcePort": "output", "targetNodeId": "waitNorthstar", "targetPort": "input" },
+    { "id": "e-waitNorthstar-fireNorthstar", "sourceNodeId": "waitNorthstar", "sourcePort": "output", "targetNodeId": "fireNorthstar", "targetPort": "input" },
+    { "id": "e-fireNorthstar-waitAlpha", "sourceNodeId": "fireNorthstar", "sourcePort": "success", "targetNodeId": "waitAlpha", "targetPort": "input" },
+
+    { "id": "e-waitAlpha-fireAlpha", "sourceNodeId": "waitAlpha", "sourcePort": "output", "targetNodeId": "fireAlpha", "targetPort": "input" },
+    { "id": "e-fireAlpha-waitBeta", "sourceNodeId": "fireAlpha", "sourcePort": "success", "targetNodeId": "waitBeta", "targetPort": "input" },
+
+    { "id": "e-waitBeta-fireBeta", "sourceNodeId": "waitBeta", "sourcePort": "output", "targetNodeId": "fireBeta", "targetPort": "input" },
+    { "id": "e-fireBeta-waitGamma", "sourceNodeId": "fireBeta", "sourcePort": "success", "targetNodeId": "waitGamma", "targetPort": "input" },
+
+    { "id": "e-waitGamma-fireGamma", "sourceNodeId": "waitGamma", "sourcePort": "output", "targetNodeId": "fireGamma", "targetPort": "input" },
+    { "id": "e-fireGamma-waitDelta", "sourceNodeId": "fireGamma", "sourcePort": "success", "targetNodeId": "waitDelta", "targetPort": "input" },
+
+    { "id": "e-waitDelta-fireDelta", "sourceNodeId": "waitDelta", "sourcePort": "output", "targetNodeId": "fireDelta", "targetPort": "input" },
+    { "id": "e-fireDelta-waitEpsilon", "sourceNodeId": "fireDelta", "sourcePort": "success", "targetNodeId": "waitEpsilon", "targetPort": "input" },
+
+    { "id": "e-waitEpsilon-fireEpsilon", "sourceNodeId": "waitEpsilon", "sourcePort": "output", "targetNodeId": "fireEpsilon", "targetPort": "input" },
+    { "id": "e-fireEpsilon-waitCorrelation", "sourceNodeId": "fireEpsilon", "sourcePort": "success", "targetNodeId": "waitCorrelation", "targetPort": "input" },
+
+    { "id": "e-waitCorrelation-fireCorrelationR1", "sourceNodeId": "waitCorrelation", "sourcePort": "output", "targetNodeId": "fireCorrelationR1", "targetPort": "input" },
+    { "id": "e-fireCorrelationR1-waitChildPhi", "sourceNodeId": "fireCorrelationR1", "sourcePort": "success", "targetNodeId": "waitChildPhi", "targetPort": "input" },
+
+    { "id": "e-waitChildPhi-fireChildPhi", "sourceNodeId": "waitChildPhi", "sourcePort": "output", "targetNodeId": "fireChildPhi", "targetPort": "input" },
+    { "id": "e-fireChildPhi-waitVendor", "sourceNodeId": "fireChildPhi", "sourcePort": "success", "targetNodeId": "waitVendor", "targetPort": "input" },
+
+    { "id": "e-waitVendor-fireVendorR2", "sourceNodeId": "waitVendor", "sourcePort": "output", "targetNodeId": "fireVendorR2", "targetPort": "input" },
+    { "id": "e-fireVendorR2-waitChildLiquidity", "sourceNodeId": "fireVendorR2", "sourcePort": "success", "targetNodeId": "waitChildLiquidity", "targetPort": "input" },
+
+    { "id": "e-waitChildLiquidity-fireChildLiquidity", "sourceNodeId": "waitChildLiquidity", "sourcePort": "output", "targetNodeId": "fireChildLiquidity", "targetPort": "input" },
+    { "id": "e-fireChildLiquidity-waitSubpoena", "sourceNodeId": "fireChildLiquidity", "sourcePort": "success", "targetNodeId": "waitSubpoena", "targetPort": "input" },
+
+    { "id": "e-waitSubpoena-fireSubpoenaR3", "sourceNodeId": "waitSubpoena", "sourcePort": "output", "targetNodeId": "fireSubpoenaR3", "targetPort": "input" },
+    { "id": "e-fireSubpoenaR3-waitPayer", "sourceNodeId": "fireSubpoenaR3", "sourcePort": "success", "targetNodeId": "waitPayer", "targetPort": "input" },
+
+    { "id": "e-waitPayer-firePayerR4", "sourceNodeId": "waitPayer", "sourcePort": "output", "targetNodeId": "firePayerR4", "targetPort": "input" },
+    { "id": "e-firePayerR4-waitInsurer", "sourceNodeId": "firePayerR4", "sourcePort": "success", "targetNodeId": "waitInsurer", "targetPort": "input" },
+
+    { "id": "e-waitInsurer-fireInsurerR4", "sourceNodeId": "waitInsurer", "sourcePort": "output", "targetNodeId": "fireInsurerR4", "targetPort": "input" },
+    { "id": "e-fireInsurerR4-waitLitigation", "sourceNodeId": "fireInsurerR4", "sourcePort": "success", "targetNodeId": "waitLitigation", "targetPort": "input" },
+
+    { "id": "e-waitLitigation-fireLitigationR5", "sourceNodeId": "waitLitigation", "sourcePort": "output", "targetNodeId": "fireLitigationR5", "targetPort": "input" },
+    { "id": "e-fireLitigationR5-end", "sourceNodeId": "fireLitigationR5", "sourcePort": "success", "targetNodeId": "end", "targetPort": "input" }
+  ],
+  "definitions": [
+    {
+      "nodeType": "core.trigger.manual",
+      "version": "1.0.0",
+      "category": "trigger",
+      "description": "Start workflow manually",
+      "tags": ["trigger", "start", "manual"],
+      "sortOrder": 40,
+      "display": {
+        "label": "Manual trigger",
+        "icon": "play",
+        "shape": "circle",
+        "iconBackground": "linear-gradient(225deg, #FAFAFB 0%, #ECEDEF 100%)",
+        "iconBackgroundDark": "linear-gradient(225deg, #526069 0%, rgba(50, 60, 66, 0.6) 100%)"
+      },
+      "handleConfiguration": [
+        {
+          "position": "right",
+          "handles": [
+            {
+              "id": "output",
+              "type": "source",
+              "handleType": "output",
+              "showButton": true,
+              "constraints": { "forbiddenTargetCategories": ["trigger"] }
+            }
+          ],
+          "visible": true
+        }
+      ],
+      "model": {
+        "type": "bpmn:StartEvent",
+        "entryPointId": true
+      },
+      "outputDefinition": {
+        "output": {
+          "type": "object",
+          "description": "Data passed when manually triggering the workflow.",
+          "source": "null",
+          "var": "output"
+        }
+      },
+      "toolbarExtensions": {
+        "design": {
+          "actions": [
+            { "id": "change-trigger-type", "icon": "replace", "label": "Change trigger type" }
+          ]
+        }
+      }
+    },
+    {
+      "nodeType": "core.logic.delay",
+      "version": "1.0.0",
+      "category": "control-flow",
+      "description": "Pause execution for a duration or until a date",
+      "tags": ["control-flow", "delay", "timer", "wait"],
+      "sortOrder": 20,
+      "display": {
+        "label": "Delay",
+        "icon": "clock",
+        "iconBackground": "linear-gradient(225deg, #FAFAFB 0%, #ECEDEF 100%)",
+        "iconBackgroundDark": "linear-gradient(225deg, #526069 0%, rgba(50, 60, 66, 0.6) 100%)"
+      },
+      "handleConfiguration": [
+        {
+          "position": "left",
+          "handles": [
+            { "id": "input", "type": "target", "handleType": "input" }
+          ]
+        },
+        {
+          "position": "right",
+          "handles": [
+            { "id": "output", "type": "source", "handleType": "output" }
+          ]
+        }
+      ],
+      "model": {
+        "type": "bpmn:IntermediateCatchEvent",
+        "eventDefinition": "bpmn:TimerEventDefinition"
+      },
+      "inputDefinition": {
+        "type": "object",
+        "properties": {
+          "timerType": { "type": "string" },
+          "timerPreset": { "type": "string" },
+          "timerValue": { "type": "string" },
+          "timerDate": { "type": "string" }
+        },
+        "required": ["timerType", "timerPreset"]
+      },
+      "inputDefaults": {
+        "timerType": "timeDuration",
+        "timerPreset": "PT15M"
+      }
+    },
+    {
+      "nodeType": "core.action.script",
+      "version": "1.0.0",
+      "category": "data-operations",
+      "description": "Run custom JavaScript code",
+      "tags": ["code", "javascript", "python"],
+      "sortOrder": 35,
+      "supportsErrorHandling": true,
+      "display": {
+        "label": "Script",
+        "icon": "code",
+        "iconBackground": "linear-gradient(225deg, #FAFAFB 0%, #ECEDEF 100%)",
+        "iconBackgroundDark": "linear-gradient(225deg, #526069 0%, rgba(50, 60, 66, 0.6) 100%)"
+      },
+      "handleConfiguration": [
+        {
+          "position": "left",
+          "handles": [
+            { "id": "input", "type": "target", "handleType": "input" }
+          ]
+        },
+        {
+          "position": "right",
+          "handles": [
+            { "id": "success", "type": "source", "handleType": "output" }
+          ]
+        }
+      ],
+      "debug": { "runtime": "clientScript" },
+      "model": { "type": "bpmn:ScriptTask" },
+      "inputDefinition": {
+        "type": "object",
+        "properties": {
+          "script": {
+            "type": "string",
+            "minLength": 1,
+            "errorMessage": "A script function is required",
+            "validationSeverity": "warning"
+          }
+        },
+        "required": ["script"]
+      },
+      "inputDefaults": { "script": "" },
+      "outputDefinition": {
+        "output": {
+          "type": "object",
+          "description": "The return value of the script",
+          "source": "=result.response",
+          "var": "output"
+        },
+        "error": {
+          "type": "object",
+          "description": "Error information if the script fails",
+          "source": "=result.Error",
+          "var": "error",
+          "schema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "required": ["code", "message", "detail", "category", "status"],
+            "properties": {
+              "code": { "type": "string", "description": "Error code as a string" },
+              "message": { "type": "string", "description": "High-level error message" },
+              "detail": { "type": "string", "description": "Detailed error description" },
+              "category": { "type": "string", "description": "Error category" },
+              "status": { "type": "integer", "description": "HTTP status code" }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "nodeType": "core.control.end",
+      "version": "1.0.0",
+      "category": "control-flow",
+      "description": "Mark the end of a workflow path",
+      "tags": ["control-flow", "end", "finish", "complete"],
+      "sortOrder": 20,
+      "display": {
+        "label": "End",
+        "icon": "circle-check",
+        "shape": "circle"
+      },
+      "handleConfiguration": [
+        {
+          "position": "left",
+          "handles": [
+            { "id": "input", "type": "target", "handleType": "input" }
+          ]
+        }
+      ],
+      "model": { "type": "bpmn:EndEvent" }
+    }
+  ],
+  "bindings": [],
+  "variables": {
+    "nodes": [
+      { "id": "fireNorthstar.output", "type": "object", "description": "provider-northstar event payload", "binding": { "nodeId": "fireNorthstar", "outputId": "output" } },
+      { "id": "fireAlpha.output", "type": "object", "description": "provider-alpha event payload", "binding": { "nodeId": "fireAlpha", "outputId": "output" } },
+      { "id": "fireBeta.output", "type": "object", "description": "provider-beta event payload", "binding": { "nodeId": "fireBeta", "outputId": "output" } },
+      { "id": "fireGamma.output", "type": "object", "description": "provider-gamma event payload", "binding": { "nodeId": "fireGamma", "outputId": "output" } },
+      { "id": "fireDelta.output", "type": "object", "description": "provider-delta event payload", "binding": { "nodeId": "fireDelta", "outputId": "output" } },
+      { "id": "fireEpsilon.output", "type": "object", "description": "provider-epsilon event payload", "binding": { "nodeId": "fireEpsilon", "outputId": "output" } },
+      { "id": "fireCorrelationR1.output", "type": "object", "description": "multi-customer-correlation event payload (R1)", "binding": { "nodeId": "fireCorrelationR1", "outputId": "output" } },
+      { "id": "fireChildPhi.output", "type": "object", "description": "PHI exfiltration child-case beat payload", "binding": { "nodeId": "fireChildPhi", "outputId": "output" } },
+      { "id": "fireVendorR2.output", "type": "object", "description": "vendor-attribution event payload (R2)", "binding": { "nodeId": "fireVendorR2", "outputId": "output" } },
+      { "id": "fireChildLiquidity.output", "type": "object", "description": "liquidity stress child-case beat payload", "binding": { "nodeId": "fireChildLiquidity", "outputId": "output" } },
+      { "id": "fireSubpoenaR3.output", "type": "object", "description": "regulatory-subpoena event payload (R3 HERO)", "binding": { "nodeId": "fireSubpoenaR3", "outputId": "output" } },
+      { "id": "firePayerR4.output", "type": "object", "description": "payer-demand event payload (R4)", "binding": { "nodeId": "firePayerR4", "outputId": "output" } },
+      { "id": "fireInsurerR4.output", "type": "object", "description": "insurer-directive event payload (R4 HITL)", "binding": { "nodeId": "fireInsurerR4", "outputId": "output" } },
+      { "id": "fireLitigationR5.output", "type": "object", "description": "litigation-event payload (R5)", "binding": { "nodeId": "fireLitigationR5", "outputId": "output" } }
+    ]
+  },
+  "layout": {
+    "nodes": {
+      "start": { "position": { "x": 0, "y": 0 }, "size": { "width": 96, "height": 96 }, "collapsed": false },
+      "waitNorthstar": { "position": { "x": 0, "y": 0 }, "size": { "width": 96, "height": 96 }, "collapsed": false },
+      "fireNorthstar": { "position": { "x": 0, "y": 0 }, "size": { "width": 96, "height": 96 }, "collapsed": false },
+      "waitAlpha": { "position": { "x": 0, "y": 0 }, "size": { "width": 96, "height": 96 }, "collapsed": false },
+      "fireAlpha": { "position": { "x": 0, "y": 0 }, "size": { "width": 96, "height": 96 }, "collapsed": false },
+      "waitBeta": { "position": { "x": 0, "y": 0 }, "size": { "width": 96, "height": 96 }, "collapsed": false },
+      "fireBeta": { "position": { "x": 0, "y": 0 }, "size": { "width": 96, "height": 96 }, "collapsed": false },
+      "waitGamma": { "position": { "x": 0, "y": 0 }, "size": { "width": 96, "height": 96 }, "collapsed": false },
+      "fireGamma": { "position": { "x": 0, "y": 0 }, "size": { "width": 96, "height": 96 }, "collapsed": false },
+      "waitDelta": { "position": { "x": 0, "y": 0 }, "size": { "width": 96, "height": 96 }, "collapsed": false },
+      "fireDelta": { "position": { "x": 0, "y": 0 }, "size": { "width": 96, "height": 96 }, "collapsed": false },
+      "waitEpsilon": { "position": { "x": 0, "y": 0 }, "size": { "width": 96, "height": 96 }, "collapsed": false },
+      "fireEpsilon": { "position": { "x": 0, "y": 0 }, "size": { "width": 96, "height": 96 }, "collapsed": false },
+      "waitCorrelation": { "position": { "x": 0, "y": 0 }, "size": { "width": 96, "height": 96 }, "collapsed": false },
+      "fireCorrelationR1": { "position": { "x": 0, "y": 0 }, "size": { "width": 96, "height": 96 }, "collapsed": false },
+      "waitChildPhi": { "position": { "x": 0, "y": 0 }, "size": { "width": 96, "height": 96 }, "collapsed": false },
+      "fireChildPhi": { "position": { "x": 0, "y": 0 }, "size": { "width": 96, "height": 96 }, "collapsed": false },
+      "waitVendor": { "position": { "x": 0, "y": 0 }, "size": { "width": 96, "height": 96 }, "collapsed": false },
+      "fireVendorR2": { "position": { "x": 0, "y": 0 }, "size": { "width": 96, "height": 96 }, "collapsed": false },
+      "waitChildLiquidity": { "position": { "x": 0, "y": 0 }, "size": { "width": 96, "height": 96 }, "collapsed": false },
+      "fireChildLiquidity": { "position": { "x": 0, "y": 0 }, "size": { "width": 96, "height": 96 }, "collapsed": false },
+      "waitSubpoena": { "position": { "x": 0, "y": 0 }, "size": { "width": 96, "height": 96 }, "collapsed": false },
+      "fireSubpoenaR3": { "position": { "x": 0, "y": 0 }, "size": { "width": 96, "height": 96 }, "collapsed": false },
+      "waitPayer": { "position": { "x": 0, "y": 0 }, "size": { "width": 96, "height": 96 }, "collapsed": false },
+      "firePayerR4": { "position": { "x": 0, "y": 0 }, "size": { "width": 96, "height": 96 }, "collapsed": false },
+      "waitInsurer": { "position": { "x": 0, "y": 0 }, "size": { "width": 96, "height": 96 }, "collapsed": false },
+      "fireInsurerR4": { "position": { "x": 0, "y": 0 }, "size": { "width": 96, "height": 96 }, "collapsed": false },
+      "waitLitigation": { "position": { "x": 0, "y": 0 }, "size": { "width": 96, "height": 96 }, "collapsed": false },
+      "fireLitigationR5": { "position": { "x": 0, "y": 0 }, "size": { "width": 96, "height": 96 }, "collapsed": false },
+      "end": { "position": { "x": 0, "y": 0 }, "size": { "width": 96, "height": 96 }, "collapsed": false }
+    }
+  }
+}

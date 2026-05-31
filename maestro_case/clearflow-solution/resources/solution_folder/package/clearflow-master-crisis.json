@@ -1,0 +1,23 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "clearflow-master-crisis",
+    "kind": "package",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "projectKey": "7e3bbea2-e5b1-4427-84bc-675e25d9a5a8",
+    "isOverridable": true,
+    "dependencies": [],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "name": "clearflow-master-crisis"
+    },
+    "locks": [],
+    "key": "de397c1b-8cf3-4a5f-b6b6-d8ab925a07b7",
+    "files": []
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "Name": "payer-union-prairie",
+  "ProjectType": "Api",
+  "Description": "Payer Demand Event Emitter API Workflow for source_system 'payer-union-prairie'.",
+  "main": "main.json"
+}

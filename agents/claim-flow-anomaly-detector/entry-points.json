@@ -1,0 +1,139 @@
+{
+    "$schema": "https://cloud.uipath.com/draft/2024-12/entry-point",
+    "$id": "entry-points.json",
+    "entryPoints": [
+        {
+            "filePath": "main",
+            "uniqueId": "8f374910-2f57-4997-9a8e-95dd13efa119",
+            "type": "function",
+            "input": {
+                "type": "object",
+                "properties": {
+                    "provider_id": {
+                        "default": "",
+                        "description": "northstar | alpha | beta | gamma | delta | epsilon",
+                        "title": "Provider Id",
+                        "type": "string"
+                    },
+                    "claim_drop_pct": {
+                        "type": "number"
+                    },
+                    "baseline_claim_volume": {
+                        "type": "number"
+                    },
+                    "observed_claim_volume": {
+                        "type": "number"
+                    },
+                    "business_continuity_runway_days": {
+                        "type": "integer"
+                    }
+                },
+                "required": [],
+                "title": "Input"
+            },
+            "output": {
+                "type": "object",
+                "properties": {
+                    "provider_id": {
+                        "default": "",
+                        "title": "Provider Id",
+                        "type": "string"
+                    },
+                    "claim_drop_pct": {
+                        "default": 0.0,
+                        "title": "Claim Drop Pct",
+                        "type": "number"
+                    },
+                    "anomaly_score": {
+                        "default": 0.0,
+                        "title": "Anomaly Score",
+                        "type": "number"
+                    },
+                    "severity": {
+                        "default": "none",
+                        "title": "Severity",
+                        "type": "string"
+                    },
+                    "error_type": {
+                        "default": "",
+                        "title": "Error Type",
+                        "type": "string"
+                    },
+                    "error_message": {
+                        "default": "",
+                        "title": "Error Message",
+                        "type": "string"
+                    }
+                },
+                "required": [],
+                "title": "Output"
+            },
+            "graph": {
+                "nodes": [
+                    {
+                        "id": "agent.py:125",
+                        "name": "main",
+                        "type": "function",
+                        "metadata": {
+                            "file": "agent.py"
+                        }
+                    },
+                    {
+                        "id": "agent.py:111",
+                        "name": "classify_anomaly",
+                        "type": "function",
+                        "metadata": {
+                            "file": "agent.py"
+                        }
+                    },
+                    {
+                        "id": "agent.py:91",
+                        "name": "_resolve_drop_pct",
+                        "type": "function",
+                        "metadata": {
+                            "file": "agent.py"
+                        }
+                    },
+                    {
+                        "id": "agent.py:73",
+                        "name": "_clamp",
+                        "type": "function",
+                        "metadata": {
+                            "file": "agent.py"
+                        }
+                    },
+                    {
+                        "id": "agent.py:101",
+                        "name": "_severity_for",
+                        "type": "function",
+                        "metadata": {
+                            "file": "agent.py"
+                        }
+                    }
+                ],
+                "edges": [
+                    {
+                        "source": "agent.py:91",
+                        "target": "agent.py:73"
+                    },
+                    {
+                        "source": "agent.py:91",
+                        "target": "agent.py:73"
+                    },
+                    {
+                        "source": "agent.py:111",
+                        "target": "agent.py:91"
+                    },
+                    {
+                        "source": "agent.py:111",
+                        "target": "agent.py:101"
+                    },
+                    {
+                        "source": "agent.py:125",
+                        "target": "agent.py:111"
+                    }
+                ]
+            }
+        }
+    ]
+}

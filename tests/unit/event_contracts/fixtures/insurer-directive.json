@@ -1,0 +1,17 @@
+{
+  "event_type": "insurer-directive",
+  "source_system": "insurer-aurora-specialty",
+  "simulated_day": 45,
+  "insurer_id": "aurora-specialty",
+  "directive_type": "reservation_of_rights",
+  "conditions": [
+    "Coverage contingent on ClearFlow demonstrating reasonable security controls were in place",
+    "No public statement regarding breach scope without prior carrier review"
+  ],
+  "coverage_sub_limit_triggered": false,
+  "required_actions": [
+    "Retain Northwall Forensics for independent investigation",
+    "Preserve all system logs for minimum 7 years",
+    "No public statement without counsel review"
+  ]
+}

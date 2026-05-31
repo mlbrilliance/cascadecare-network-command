@@ -1,0 +1,10 @@
+{
+  "id": "CascadeCare.ClearFlowIdealIncidentResponse",
+  "version": "1.0.0",
+  "content": [
+    "content/clearflow-ideal-incident-response.bpmn",
+    "content/bindings_v2.json",
+    "content/entry-points.json",
+    "content/operate.json"
+  ]
+}

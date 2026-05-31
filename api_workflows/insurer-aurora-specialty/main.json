@@ -1,0 +1,97 @@
+{
+  "document": {
+    "dsl": "1.0.0",
+    "name": "insurer-aurora-specialty — Insurer Directive Event Emitter",
+    "version": "0.0.1",
+    "namespace": "cascadecare",
+    "metadata": {
+      "description": "Integration Service API Workflow for source_system 'insurer-aurora-specialty'. Emits an 'insurer-directive' event payload (schema: specs/003-uipath-native/event-contracts/insurer-directive.json-schema.json) consumed by the Maestro Trigger that creates the Action Center HITL task (tvlKcFYnW) in the Fiduciary Review stage at t+200s. DEPLOY-TIME NOTE: the live Data Fabric read (Insurer.policy_directives entity) and the Maestro Trigger emission are wired at deploy via 'uip api-workflow registry stub' against a live tenant. Here the payload is shaped from workflow inputs (Data Fabric defaults) by a JavaScript/Assign activity; the connector read is NOT hand-authored.",
+      "variables": {
+        "schema": {
+          "format": "json",
+          "document": {
+            "type": "object",
+            "properties": {
+              "eventPayload": { "type": "object", "default": {} }
+            },
+            "title": "Variables"
+          }
+        }
+      }
+    }
+  },
+  "input": {
+    "schema": {
+      "format": "json",
+      "document": {
+        "type": "object",
+        "properties": {
+          "simulated_day": { "type": "integer", "default": 45 },
+          "conditions": { "type": "array", "default": ["retain Northwall Forensics", "no public statement without counsel review"] },
+          "coverage_sub_limit_triggered": { "type": "boolean", "default": true },
+          "required_actions": { "type": "array", "default": ["preserve all claim-flow logs", "engage Hawthorne Mercer LLP for privilege review"] }
+        },
+        "title": "Inputs"
+      }
+    }
+  },
+  "output": {
+    "schema": {
+      "format": "json",
+      "document": {
+        "type": "object",
+        "properties": {
+          "event_type": { "type": "string" },
+          "source_system": { "type": "string" },
+          "simulated_day": { "type": "integer" },
+          "insurer_id": { "type": "string" },
+          "directive_type": { "type": "string" },
+          "conditions": { "type": "array" },
+          "coverage_sub_limit_triggered": { "type": "boolean" },
+          "required_actions": { "type": "array" }
+        },
+        "title": "Outputs"
+      }
+    }
+  },
+  "do": [
+    {
+      "Sequence_1": {
+        "do": [
+          {
+            "WorkflowStart": {
+              "set": "${Object.entries($workflow.definition?.document?.metadata?.variables?.schema?.document?.properties || {}).reduce((acc, [name, def]) => ({ ...acc, [name]: def?.default }), {}) }",
+              "output": { "as": "${$input}" },
+              "export": { "as": "{ ...$context, variables: { ...$context.variables, ...$output } }" },
+              "metadata": { "activityType": "Assign", "displayName": "Workflow start", "fullName": "Assign", "isTransparent": true }
+            }
+          },
+          {
+            "Javascript_BuildPayload": {
+              "run": {
+                "script": {
+                  "code": "return { event_type: 'insurer-directive', source_system: 'insurer-aurora-specialty', simulated_day: $workflow.input.simulated_day, insurer_id: 'aurora-specialty', directive_type: 'reservation_of_rights', conditions: $workflow.input.conditions, coverage_sub_limit_triggered: $workflow.input.coverage_sub_limit_triggered, required_actions: $workflow.input.required_actions };",
+                  "language": "javascript",
+                  "arguments": "${{ \"$context\": $context, \"$workflow\": $workflow, \"$input\": $input }}"
+                }
+              },
+              "export": { "as": "{ ...$context, outputs: { ...$context?.outputs, \"Javascript_BuildPayload\": $output } }" },
+              "metadata": { "activityType": "JsInvoke", "displayName": "Build Insurer Directive Payload", "fullName": "JsInvoke" }
+            }
+          },
+          {
+            "Response_1": {
+              "response": "${{ event_type: $context.outputs.Javascript_BuildPayload.event_type, source_system: $context.outputs.Javascript_BuildPayload.source_system, simulated_day: $context.outputs.Javascript_BuildPayload.simulated_day, insurer_id: $context.outputs.Javascript_BuildPayload.insurer_id, directive_type: $context.outputs.Javascript_BuildPayload.directive_type, conditions: $context.outputs.Javascript_BuildPayload.conditions, coverage_sub_limit_triggered: $context.outputs.Javascript_BuildPayload.coverage_sub_limit_triggered, required_actions: $context.outputs.Javascript_BuildPayload.required_actions }}",
+              "markJobAsFailed": false,
+              "then": "end",
+              "export": { "as": "{ ...$context, outputs: { ...$context?.outputs, \"Response_1\": $output } }" },
+              "metadata": { "activityType": "Response", "displayName": "Response", "fullName": "Response" }
+            }
+          }
+        ],
+        "metadata": { "activityType": "Sequence", "displayName": "Sequence", "fullName": "Sequence" }
+      }
+    }
+  ],
+  "evaluate": { "mode": "strict", "language": "javascript" }
+}

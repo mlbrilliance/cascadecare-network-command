@@ -1,0 +1,10 @@
+{
+  "event_type": "payer-demand",
+  "source_system": "payer-apex",
+  "simulated_day": 45,
+  "payer_id": "apex",
+  "demand_type": "data_access",
+  "target_provider_ids": ["northstar", "alpha"],
+  "contractual_basis": "Operational visibility clause, section 4.2 of Apex-ClearFlow Network Agreement",
+  "conflicts_with_baa_ids": ["baa-northstar", "baa-alpha"]
+}

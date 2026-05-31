@@ -1,0 +1,474 @@
+{
+    "id": "case-NZZd3PzWvV",
+    "version": "20.0.0",
+    "name": "clearflow-stakeholder-parent",
+    "metadata": {
+        "displayName": "ClearFlow Stakeholder Parent Case",
+        "caseIdentifier": "CFSP",
+        "caseIdentifierType": "constant",
+        "caseAppEnabled": true,
+        "publishVersion": 2,
+        "caseUnifiedSchemaEnabled": true,
+        "intsvcActivityConfig": "v2",
+        "description": "Per-stakeholder parent case (provider, payer, or vendor). Spawned by the master crisis case; spawns per-obligation grandchild cases. The middle level of the three-level nesting.",
+        "defaultSla": {
+            "duration": 3888000,
+            "durationUnit": "seconds",
+            "alertThreshold": 80
+        },
+        "arguments": [],
+        "caseExitRules": [
+            {
+                "id": "Condition_SPexit",
+                "displayName": "Stakeholder resolved",
+                "rules": [
+                    [
+                        {
+                            "rule": "required-stages-completed",
+                            "id": "Rule_SPexit"
+                        }
+                    ]
+                ],
+                "marksCaseComplete": true
+            }
+        ]
+    },
+    "bindings": [
+        {
+            "id": "bOCTLw2nO",
+            "name": "name",
+            "type": "string",
+            "resource": "process",
+            "resourceSubType": "CaseManagement",
+            "resourceKey": ".clearflow-obligation-grandchild",
+            "default": "clearflow-obligation-grandchild",
+            "propertyAttribute": "name"
+        },
+        {
+            "id": "bFgEJdURH",
+            "name": "folderPath",
+            "type": "string",
+            "resource": "process",
+            "resourceSubType": "CaseManagement",
+            "resourceKey": ".clearflow-obligation-grandchild",
+            "default": "",
+            "propertyAttribute": "folderPath"
+        },
+        {
+            "id": "bBBRSpNm1",
+            "name": "name",
+            "type": "string",
+            "resource": "process",
+            "resourceSubType": "Agent",
+            "resourceKey": ".baa-boundary-reasoner",
+            "default": "baa-boundary-reasoner",
+            "propertyAttribute": "name"
+        },
+        {
+            "id": "bBBRSpFp2",
+            "name": "folderPath",
+            "type": "string",
+            "resource": "process",
+            "resourceSubType": "Agent",
+            "resourceKey": ".baa-boundary-reasoner",
+            "default": "",
+            "propertyAttribute": "folderPath"
+        }
+    ],
+    "variables": {
+        "inputs": [],
+        "outputs": [],
+        "inputOutputs": [
+            {
+                "id": "var_stakeholder_id",
+                "name": "StakeholderId",
+                "type": "string",
+                "custom": true,
+                "elementId": "root",
+                "default": ""
+            },
+            {
+                "id": "var_master_case_id",
+                "name": "MasterCaseId",
+                "type": "string",
+                "custom": true,
+                "elementId": "root",
+                "default": ""
+            },
+            {
+                "id": "var_privilege_flag",
+                "name": "PrivilegeFlag",
+                "type": "string",
+                "custom": true,
+                "elementId": "root",
+                "default": "operational"
+            },
+            {
+                "id": "var_baa_disclosure_position",
+                "name": "BAADisclosurePosition",
+                "type": "string",
+                "custom": true,
+                "elementId": "root",
+                "default": "unknown"
+            }
+        ]
+    },
+    "nodes": [
+        {
+            "id": "Stage_5QJ0XA",
+            "type": "case-management:Stage",
+            "data": {
+                "label": "Stakeholder Onboarding",
+                "parentElement": {
+                    "id": "root",
+                    "type": "case-management:root"
+                },
+                "isInvalidDropTarget": false,
+                "isPendingParent": false,
+                "tasks": [
+                    [
+                        {
+                            "id": "tO1Iycl5a",
+                            "elementId": "Stage_5QJ0XA-tO1Iycl5a",
+                            "displayName": "Register Stakeholder & Pull BAA",
+                            "description": "Records which provider/payer/vendor this parent case represents and pulls the matching BAA terms for downstream analysis.",
+                            "type": "process",
+                            "data": {},
+                            "isRequired": true,
+                            "entryConditions": [
+                                {
+                                    "id": "Condition_5PZ1Rd",
+                                    "displayName": "Stage entered",
+                                    "rules": [
+                                        [
+                                            {
+                                                "rule": "current-stage-entered",
+                                                "id": "Rule_aluQfq"
+                                            }
+                                        ]
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                ],
+                "description": "Establish the stakeholder identity and load its BAA. Entered when the parent case is spawned by the master.",
+                "entryConditions": [
+                    {
+                        "id": "Condition_FoRqv1",
+                        "displayName": "Parent case opened",
+                        "rules": [
+                            [
+                                {
+                                    "rule": "case-entered",
+                                    "id": "Rule_2RvzCj"
+                                }
+                            ]
+                        ]
+                    }
+                ],
+                "exitConditions": [
+                    {
+                        "id": "Condition_TPAlLb",
+                        "displayName": "Stage complete",
+                        "rules": [
+                            [
+                                {
+                                    "rule": "required-tasks-completed",
+                                    "id": "Rule_IzP8JX"
+                                }
+                            ]
+                        ],
+                        "marksStageComplete": true
+                    }
+                ]
+            }
+        },
+        {
+            "id": "Stage_BHfIGb",
+            "type": "case-management:Stage",
+            "data": {
+                "label": "Impact Assessment",
+                "parentElement": {
+                    "id": "root",
+                    "type": "case-management:root"
+                },
+                "isInvalidDropTarget": false,
+                "isPendingParent": false,
+                "tasks": [
+                    [
+                        {
+                            "id": "tlk3qM2fg",
+                            "elementId": "Stage_BHfIGb-tlk3qM2fg",
+                            "displayName": "Assess Claim Disruption & Liquidity",
+                            "description": "Quantifies claim-flow disruption and business-continuity runway for this stakeholder. Drives the Day-14 liquidity-stress child-case event for at-risk providers.",
+                            "type": "process",
+                            "data": {},
+                            "isRequired": true,
+                            "entryConditions": [
+                                {
+                                    "id": "Condition_DbIMtu",
+                                    "displayName": "Stage entered",
+                                    "rules": [
+                                        [
+                                            {
+                                                "rule": "current-stage-entered",
+                                                "id": "Rule_nBUvwo"
+                                            }
+                                        ]
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                ],
+                "description": "Measure the operational and financial impact of the cascade on this stakeholder.",
+                "entryConditions": [
+                    {
+                        "id": "Condition_kE4BxS",
+                        "displayName": "Previous stage completed",
+                        "rules": [
+                            [
+                                {
+                                    "rule": "selected-stage-completed",
+                                    "id": "Rule_G2YNiJ",
+                                    "selectedStageId": "Stage_5QJ0XA"
+                                }
+                            ]
+                        ]
+                    }
+                ],
+                "exitConditions": [
+                    {
+                        "id": "Condition_6CfxeU",
+                        "displayName": "Stage complete",
+                        "rules": [
+                            [
+                                {
+                                    "rule": "required-tasks-completed",
+                                    "id": "Rule_YhzFXf"
+                                }
+                            ]
+                        ],
+                        "marksStageComplete": true
+                    }
+                ]
+            }
+        },
+        {
+            "id": "Stage_9fuQ8L",
+            "type": "case-management:Stage",
+            "data": {
+                "label": "Obligation Determination",
+                "parentElement": {
+                    "id": "root",
+                    "type": "case-management:root"
+                },
+                "isInvalidDropTarget": false,
+                "isPendingParent": false,
+                "tasks": [
+                    [
+                        {
+                            "id": "ta1Ou8jah",
+                            "elementId": "Stage_9fuQ8L-ta1Ou8jah",
+                            "displayName": "BAA Boundary Analysis",
+                            "description": "BAA Boundary Reasoner analyzes this stakeholder's BAA terms against the active inquiry scope and sets BAADisclosurePosition. DEPLOY-TIME PLACEHOLDER \u2014 agent entityKey + input/output schemas resolve when the baa-boundary-reasoner is published; bindings carry best-effort resourceKey/name only.",
+                            "type": "agent",
+                            "shouldRunOnlyOnce": true,
+                            "data": {
+                                "name": "=bindings.bBBRSpNm1",
+                                "folderPath": "=bindings.bBBRSpFp2",
+                                "inputs": [],
+                                "outputs": []
+                            },
+                            "isRequired": true,
+                            "entryConditions": [
+                                {
+                                    "id": "Condition_w1QkiP",
+                                    "displayName": "Stage entered",
+                                    "rules": [
+                                        [
+                                            {
+                                                "rule": "current-stage-entered",
+                                                "id": "Rule_ZdS9pO"
+                                            }
+                                        ]
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    [
+                        {
+                            "id": "tfmtATbvb",
+                            "elementId": "Stage_9fuQ8L-tfmtATbvb",
+                            "displayName": "Spawn Obligation Grandchild",
+                            "description": "Spawns a clearflow-obligation-grandchild case to carry a specific BAA / regulatory / investigation obligation. Third level of the case nesting. DEPLOY-TIME PLACEHOLDER: entityKey and input/output schemas resolve when the grandchild case is published.",
+                            "type": "case-management",
+                            "shouldRunOnlyOnce": true,
+                            "data": {
+                                "name": "=bindings.bOCTLw2nO",
+                                "folderPath": "=bindings.bFgEJdURH",
+                                "inputs": [],
+                                "outputs": []
+                            },
+                            "isRequired": false,
+                            "entryConditions": [
+                                {
+                                    "id": "Condition_3BsTqY",
+                                    "displayName": "After BAA boundary analysis",
+                                    "rules": [
+                                        [
+                                            {
+                                                "rule": "selected-tasks-completed",
+                                                "id": "Rule_MWQvdm",
+                                                "selectedTasksIds": [
+                                                    "ta1Ou8jah"
+                                                ]
+                                            }
+                                        ]
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                ],
+                "description": "Determine this stakeholder's disclosure obligations and spawn the per-obligation grandchild case.",
+                "entryConditions": [
+                    {
+                        "id": "Condition_bVxO3h",
+                        "displayName": "Previous stage completed",
+                        "rules": [
+                            [
+                                {
+                                    "rule": "selected-stage-completed",
+                                    "id": "Rule_R4VlUw",
+                                    "selectedStageId": "Stage_BHfIGb"
+                                }
+                            ]
+                        ]
+                    }
+                ],
+                "exitConditions": [
+                    {
+                        "id": "Condition_XVXioh",
+                        "displayName": "Stage complete",
+                        "rules": [
+                            [
+                                {
+                                    "rule": "required-tasks-completed",
+                                    "id": "Rule_trcE5D"
+                                }
+                            ]
+                        ],
+                        "marksStageComplete": true
+                    }
+                ]
+            }
+        },
+        {
+            "id": "Stage_SUCBZw",
+            "type": "case-management:Stage",
+            "data": {
+                "label": "Stakeholder Resolved",
+                "parentElement": {
+                    "id": "root",
+                    "type": "case-management:root"
+                },
+                "isInvalidDropTarget": false,
+                "isPendingParent": false,
+                "tasks": [],
+                "description": "Terminal stage. All obligations for this stakeholder are determined and discharged.",
+                "isRequired": true,
+                "entryConditions": [
+                    {
+                        "id": "Condition_qYjeEq",
+                        "displayName": "Previous stage completed",
+                        "rules": [
+                            [
+                                {
+                                    "rule": "selected-stage-completed",
+                                    "id": "Rule_PAaLLu",
+                                    "selectedStageId": "Stage_9fuQ8L"
+                                }
+                            ]
+                        ]
+                    }
+                ],
+                "exitConditions": [
+                    {
+                        "id": "Condition_mFEYE9",
+                        "displayName": "Stakeholder closed",
+                        "rules": [
+                            [
+                                {
+                                    "rule": "required-tasks-completed",
+                                    "id": "Rule_sHNedQ"
+                                }
+                            ]
+                        ],
+                        "marksStageComplete": true
+                    }
+                ]
+            }
+        },
+        {
+            "id": "468d60f1-0562-4be9-ae1e-2e05e0ac3ac3",
+            "type": "case-management:Trigger",
+            "data": {
+                "displayName": "Trigger 1",
+                "triggerType": "manual",
+                "isInterrupting": false,
+                "runOnlyOnce": true,
+                "marksStageComplete": false
+            }
+        }
+    ],
+    "edges": [
+        {
+            "id": "edge_SPtrg1",
+            "source": "468d60f1-0562-4be9-ae1e-2e05e0ac3ac3",
+            "target": "Stage_5QJ0XA",
+            "sourceHandle": "468d60f1-0562-4be9-ae1e-2e05e0ac3ac3____source____right",
+            "targetHandle": "Stage_5QJ0XA____target____left",
+            "data": {
+                "label": "Parent Case Spawned"
+            },
+            "type": "case-management:TriggerEdge"
+        },
+        {
+            "id": "edge_SPe001",
+            "source": "Stage_5QJ0XA",
+            "target": "Stage_BHfIGb",
+            "sourceHandle": "Stage_5QJ0XA____source____right",
+            "targetHandle": "Stage_BHfIGb____target____left",
+            "data": {
+                "label": "Stakeholder registered"
+            },
+            "type": "case-management:Edge"
+        },
+        {
+            "id": "edge_SPe002",
+            "source": "Stage_BHfIGb",
+            "target": "Stage_9fuQ8L",
+            "sourceHandle": "Stage_BHfIGb____source____right",
+            "targetHandle": "Stage_9fuQ8L____target____left",
+            "data": {
+                "label": "Impact assessed"
+            },
+            "type": "case-management:Edge"
+        },
+        {
+            "id": "edge_SPe003",
+            "source": "Stage_9fuQ8L",
+            "target": "Stage_SUCBZw",
+            "sourceHandle": "Stage_9fuQ8L____source____right",
+            "targetHandle": "Stage_SUCBZw____target____left",
+            "data": {
+                "label": "Obligations determined"
+            },
+            "type": "case-management:Edge"
+        }
+    ],
+    "layout": {}
+}

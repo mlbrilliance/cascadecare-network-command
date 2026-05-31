@@ -1,0 +1,52 @@
+# Pre-commit hooks for CascadeCare Network Command.
+# Install once:  uv run pre-commit install
+# Run manually:  uv run pre-commit run --all-files
+#
+# Two layers:
+#   - local hooks (fast, deterministic): secret scanning, protected-file guard,
+#     env-example sync — from the agent-harness.
+#   - third-party hooks: ruff (lint/format) + mypy (types) on dev-time Python.
+# Pure-UiPath runtime assets (caseplan.json, BPMN, flows) are validated
+# separately via `uv run pytest` and `uip ... validate`.
+repos:
+  - repo: local
+    hooks:
+      - id: security-scan
+        name: Deterministic security scan (secrets + dangerous patterns)
+        entry: python3 .agent-os/hooks/security_scan.py
+        language: system
+        pass_filenames: false
+        always_run: true
+
+      - id: protect-files
+        name: Block edits to protected files
+        entry: python3 .agent-os/hooks/protect_files_precommit.py
+        language: system
+        pass_filenames: true
+
+      - id: env-example-sync
+        name: Keep .env.example in sync with .env
+        entry: python3 .agent-os/hooks/check_env_example.py
+        language: system
+        pass_filenames: false
+        always_run: true
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.0
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.12.0
+    hooks:
+      - id: mypy
+        files: ^src/
+        additional_dependencies: [types-PyYAML]
+
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        args: [--baseline, .secrets.baseline]

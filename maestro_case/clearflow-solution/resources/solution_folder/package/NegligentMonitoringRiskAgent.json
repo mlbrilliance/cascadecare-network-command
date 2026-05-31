@@ -1,0 +1,23 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "NegligentMonitoringRiskAgent",
+    "kind": "package",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "projectKey": "1e3124f0-31e7-4fb7-a3d7-095c85f94be0",
+    "isOverridable": true,
+    "dependencies": [],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "name": "NegligentMonitoringRiskAgent"
+    },
+    "locks": [],
+    "key": "aa8deede-630c-4637-aabf-09185d7e26e4",
+    "files": []
+  }
+}

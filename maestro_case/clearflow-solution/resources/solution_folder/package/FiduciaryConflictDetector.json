@@ -1,0 +1,23 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "FiduciaryConflictDetector",
+    "kind": "package",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "projectKey": "74cd0a7a-ce88-4a78-a19e-a1504693a4d1",
+    "isOverridable": true,
+    "dependencies": [],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "name": "FiduciaryConflictDetector"
+    },
+    "locks": [],
+    "key": "56b1dbdf-f88d-40c0-ace7-58a467f74b94",
+    "files": []
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "event_type": "vendor-attribution",
+  "source_system": "vendor-nimbus",
+  "simulated_day": 5,
+  "vendor_id": "nimbus",
+  "evidence_signal_strength": "moderate",
+  "connected_provider_ids": ["northstar", "alpha", "beta", "gamma", "delta", "epsilon"],
+  "clearflow_cleared": true,
+  "vector_hypothesis_confidence": 0.83
+}

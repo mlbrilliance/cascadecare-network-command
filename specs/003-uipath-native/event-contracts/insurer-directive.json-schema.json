@@ -1,0 +1,73 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cascadecare.local/event-contracts/insurer-directive.json",
+  "title": "Insurer Directive Event",
+  "description": "Emitted by the insurer-aurora-specialty Integration Service API Workflow when Aurora Specialty (ClearFlow's cyber insurer) issues a directive affecting the crisis response. A 'reservation_of_rights' directive triggers the tri-party HITL gate in Action Center at t+200s (simulated Day 45). The insurer's policy conditions are stored in Data Fabric Insurer.policy_directives.",
+  "type": "object",
+  "required": ["event_type", "source_system", "simulated_day", "insurer_id", "directive_type"],
+  "additionalProperties": false,
+  "properties": {
+    "event_type": {
+      "type": "string",
+      "const": "insurer-directive"
+    },
+    "source_system": {
+      "type": "string",
+      "description": "The insurer Integration Service API Workflow.",
+      "enum": ["insurer-aurora-specialty"]
+    },
+    "simulated_day": {
+      "type": "integer",
+      "description": "Demo timeline day (0–90).",
+      "minimum": 0,
+      "maximum": 90
+    },
+    "insurer_id": {
+      "type": "string",
+      "description": "The cyber insurer issuing the directive. Must match vocabulary.stakeholders.insurer id.",
+      "const": "aurora-specialty"
+    },
+    "directive_type": {
+      "type": "string",
+      "description": "Type of insurer directive.",
+      "enum": [
+        "reservation_of_rights",
+        "coverage_dispute",
+        "claim_acknowledgement",
+        "settlement_offer"
+      ]
+    },
+    "conditions": {
+      "type": "array",
+      "description": "Conditions attached to the directive (from Data Fabric Insurer.policy_directives).",
+      "items": {
+        "type": "string"
+      }
+    },
+    "coverage_sub_limit_triggered": {
+      "type": "boolean",
+      "description": "Whether the directive signals a coverage sub-limit has been hit."
+    },
+    "required_actions": {
+      "type": "array",
+      "description": "Actions ClearFlow must take to preserve coverage (e.g. 'retain Northwall Forensics', 'no public statement without counsel review').",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "maestro_trigger_filter_hint": {
+    "description": "Paste this as the Maestro Trigger FilterTree JSON when wiring this event in Slice 010/012. Creates the Action Center HITL task in the Fiduciary Review stage. The reservation_of_rights directive is the one that surfaces in the demo at t+200s.",
+    "filterTree": {
+      "operator": "AND",
+      "conditions": [
+        { "field": "event_type", "operator": "eq", "value": "insurer-directive" },
+        { "field": "insurer_id", "operator": "eq", "value": "aurora-specialty" },
+        { "field": "directive_type", "operator": "eq", "value": "reservation_of_rights" }
+      ]
+    },
+    "fires_task": "tvlKcFYnW",
+    "action_center_priority": "Critical",
+    "action_center_title": "TRI-PARTY APPROVAL — Resolve Fiduciary Conflict: Apex / Northstar / ClearFlow"
+  }
+}

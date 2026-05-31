@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:uipath="http://uipath.org/schema/bpmn" id="Definitions_ClearFlowIdealIncidentResponse" targetNamespace="http://uipath.com/cascadecare/maestro-bpmn/ideal-incident-response">
+  <bpmn:process id="Process_IdealIncidentResponse" name="ClearFlow Ideal Incident Response" isExecutable="true">
+    <bpmn:extensionElements>
+      <uipath:variables version="v1">
+        <uipath:inputOutput id="incidentId" name="incidentId" type="string" default="" elementId="Process_IdealIncidentResponse" custom="true" />
+        <uipath:inputOutput id="affectedCustomerCount" name="affectedCustomerCount" type="integer" default="1" elementId="Process_IdealIncidentResponse" custom="true" />
+        <uipath:output id="masterCaseId" name="masterCaseId" type="string" default="" elementId="Process_IdealIncidentResponse" custom="true" />
+        <uipath:output id="disposition" name="disposition" type="string" default="completed" elementId="Process_IdealIncidentResponse" custom="true" />
+      </uipath:variables>
+      <uipath:migrationVersion version="2026.1" />
+    </bpmn:extensionElements>
+    <bpmn:startEvent id="Start_IncidentIntake" name="Incident Intake">
+      <bpmn:extensionElements>
+        <uipath:entryPointId value="Entry_IdealIncidentResponse" />
+      </bpmn:extensionElements>
+      <bpmn:outgoing>Flow_Intake_To_Triage</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="Task_Triage" name="Triage incident">
+      <bpmn:incoming>Flow_Intake_To_Triage</bpmn:incoming>
+      <bpmn:outgoing>Flow_Triage_To_Gateway</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gateway_IsCascade" name="is_cascade?" default="Flow_Gateway_To_Join">
+      <bpmn:incoming>Flow_Triage_To_Gateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_Gateway_To_SpawnMaster</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Gateway_To_Join</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:callActivity id="Call_SpawnMasterCrisis" name="Spawn ClearFlow master crisis case">
+      <bpmn:extensionElements>
+        <uipath:activity version="v1">
+          <uipath:type value="Orchestrator.StartCaseMgmtProcessAsync" version="v1" />
+          <uipath:context>
+            <uipath:input name="releaseKey" type="resource" value="=bindings.Binding_MasterCrisisCase" />
+          </uipath:context>
+          <uipath:input name="JobArguments" type="json" target="bodyField"><![CDATA[{"CaseGoal":"Determine if ClearFlow is the breach vector","ReversalNumber":1,"ClearFlowVectorStatus":"unknown","GrandchildCaseCount":0,"SimulatedDay":1}]]></uipath:input>
+          <uipath:output name="Process response" type="Orchestrator.RunJob" var="masterCaseId" />
+        </uipath:activity>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_Gateway_To_SpawnMaster</bpmn:incoming>
+      <bpmn:outgoing>Flow_SpawnMaster_To_Join</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:exclusiveGateway id="Gateway_Join" name="Resume response">
+      <bpmn:incoming>Flow_Gateway_To_Join</bpmn:incoming>
+      <bpmn:incoming>Flow_SpawnMaster_To_Join</bpmn:incoming>
+      <bpmn:outgoing>Flow_Join_To_Contain</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_Contain" name="Contain">
+      <bpmn:incoming>Flow_Join_To_Contain</bpmn:incoming>
+      <bpmn:outgoing>Flow_Contain_To_Notify</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Notify" name="Notify stakeholders">
+      <bpmn:incoming>Flow_Contain_To_Notify</bpmn:incoming>
+      <bpmn:outgoing>Flow_Notify_To_Close</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Close" name="Close incident">
+      <bpmn:incoming>Flow_Notify_To_Close</bpmn:incoming>
+      <bpmn:outgoing>Flow_Close_To_End</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="End_IncidentClosed" name="Incident Closed">
+      <bpmn:incoming>Flow_Close_To_End</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_Intake_To_Triage" sourceRef="Start_IncidentIntake" targetRef="Task_Triage" />
+    <bpmn:sequenceFlow id="Flow_Triage_To_Gateway" sourceRef="Task_Triage" targetRef="Gateway_IsCascade" />
+    <bpmn:sequenceFlow id="Flow_Gateway_To_SpawnMaster" name="cascade" sourceRef="Gateway_IsCascade" targetRef="Call_SpawnMasterCrisis">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">=vars.affectedCustomerCount &gt;= 3</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_Gateway_To_Join" name="single incident" sourceRef="Gateway_IsCascade" targetRef="Gateway_Join" />
+    <bpmn:sequenceFlow id="Flow_SpawnMaster_To_Join" sourceRef="Call_SpawnMasterCrisis" targetRef="Gateway_Join" />
+    <bpmn:sequenceFlow id="Flow_Join_To_Contain" sourceRef="Gateway_Join" targetRef="Task_Contain" />
+    <bpmn:sequenceFlow id="Flow_Contain_To_Notify" sourceRef="Task_Contain" targetRef="Task_Notify" />
+    <bpmn:sequenceFlow id="Flow_Notify_To_Close" sourceRef="Task_Notify" targetRef="Task_Close" />
+    <bpmn:sequenceFlow id="Flow_Close_To_End" sourceRef="Task_Close" targetRef="End_IncidentClosed" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="Diagram_IdealIncidentResponse">
+    <bpmndi:BPMNPlane id="Plane_IdealIncidentResponse" bpmnElement="Process_IdealIncidentResponse">
+      <bpmndi:BPMNShape id="Shape_Start_IncidentIntake" bpmnElement="Start_IncidentIntake">
+        <dc:Bounds x="120" y="220" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_Triage" bpmnElement="Task_Triage">
+        <dc:Bounds x="220" y="198" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_IsCascade" bpmnElement="Gateway_IsCascade" isMarkerVisible="true">
+        <dc:Bounds x="415" y="213" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Call_SpawnMasterCrisis" bpmnElement="Call_SpawnMasterCrisis">
+        <dc:Bounds x="525" y="98" width="160" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_Join" bpmnElement="Gateway_Join" isMarkerVisible="true">
+        <dc:Bounds x="755" y="213" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_Contain" bpmnElement="Task_Contain">
+        <dc:Bounds x="860" y="198" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_Notify" bpmnElement="Task_Notify">
+        <dc:Bounds x="1050" y="198" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_Close" bpmnElement="Task_Close">
+        <dc:Bounds x="1240" y="198" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_End_IncidentClosed" bpmnElement="End_IncidentClosed">
+        <dc:Bounds x="1430" y="220" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_Flow_Intake_To_Triage" bpmnElement="Flow_Intake_To_Triage">
+        <di:waypoint x="156" y="238" />
+        <di:waypoint x="220" y="238" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Triage_To_Gateway" bpmnElement="Flow_Triage_To_Gateway">
+        <di:waypoint x="350" y="238" />
+        <di:waypoint x="415" y="238" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Gateway_To_SpawnMaster" bpmnElement="Flow_Gateway_To_SpawnMaster">
+        <di:waypoint x="440" y="213" />
+        <di:waypoint x="440" y="138" />
+        <di:waypoint x="525" y="138" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Gateway_To_Join" bpmnElement="Flow_Gateway_To_Join">
+        <di:waypoint x="465" y="238" />
+        <di:waypoint x="755" y="238" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_SpawnMaster_To_Join" bpmnElement="Flow_SpawnMaster_To_Join">
+        <di:waypoint x="685" y="138" />
+        <di:waypoint x="780" y="138" />
+        <di:waypoint x="780" y="213" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Join_To_Contain" bpmnElement="Flow_Join_To_Contain">
+        <di:waypoint x="805" y="238" />
+        <di:waypoint x="860" y="238" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Contain_To_Notify" bpmnElement="Flow_Contain_To_Notify">
+        <di:waypoint x="990" y="238" />
+        <di:waypoint x="1050" y="238" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Notify_To_Close" bpmnElement="Flow_Notify_To_Close">
+        <di:waypoint x="1180" y="238" />
+        <di:waypoint x="1240" y="238" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Close_To_End" bpmnElement="Flow_Close_To_End">
+        <di:waypoint x="1370" y="238" />
+        <di:waypoint x="1430" y="238" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

@@ -1,0 +1,39 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "VectorHypothesisAgent",
+    "kind": "process",
+    "type": "agent",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "projectKey": "4ff897b9-6ed4-4395-a531-8401cf97db91",
+    "isOverridable": true,
+    "dependencies": [
+      {
+        "kind": "package",
+        "name": "VectorHypothesisAgent"
+      }
+    ],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "type": "Agent",
+      "name": "VectorHypothesisAgent",
+      "package": {
+        "key": "577ca994-f25a-4459-b4ee-1ff174af9864"
+      },
+      "inputArguments": "{}",
+      "targetFrameworkValue": "Portable",
+      "retentionAction": "Delete",
+      "retentionPeriod": 30,
+      "staleRetentionAction": "Delete",
+      "staleRetentionPeriod": 180
+    },
+    "locks": [],
+    "key": "e1184f3b-5d30-4500-aa22-6ab3003de41d",
+    "files": []
+  }
+}

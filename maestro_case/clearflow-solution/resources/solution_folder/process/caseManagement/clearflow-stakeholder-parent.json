@@ -1,0 +1,39 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "clearflow-stakeholder-parent",
+    "kind": "process",
+    "type": "caseManagement",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "projectKey": "3b9700dd-facf-4fba-be12-122a56c8ecdb",
+    "isOverridable": true,
+    "dependencies": [
+      {
+        "kind": "package",
+        "name": "clearflow-stakeholder-parent"
+      }
+    ],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "type": "CaseManagement",
+      "name": "clearflow-stakeholder-parent",
+      "package": {
+        "key": "c7f7a475-f003-4630-9e1b-4e1022918226"
+      },
+      "inputArguments": "{}",
+      "targetFrameworkValue": "Portable",
+      "retentionAction": "Delete",
+      "retentionPeriod": 30,
+      "staleRetentionAction": "Delete",
+      "staleRetentionPeriod": 180
+    },
+    "locks": [],
+    "key": "c3f2e5d0-8476-4359-bf03-f174f9f7c9d4",
+    "files": []
+  }
+}

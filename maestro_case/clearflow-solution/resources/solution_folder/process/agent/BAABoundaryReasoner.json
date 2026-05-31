@@ -1,0 +1,39 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "BAABoundaryReasoner",
+    "kind": "process",
+    "type": "agent",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "projectKey": "91e99654-b12f-4612-b1d6-6353f80740de",
+    "isOverridable": true,
+    "dependencies": [
+      {
+        "kind": "package",
+        "name": "BAABoundaryReasoner"
+      }
+    ],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "type": "Agent",
+      "name": "BAABoundaryReasoner",
+      "package": {
+        "key": "458576f1-b6f9-4eea-8c29-94cf7ae93068"
+      },
+      "inputArguments": "{}",
+      "targetFrameworkValue": "Portable",
+      "retentionAction": "Delete",
+      "retentionPeriod": 30,
+      "staleRetentionAction": "Delete",
+      "staleRetentionPeriod": 180
+    },
+    "locks": [],
+    "key": "a748d364-61a6-4c75-9958-e8613f1d63dc",
+    "files": []
+  }
+}

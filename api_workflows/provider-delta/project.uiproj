@@ -1,0 +1,6 @@
+{
+  "Name": "provider-delta",
+  "ProjectType": "Api",
+  "Description": "Claim Anomaly Event Emitter API Workflow for source_system 'provider-delta'.",
+  "main": "main.json"
+}

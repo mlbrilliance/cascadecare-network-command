@@ -1,0 +1,40 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "clearflow-master-crisis",
+    "kind": "process",
+    "type": "caseManagement",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "projectKey": "7e3bbea2-e5b1-4427-84bc-675e25d9a5a8",
+    "isOverridable": true,
+    "dependencies": [
+      {
+        "kind": "package",
+        "name": "clearflow-master-crisis"
+      }
+    ],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "type": "CaseManagement",
+      "name": "clearflow-master-crisis",
+      "package": {
+        "key": "de397c1b-8cf3-4a5f-b6b6-d8ab925a07b7"
+      },
+      "packageName": "clearflow-solution.caseManagement.clearflow-master-crisis",
+      "inputArguments": "{}",
+      "targetFrameworkValue": "Portable",
+      "retentionAction": "Delete",
+      "retentionPeriod": 30,
+      "staleRetentionAction": "Delete",
+      "staleRetentionPeriod": 180
+    },
+    "locks": [],
+    "key": "7ef4e3ad-5a79-4c4f-9954-1a82daa2034f",
+    "files": []
+  }
+}

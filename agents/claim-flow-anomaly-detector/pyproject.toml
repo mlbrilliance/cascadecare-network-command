@@ -1,0 +1,18 @@
+[project]
+name = "claim-flow-anomaly-detector"
+version = "0.1.0"
+description = "Classifies an anomaly score on a single provider claim telemetry feed (CascadeCare Network Command, Slice 009)."
+authors = [{ name = "CascadeCare Network Command contributors" }]
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic>=2.0",
+    "uipath>=2.10",
+]
+
+[dependency-groups]
+dev = [
+    "uipath-dev",
+]
+
+[tool.uipath]
+type = "agent"

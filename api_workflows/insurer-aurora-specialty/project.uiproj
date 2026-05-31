@@ -1,0 +1,6 @@
+{
+  "Name": "insurer-aurora-specialty",
+  "ProjectType": "Api",
+  "Description": "Insurer Directive Event Emitter API Workflow for source_system 'insurer-aurora-specialty'.",
+  "main": "main.json"
+}

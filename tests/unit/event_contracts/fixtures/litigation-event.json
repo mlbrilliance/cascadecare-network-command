@@ -1,0 +1,10 @@
+{
+  "event_type": "litigation-event",
+  "source_system": "regulator-tn-doi",
+  "simulated_day": 90,
+  "event_subtype": "co_defendant_named",
+  "named_parties": ["ClearFlow Health Network", "Nimbus Patient Engagement Platform"],
+  "clearflow_named_co_defendant": true,
+  "theory": "negligent monitoring — ClearFlow's telemetry identified the cascade pattern first and ClearFlow had a duty to escalate",
+  "privilege_reshuffle_required": true
+}

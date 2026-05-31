@@ -1,0 +1,39 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "NegligentMonitoringRiskAgent",
+    "kind": "process",
+    "type": "agent",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "projectKey": "1e3124f0-31e7-4fb7-a3d7-095c85f94be0",
+    "isOverridable": true,
+    "dependencies": [
+      {
+        "kind": "package",
+        "name": "NegligentMonitoringRiskAgent"
+      }
+    ],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "type": "Agent",
+      "name": "NegligentMonitoringRiskAgent",
+      "package": {
+        "key": "aa8deede-630c-4637-aabf-09185d7e26e4"
+      },
+      "inputArguments": "{}",
+      "targetFrameworkValue": "Portable",
+      "retentionAction": "Delete",
+      "retentionPeriod": 30,
+      "staleRetentionAction": "Delete",
+      "staleRetentionPeriod": 180
+    },
+    "locks": [],
+    "key": "27958ae3-31f8-4b30-b61e-1b8246f37279",
+    "files": []
+  }
+}

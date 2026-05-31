@@ -1,0 +1,211 @@
+# CascadeCare Network Command — Changelog
+
+## Agent wiring + Slices 011 + 012 — Orchestration layer (2026-05-28)
+
+Wired the agents into the case canvas and added the BPMN playbook + the Flow Demo Driver
+that drives the demo.
+
+**Agent wiring (caseplans now agent-driven):**
+- Master caseplan: 4 process tasks converted to native `type:"agent"` tasks
+  (claim-flow-anomaly-detector, vector-hypothesis-agent, baa-boundary-reasoner,
+  negligent-monitoring-risk-agent) + 2 new agent tasks added (multi-customer-pattern-detector,
+  forensic-self-exam-agent) so all 7 agents surface; the Reversal-4 task stays a human `action`
+  (HITL gate) fed by fiduciary-conflict-detector. Parent caseplan's BAA task → `agent`.
+- `case-vocabulary.yaml` task types updated; solution regenerated via `pack-solution.sh`.
+
+**Slice 011 — Maestro BPMN ideal-response model** (`maestro_bpmn/clearflow-ideal-incident-response/`):
+intake → triage → `is_cascade?` gateway → contain → notify → close; the cascade branch is a
+callActivity (`Orchestrator.StartCaseMgmtProcessAsync`) bridging to the master case via
+`bindings_v2.json` (→ `clearflow-crisis`).
+
+**Slice 012 — Maestro Flow Demo Driver** (`maestro_flow/clearflow-demo-driver/flow.json`):
+timed steps firing the API Workflows on the canonical 300s storyboard (R1 t+20s … R5 t+260s,
+R3 subpoena = hero), including the Day-3 PHI / Day-14 liquidity child beats. 14 fire steps + a
+deploy-time binding manifest.
+
+**Gates added:** `tests/unit/maestro_flow/` (drives every reversal event_type; slugs are
+registered) and `tests/unit/maestro_bpmn/` (well-formed BPMN, happy-path + cascade gateway,
+master-case bridge).
+
+**Deploy-time (online):** agent/case-management `entityKey` resolution; `uip maestro bpmn
+validate` + `uip maestro flow validate`/`format`; swap the Flow's payload-builder stand-ins for
+real `uipath.core.api-workflow.<UUID>` nodes; solution-member registration for BPMN/Flow.
+
+**Test result**: `uv run pytest` → 342 passed / 7 skipped ✅   **ruff/mypy** clean ✅   **IP**: clean ✅
+
+---
+
+## Slices 008 + 009 — The 7 Agents (2026-05-28)
+
+Authored all seven agents and their authoritative prompts (`agents/prompts/*.md`, never
+inlined in Python). Agent dirs are named by the vocabulary `key` so `agents/<key>/` is
+verifiable against the registry.
+
+**Slice 008 — 4 Agent Builder (low-code) agents** (Claude BYO-LLM, `anthropic.claude-sonnet-4-6`):
+- `vector-hypothesis-agent` (Reversal 2 — attack-vector determination)
+- `baa-boundary-reasoner` (Reversal 3 — per-provider BAA-vs-subpoena; Context Grounding on
+  `BAA-corpus` via `resources/BAA-corpus/resource.json`)
+- `fiduciary-conflict-detector` (Reversal 4 — tri-party conflict + HITL form payload)
+- `negligent-monitoring-risk-agent` (Reversal 5 — co-defendant exposure)
+Each: `agent.json` + `entry-points.json` + `project.uiproj`; system prompt byte-identical to
+its `.md`; input/output schemas mirror entry-points.
+
+**Slice 009 — 3 Coded Agents** (UiPath Coded Function framework, first-party LLM):
+- `claim-flow-anomaly-detector` (anomaly score + severity bands; `critical` ≥0.70 matches the
+  provider-claim-anomaly trigger)
+- `multi-customer-pattern-detector` (cascade signal iff ≥3 providers anomalous)
+- `forensic-self-exam-agent` (routing + ClearFlow vector status)
+Each: `agent.py` (pydantic Input/Output + deterministic core + lazy LLM-enrichment hook) +
+`uipath.json` + `entry-points.json` + build-system-free `pyproject.toml`. TDD: tests written
+before source. 60 logic tests + a 7-agent registry-consistency gate.
+
+**Deploy-time (online):** confirm the gateway model slug + `BAA-corpus` index; `uip agent
+validate`/`migrate` (low-code) and `uip codedagent init`/`deploy` (coded); wire the agents as
+`type:"agent"` tasks in the caseplans; the coded agents' LLM-enrichment call.
+
+**Test result**: `uv run pytest` → 323 passed / 7 skipped ✅   **ruff/mypy** clean ✅   **IP**: clean ✅
+
+---
+
+## Slice 006 — Integration Service API Workflows (2026-05-28)
+
+Authored the 14 API Workflow definitions (one per external-system source_system slug) that
+front the mock systems and emit the Maestro-Trigger event payloads.
+
+**Added:**
+- `api_workflows/<slug>/main.json` × 14 — CNCF Serverless Workflow 1.0.0 docs
+  (WorkflowStart → JsInvoke payload builder → single-expression Response). Mapping:
+  6 `provider-*` → `provider-claim-anomaly`; 4 `payer-*` → `payer-demand`; `vendor-nimbus`
+  → `vendor-attribution`; `regulator-tn-doi` → `regulatory-subpoena` | `litigation-event`
+  (If-branch on `event_type`); `insurer-aurora-specialty` → `insurer-directive`;
+  `counsel-hawthorne` → privilege-determination utility (no Maestro event).
+  (`multi-customer-correlation` is emitted by the Coded agent, not a workflow.)
+- `api_workflows/README.md` — slug→event mapping + deploy-time steps.
+- `tests/unit/api_workflows/test_workflow_structure.py` — structural gate (58 cases): valid
+  DSL, WorkflowStart-first, terminating Response, event_type+slug present, slug ∈ vocabulary.
+
+**Deploy-time (online, requires tenant):** the live Data Fabric **connector read** and the
+**Maestro Trigger emission** (FilterTree per each schema's `maestro_trigger_filter_hint`) are
+wired via `uip api-workflow registry resolve`/`stub`; per-folder `project.json` (`Type:"Api"`)
++ `uip solution pack`/`publish`. The current JsInvoke + input-defaults shaping is the
+build-time stand-in (the skill forbids hand-authoring connector `metadata.configuration`).
+
+**Test result**: `uv run pytest` → 241 passed ✅   **ruff/mypy** clean ✅   **IP safety**: clean ✅
+
+---
+
+## Slice 010 — Three-Level Case Nesting (2026-05-28)
+
+Authored the two missing Maestro Case definitions and wired the three-level nesting that
+produces the Reversal-3 hero moment. All three caseplans are valid V20 and share one project
+layout; the solution package is regenerated from the canonical standalone sources.
+
+**Added:**
+- `maestro_case/clearflow-stakeholder-parent/` — V20 case (Onboarding → Impact Assessment →
+  Obligation Determination → Resolved); spawns obligation grandchildren via a `case-management`
+  task. Variables per vocabulary (StakeholderId, MasterCaseId, PrivilegeFlag, BAADisclosurePosition).
+- `maestro_case/clearflow-obligation-grandchild/` — V20 leaf case (Intake → Response →
+  Discharged) for a single BAA/regulatory obligation.
+- `LICENSE` (MIT) + README License section + pyproject `license` — AgentHack submission gate.
+
+**Changed:**
+- `maestro_case/clearflow-master-crisis/` — added six `case-management` spawn tasks to the
+  Regulatory Response stage (`Stage_JM1SVs`), one per provider, all gated on BAA Boundary
+  Analysis so they fire simultaneously: the visible Reversal-3 fan.
+- `specs/003-uipath-native/case-vocabulary.yaml` — populated stakeholder_parent /
+  obligation_grandchild stages+tasks and the six master spawn task IDs.
+- `scripts/pack-solution.sh` — registered the two new cases; regenerated the solution package.
+- `tests/unit/maestro_case/test_caseplan_structure.py` now covers all three caseplans; the six
+  previously-skipped vocabulary tests are now active.
+
+**Deploy-time (next online session — requires tenant):** child-case `entityKey` / input-output
+schema resolution (`uip maestro case registry pull`, `tasks describe`); registering parent &
+grandchild as deployable members in the solution manifest (`uip solution project add`);
+`uip solution validate` + publish.
+
+**Test result**: `uv run pytest` → 183 passed ✅   **IP safety**: clean ✅
+
+---
+
+## Slice 005-prep — Vocabulary Registry + Event Contracts (2026-05-26)
+
+Landed the Slice 005 prep candidates that lock cross-case naming and event payload shapes
+before Data Fabric seeding begins.
+
+**Added:**
+- `specs/003-uipath-native/case-vocabulary.yaml` — single source of truth for case variables,
+  stages, tasks, agents, stakeholders, and canonical `event_types`. All three caseplan.json
+  files must draw IDs/names from this registry.
+- `specs/003-uipath-native/event-contracts/*.json-schema.json` — seven JSON Schema draft-07
+  event payload contracts (provider-claim-anomaly, multi-customer-correlation,
+  vendor-attribution, regulatory-subpoena, payer-demand, insurer-directive, litigation-event),
+  each with a `maestro_trigger_filter_hint` annotation.
+- `tests/unit/case_vocabulary/` and `tests/unit/event_contracts/` — consistency tests
+  (vocabulary ↔ caseplan, schema ↔ vocabulary, golden-fixture validation).
+
+**Renamed:**
+- `caseplan.json` rename pass aligning master case IDs to the vocabulary registry.
+
+**Test result**: `uv run pytest tests/unit/event_contracts tests/unit/case_vocabulary` green ✅
+**IP safety**: `/audit-ip-safety` clean ✅
+
+---
+
+## Slice 004 — Foundation Reset: Pure-UiPath Trajectory (2026-05-26)
+
+Executed architectural pivot following AgentHack 2026 rules review and Maestro Case Private Preview Guide analysis. The non-negotiable: **UiPath Maestro Case canvas IS the runtime**. All external Python services (FastAPI shim, LangGraph harness, PostgreSQL mirror) dropped. Every runtime asset is now a UiPath artifact.
+
+**Deleted (per Decision 13 in the grilling plan):**
+- `src/cascadecare/orchestration/` — LangGraph harness + CLI (replaced by Maestro Case stages + transitions)
+- `src/cascadecare/models/` — SQLAlchemy ORM for case hierarchy (replaced by Maestro Case + Data Fabric)
+- `src/cascadecare/db/` — engine, session, Alembic migrations
+- `src/cascadecare/probe/` — one-shot HTTP probe tool (served its purpose)
+- `src/cascadecare/agents/prompts/orchestration_harness.md` — stale LangGraph harness prompt
+- `tests/unit/models/`, `tests/integration/models/`, `tests/unit/probe/`, `tests/unit/test_orchestration_*.py`
+- `alembic.ini`, `agentdb.rvf`, `agentdb.rvf.lock`
+- pyproject.toml deps: `langgraph`, `langchain*`, `lancedb`, `SQLAlchemy`, `psycopg`, `Alembic`, `anthropic` (direct SDK), `faker`, `Polars`
+
+**Archived:**
+- `specs/002-case-schema/` → `docs/archive/specs-002-case-schema/` with trajectory-shift README
+
+**Updated:**
+- `CLAUDE.md` — Technology Stack, Agent Topology, File Conventions updated to UiPath-native posture; SPECKIT pointer → `specs/003-uipath-native/`
+- `DEVIATIONS.md` — Studio Web upload blocker marked RESOLVED; PostgreSQL and nesting-probe deviations marked superseded
+- `.specify/feature.json` — `specs/003-uipath-native`
+- `pyproject.toml` — trimmed to `httpx` + `uipath` runtime deps only
+
+**Scaffolded:**
+- `specs/003-uipath-native/plan.md`, `tasks.md`, `data-model.md` — canonical spec for all future slices
+
+**Test result**: 12 tests pass (unit/uipath only); `uv run pytest tests/unit/uipath/ -v` ✅
+**IP safety**: `/audit-ip-safety` clean ✅
+
+---
+
+## Slice 003 — Maestro Case Definition (2026-05-26)
+
+Authored and validated the master crisis Maestro Case definition (V20 schema) — the first live
+UiPath runtime asset and the spine of the three-level nesting story.
+
+**Added:**
+- `maestro_case/clearflow-master-crisis/content/caseplan.json` — V20 master case: reversal-aligned
+  stages (Initial Response → Multi-Customer Investigation → Vector Isolation → Regulatory Response
+  → Fiduciary Review → Litigation Defense → Closed), case variables, entry/exit conditions, and
+  agent/process/action task placeholders.
+- `maestro_case/clearflow-solution/` solution scaffold for packaging via `pack-solution.sh`.
+
+**Verified**: `uip maestro case validate` returns `{"Status": "Valid"}` (0 errors).
+**Note**: Solution publish to the staging tenant tracked separately (see `DEVIATIONS.md`). The
+stakeholder-parent and obligation-grandchild caseplans land in Slice 010.
+
+---
+
+## Slice 001 — Repo Scaffolding (2026-05-25)
+
+> **Superseded note (Slice 004).** The Pydantic Settings `config.py`, the PostgreSQL
+> `docker-compose.yml` service, and the related dependencies described below were **removed in
+> the Slice 004 pure-UiPath pivot**. There is no relational database and no runtime Python
+> service in the current architecture; case state lives in UiPath Maestro Case and reference data
+> in Data Fabric. The entry below is retained for historical accuracy only.
+
+Established the complete project directory structure with all source and test package directories, each containing appropriate `__init__.py` files. Created `docker-compose.yml` with a PostgreSQL service (port 5432, database `cascadecare`) sourcing credentials from environment variables. Implemented `src/cascadecare/config.py` using Pydantic Settings to load configuration from `.env` files with sensible defaults. Added `.env.example` documenting all required environment variables. Added `pydantic-settings` dependency. All 6 unit tests for the configuration model pass. Ruff and mypy validation pass on all source code. IP safety audit passes with zero forbidden tokens. The repository is now fully scaffolded and ready for Slice 002 (three-level case schema implementation).

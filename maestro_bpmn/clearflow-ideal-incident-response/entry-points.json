@@ -1,0 +1,37 @@
+{
+  "entryPoints": [
+    {
+      "id": "Entry_IdealIncidentResponse",
+      "name": "Incident Intake",
+      "filePath": "/content/clearflow-ideal-incident-response.bpmn#Start_IncidentIntake",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "incidentId": {
+            "type": "string"
+          },
+          "affectedCustomerCount": {
+            "type": "integer"
+          },
+          "isCascade": {
+            "type": "boolean"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "isCascade": {
+            "type": "boolean"
+          },
+          "masterCaseId": {
+            "type": "string"
+          },
+          "disposition": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  ]
+}

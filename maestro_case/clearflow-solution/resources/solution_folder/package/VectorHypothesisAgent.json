@@ -1,0 +1,23 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "VectorHypothesisAgent",
+    "kind": "package",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "projectKey": "4ff897b9-6ed4-4395-a531-8401cf97db91",
+    "isOverridable": true,
+    "dependencies": [],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "name": "VectorHypothesisAgent"
+    },
+    "locks": [],
+    "key": "577ca994-f25a-4459-b4ee-1ff174af9864",
+    "files": []
+  }
+}

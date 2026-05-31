@@ -1,0 +1,9 @@
+{
+  "projectId": "CascadeCare.ClearFlowIdealIncidentResponse",
+  "main": "clearflow-ideal-incident-response.bpmn",
+  "contentType": "ProcessOrchestration",
+  "targetFramework": "Portable",
+  "runtimeOptions": {
+    "requiresUserInteraction": false
+  }
+}

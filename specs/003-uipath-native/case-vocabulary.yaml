@@ -1,0 +1,408 @@
+# CascadeCare Case Vocabulary Registry
+# Single source of truth for cross-case reference names.
+#
+# All three caseplan.json files (master / stakeholder-parent / obligation-grandchild)
+# MUST use IDs and names from this registry. Adding a new variable, stage, or task
+# to a caseplan.json requires a matching entry here first.
+#
+# Verify consistency: uv run pytest tests/unit/case_vocabulary/ -v
+# See also: specs/003-uipath-native/data-model.md (Data Fabric entity shapes)
+#           specs/003-uipath-native/event-contracts/ (event payload schemas)
+
+schema_version: "1.0"
+
+# ── Variables ──────────────────────────────────────────────────────────────
+# Keyed by owner_case (master | stakeholder_parent | obligation_grandchild).
+# id:   the JSON field "id" in the caseplan.json variables array
+# name: the JSON field "name" — used in UI and expression bindings
+# type: string | integer | boolean | decimal | datetime
+variables:
+  master:
+    - id: var_case_goal
+      name: CaseGoal
+      type: string
+      notes: "Current master crisis objective. Shifts text at each reversal."
+    - id: var_reversal_number
+      name: ReversalNumber
+      type: integer
+      notes: "Count of master goal reversals fired. 0 at open; 5 at R5."
+    - id: var_clearflow_vector_status
+      name: ClearFlowVectorStatus
+      type: string
+      notes: "unknown | cleared | co-victim | co-defendant"
+    - id: var_grandchild_case_count
+      name: GrandchildCaseCount
+      type: integer
+      notes: "Running count of obligation-grandchild cases spawned."
+    - id: var_simulated_day
+      name: SimulatedDay
+      type: integer
+      notes: "Demo timeline day (0–90). Incremented by Demo Driver events."
+
+  stakeholder_parent:
+    # These variables will be wired when clearflow-stakeholder-parent is authored in Slice 010.
+    # The consistency test skips this section until that caseplan.json exists.
+    - id: var_stakeholder_id
+      name: StakeholderId
+      type: string
+      notes: >
+        Which provider/payer/vendor this parent case represents.
+        Must match a vocabulary.stakeholders id (e.g. northstar, apex, nimbus).
+    - id: var_master_case_id
+      name: MasterCaseId
+      type: string
+      notes: "Back-reference to the spawning master case instance ID."
+    - id: var_privilege_flag
+      name: PrivilegeFlag
+      type: string
+      notes: "attorney-client | work-product | operational"
+    - id: var_baa_disclosure_position
+      name: BAADisclosurePosition
+      type: string
+      notes: "can_disclose | cannot_disclose | conditional | unknown"
+
+  obligation_grandchild:
+    # These variables will be wired when clearflow-obligation-grandchild is authored in Slice 010.
+    - id: var_obligation_type
+      name: ObligationType
+      type: string
+      notes: "baa-compliance | regulatory-response | investigation"
+    - id: var_subpoena_reference_id
+      name: SubpoenaReferenceId
+      type: string
+      notes: "ID of the RegulatorTemplate that triggered this grandchild."
+    - id: var_parent_case_id
+      name: ParentCaseId
+      type: string
+      notes: "Back-reference to the spawning stakeholder-parent instance ID."
+    - id: var_master_case_id
+      name: MasterCaseId
+      type: string
+      notes: "Back-reference to the master case instance ID (for cross-level queries)."
+
+# ── Stages ──────────────────────────────────────────────────────────────
+# id:    the JSON "id" field in the caseplan.json nodes array
+# label: the data.label displayed on the Maestro Case canvas
+# reversal: which R# event drives entry into this stage (master only)
+stages:
+  master:
+    - id: Stage_ugoiTN
+      label: "Initial Response"
+      notes: "Entry: crisis initiated. No reversal — always first stage."
+    - id: Stage_jsrEfr
+      label: "Multi-Customer Investigation"
+      reversal: 1
+      notes: "Entry edge: 'Reversal 1: Multi-customer pattern confirmed'"
+    - id: Stage_TJUXJV
+      label: "Vector Isolation"
+      reversal: 2
+      notes: "Entry edge: 'Reversal 2: ClearFlow cleared as vector'"
+    - id: Stage_JM1SVs
+      label: "Regulatory Response"
+      reversal: 3
+      notes: "Entry edge: 'Reversal 3: TN DOI subpoena received'. Hero moment."
+    - id: Stage_LKuLeU
+      label: "Fiduciary Review"
+      reversal: 4
+      notes: "Entry edge: 'Reversal 4: Payer demands BAA data access'"
+    - id: Stage_CZ5efq
+      label: "Litigation Defense"
+      reversal: 5
+      notes: "Entry edge: 'Reversal 5: ClearFlow named co-defendant'"
+    - id: Stage_JW7OlW
+      label: "Closed"
+      notes: "Terminal stage."
+
+  stakeholder_parent:
+    - id: Stage_5QJ0XA
+      label: "Stakeholder Onboarding"
+      notes: "Entry: parent case spawned (case-entered). Registers stakeholder + pulls BAA."
+    - id: Stage_BHfIGb
+      label: "Impact Assessment"
+      notes: "Entry edge: 'Stakeholder registered'. Claim disruption + liquidity."
+    - id: Stage_9fuQ8L
+      label: "Obligation Determination"
+      notes: "Entry edge: 'Impact assessed'. BAA boundary + spawns obligation grandchild."
+    - id: Stage_SUCBZw
+      label: "Stakeholder Resolved"
+      notes: "Terminal stage."
+
+  obligation_grandchild:
+    - id: Stage_6x5Dzu
+      label: "Obligation Intake"
+      notes: "Entry: grandchild case spawned (case-entered). Classifies obligation."
+    - id: Stage_F95sBP
+      label: "Obligation Response"
+      notes: "Entry edge: 'Obligation classified'. Prepare/file response + audit record."
+    - id: Stage_otF4rP
+      label: "Obligation Discharged"
+      notes: "Terminal stage."
+
+# ── Tasks ──────────────────────────────────────────────────────────────
+# id:           the JSON "id" field in the stage's tasks array
+# display_name: the "displayName" field
+# type:         process | action | case-management | agent
+# stage_id:     must match a stage id in the same owner_case's stages section
+# agent_key:    references vocabulary.agents[].key (only for type=agent tasks)
+tasks:
+  master:
+    - id: tBMXe7xGw
+      display_name: "Assess Affected Providers"
+      type: process
+      stage_id: Stage_ugoiTN
+    - id: tTNOuRcy1
+      display_name: "Claim Flow Anomaly Detection"
+      type: agent
+      stage_id: Stage_jsrEfr
+      agent_key: claim-flow-anomaly-detector
+    - id: tMCPCor02
+      display_name: "Multi-Customer Correlation"
+      type: agent
+      stage_id: Stage_jsrEfr
+      agent_key: multi-customer-pattern-detector
+    - id: tumu72Wei
+      display_name: "Vector Hypothesis Analysis"
+      type: agent
+      stage_id: Stage_TJUXJV
+      agent_key: vector-hypothesis-agent
+    - id: tFSEXam01
+      display_name: "Forensic Self-Examination"
+      type: agent
+      stage_id: Stage_TJUXJV
+      agent_key: forensic-self-exam-agent
+    - id: tNWPCipI7
+      display_name: "BAA Boundary Analysis"
+      type: agent
+      stage_id: Stage_JM1SVs
+      agent_key: baa-boundary-reasoner
+    - id: tvlKcFYnW
+      display_name: "Tri-Party Fiduciary Conflict Review"
+      type: hitlTask
+      stage_id: Stage_LKuLeU
+      agent_key: fiduciary-conflict-detector
+      notes: "Slice 014: upgraded to hitlTask (May 25 feature) with outputVariables capturing reviewer context."
+    - id: thCAPt9PP
+      display_name: "Litigation Defense Posture Review"
+      type: agent
+      stage_id: Stage_CZ5efq
+      agent_key: negligent-monitoring-risk-agent
+    # ── Reversal-3 fan: six case-management spawns (one per provider) ──
+    # Each references clearflow-stakeholder-parent (deploy-time placeholder binding).
+    - id: tFONj34ck
+      display_name: "Spawn Stakeholder Parent — Northstar Regional Health"
+      type: case-management
+      stage_id: Stage_JM1SVs
+    - id: tP26wJSn9
+      display_name: "Spawn Stakeholder Parent — Provider Alpha"
+      type: case-management
+      stage_id: Stage_JM1SVs
+    - id: tP1qlCyT5
+      display_name: "Spawn Stakeholder Parent — Provider Beta"
+      type: case-management
+      stage_id: Stage_JM1SVs
+    - id: tXX9Tu80x
+      display_name: "Spawn Stakeholder Parent — Provider Gamma"
+      type: case-management
+      stage_id: Stage_JM1SVs
+    - id: tf3qEuV5z
+      display_name: "Spawn Stakeholder Parent — Provider Delta"
+      type: case-management
+      stage_id: Stage_JM1SVs
+    - id: tz8z6TUHT
+      display_name: "Spawn Stakeholder Parent — Provider Epsilon"
+      type: case-management
+      stage_id: Stage_JM1SVs
+
+  stakeholder_parent:
+    - id: tO1Iycl5a
+      display_name: "Register Stakeholder & Pull BAA"
+      type: process
+      stage_id: Stage_5QJ0XA
+    - id: tlk3qM2fg
+      display_name: "Assess Claim Disruption & Liquidity"
+      type: process
+      stage_id: Stage_BHfIGb
+    - id: ta1Ou8jah
+      display_name: "BAA Boundary Analysis"
+      type: agent
+      stage_id: Stage_9fuQ8L
+      agent_key: baa-boundary-reasoner
+    - id: tfmtATbvb
+      display_name: "Spawn Obligation Grandchild"
+      type: case-management
+      stage_id: Stage_9fuQ8L
+
+  obligation_grandchild:
+    - id: tE0pwsV58
+      display_name: "Classify Obligation"
+      type: process
+      stage_id: Stage_6x5Dzu
+    - id: t9BUmAX8k
+      display_name: "Prepare & File Obligation Response"
+      type: action
+      stage_id: Stage_F95sBP
+    - id: tIy5SWPeX
+      display_name: "Generate Audit Record"
+      type: process
+      stage_id: Stage_F95sBP
+    - id: tNS_sla_alert
+      display_name: "SLA-Breach Notification"
+      type: Maestro.NotificationService
+      stage_id: Stage_F95sBP
+      notes: "Slice 014: Maestro.NotificationService task (May 28 feature). Fires on stage-entered; notifies parent case owner of obligation SLA breach."
+
+# ── Agents ──────────────────────────────────────────────────────────────
+# key:         unique slug used in task.agent_key references
+# agent_type:  coded | agent-builder
+# llm:         uipath-first-party | claude-byo-llm
+# prompt_file: path relative to agents/prompts/ (Markdown, authoritative system prompt)
+agents:
+  - key: claim-flow-anomaly-detector
+    display_name: "Claim Flow Anomaly Detector"
+    agent_type: coded
+    llm: uipath-first-party
+    prompt_file: claim_flow_anomaly_detector.md
+    notes: "Classifies anomaly score on claim telemetry. Fires at Reversal 1 setup."
+  - key: multi-customer-pattern-detector
+    display_name: "Multi-Customer Pattern Detector"
+    agent_type: coded
+    llm: uipath-first-party
+    prompt_file: multi_customer_pattern_detector.md
+    notes: "Cross-provider correlation; emits cascade signal. Drives Reversal 1."
+  - key: forensic-self-exam-agent
+    display_name: "Forensic Self-Exam Agent"
+    agent_type: coded
+    llm: uipath-first-party
+    prompt_file: forensic_self_exam_agent.md
+    notes: "Coordinates internal investigation; produces ClearFlow vector determination."
+  - key: vector-hypothesis-agent
+    display_name: "Vector Hypothesis Agent"
+    agent_type: agent-builder
+    llm: claude-byo-llm
+    prompt_file: vector_hypothesis_agent.md
+    notes: "Determines attack vector (ClearFlow vs Nimbus). Drives Reversal 2."
+  - key: baa-boundary-reasoner
+    display_name: "BAA Boundary Reasoner"
+    agent_type: agent-builder
+    llm: claude-byo-llm
+    prompt_file: baa_boundary_reasoner.md
+    context_grounding_index: BAA-corpus
+    notes: "Analyzes each provider's BAA terms against the subpoena scope. Six BAAs, six answers."
+  - key: fiduciary-conflict-detector
+    display_name: "Fiduciary Conflict Detector"
+    agent_type: agent-builder
+    llm: claude-byo-llm
+    prompt_file: fiduciary_conflict_detector.md
+    notes: "Multi-party obligation conflicts; produces HITL gate payload. Drives Reversal 4."
+  - key: negligent-monitoring-risk-agent
+    display_name: "Negligent Monitoring Risk Agent"
+    agent_type: agent-builder
+    llm: claude-byo-llm
+    prompt_file: negligent_monitoring_risk_agent.md
+    notes: "Co-defendant exposure for Reversal 5; privilege reshuffles follow."
+
+# ── Stakeholders ──────────────────────────────────────────────────────────
+# Must match Data Fabric entity id fields defined in specs/003-uipath-native/data-model.md.
+# StakeholderId variable in stakeholder-parent cases must be one of these ids.
+stakeholders:
+  providers:
+    - id: northstar
+      display_name: "Northstar Regional Health"
+      baa_id: baa-northstar
+      business_continuity_runway_days: 45
+    - id: alpha
+      display_name: "Provider Alpha"
+      baa_id: baa-alpha
+      business_continuity_runway_days: 60
+    - id: beta
+      display_name: "Provider Beta"
+      baa_id: baa-beta
+      business_continuity_runway_days: 10
+    - id: gamma
+      display_name: "Provider Gamma"
+      baa_id: baa-gamma
+      business_continuity_runway_days: 30
+    - id: delta
+      display_name: "Provider Delta"
+      baa_id: baa-delta
+      business_continuity_runway_days: 20
+    - id: epsilon
+      display_name: "Provider Epsilon"
+      baa_id: baa-epsilon
+      business_continuity_runway_days: 15
+  payers:
+    - id: apex
+      display_name: "Apex Health Plan"
+      activity_level: active_antagonist
+    - id: summitblue
+      display_name: "SummitBlue Medicare Advantage"
+      activity_level: active_federal
+    - id: union-prairie
+      display_name: "Union Prairie Benefits"
+      activity_level: named_only
+    - id: lakeshore
+      display_name: "Lakeshore TPA Services"
+      activity_level: named_only
+  vendor:
+    - id: nimbus
+      display_name: "Nimbus Patient Engagement Platform"
+  regulator:
+    - id: tn-doi
+      display_name: "Tennessee Department of Insurance"
+  insurer:
+    - id: aurora-specialty
+      display_name: "Aurora Specialty"
+  counsel:
+    - id: hawthorne-mercer
+      display_name: "Hawthorne Mercer LLP"
+
+# ── Event types ──────────────────────────────────────────────────────────
+# Canonical event_type const values used in:
+# - Maestro Trigger filterTree field matching
+# - Integration Service API Workflow emitted payloads
+# - Maestro Flow Demo Driver step payloads
+# - specs/003-uipath-native/event-contracts/*.json-schema.json "event_type" const
+#
+# IMPORTANT: changing a value here requires updating the matching schema file
+# AND any Maestro Trigger configurations that filter on event_type.
+#
+# Wall-clock annotations follow the canonical 300s demo storyboard in plan.md
+# (R1=t+20s, R2=t+70s, R3=t+150s, R4=t+200s, R5=t+260s).
+event_types:
+  - provider-claim-anomaly       # provider-{northstar..epsilon} API Workflows, R1 setup (~t+20s)
+  - multi-customer-correlation   # emitted by Multi-Customer Pattern Detector, R1 (t+20s)
+  - vendor-attribution           # vendor-nimbus API Workflow, R2 (t+70s)
+  - regulatory-subpoena          # regulator-tn-doi API Workflow, R3 (t+150s) — HERO
+  - payer-demand                 # payer-apex API Workflow, R4 setup (t+200s)
+  - insurer-directive            # insurer-aurora-specialty API Workflow, R4 HITL gate (t+200s)
+  - litigation-event             # regulator-tn-doi (second call), R5 (t+260s)
+
+# ── Source systems ─────────────────────────────────────────────────────────
+# Canonical emitter slugs for every event payload's "source_system" field. These
+# are the Integration Service API Workflow slugs (one per external system, ~13)
+# plus the Coded Agent that emits the correlation event directly.
+#
+# Every source_system enum value in specs/003-uipath-native/event-contracts/*.json-schema.json
+# MUST appear in this list. The role-id convention is <role>-<entity-id> (e.g.
+# regulator-tn-doi, insurer-aurora-specialty), matching vocabulary.stakeholders ids.
+# Cross-checked by tests/unit/event_contracts/test_event_schemas.py.
+source_systems:
+  # Provider API Workflows (×6)
+  - provider-northstar
+  - provider-alpha
+  - provider-beta
+  - provider-gamma
+  - provider-delta
+  - provider-epsilon
+  # Payer API Workflows
+  - payer-apex
+  - payer-summitblue
+  - payer-union-prairie
+  - payer-lakeshore
+  # Vendor / regulator / insurer / counsel API Workflows
+  - vendor-nimbus
+  - regulator-tn-doi
+  - insurer-aurora-specialty
+  - counsel-hawthorne
+  # Coded Agent that emits its correlation event directly (not an API Workflow)
+  - multi-customer-pattern-detector

@@ -1,0 +1,6 @@
+{
+  "Name": "payer-lakeshore",
+  "ProjectType": "Api",
+  "Description": "Payer Demand Event Emitter API Workflow for source_system 'payer-lakeshore'.",
+  "main": "main.json"
+}

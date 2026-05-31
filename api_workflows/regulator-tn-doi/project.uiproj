@@ -1,0 +1,6 @@
+{
+  "Name": "regulator-tn-doi",
+  "ProjectType": "Api",
+  "Description": "Regulatory Subpoena / Litigation Event Emitter (parameterized) API Workflow for source_system 'regulator-tn-doi'.",
+  "main": "main.json"
+}

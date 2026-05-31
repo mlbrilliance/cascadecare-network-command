@@ -1,0 +1,23 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "clearflow-demo-driver",
+    "kind": "package",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "projectKey": "77a02903-c6ea-4ea6-b5df-42fcaaf0fe71",
+    "isOverridable": true,
+    "dependencies": [],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "name": "clearflow-demo-driver"
+    },
+    "locks": [],
+    "key": "8d3a2c30-b68a-4614-ae22-4858acdead12",
+    "files": []
+  }
+}

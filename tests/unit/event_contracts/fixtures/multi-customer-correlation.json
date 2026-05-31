@@ -1,0 +1,9 @@
+{
+  "event_type": "multi-customer-correlation",
+  "source_system": "multi-customer-pattern-detector",
+  "simulated_day": 1,
+  "affected_provider_ids": ["northstar", "alpha", "beta"],
+  "correlation_score": 0.91,
+  "baseline_likelihood_pct": 0.3,
+  "recommended_goal_shift": "Determine whether ClearFlow is the vector and contain blast radius"
+}

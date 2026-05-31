@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cascadecare.local/event-contracts/multi-customer-correlation.json",
+  "title": "Multi-Customer Correlation Event",
+  "description": "Emitted by the Multi-Customer Pattern Detector Coded Agent when cross-provider telemetry correlation exceeds the baseline likelihood threshold. This is the Reversal 1 trigger event — it shifts the master case goal from 'assist isolated customers' to 'determine if ClearFlow is the vector'.",
+  "type": "object",
+  "required": ["event_type", "source_system", "simulated_day", "affected_provider_ids", "correlation_score", "baseline_likelihood_pct"],
+  "additionalProperties": false,
+  "properties": {
+    "event_type": {
+      "type": "string",
+      "const": "multi-customer-correlation"
+    },
+    "source_system": {
+      "type": "string",
+      "description": "Always the Multi-Customer Pattern Detector Coded Agent.",
+      "enum": ["multi-customer-pattern-detector"]
+    },
+    "simulated_day": {
+      "type": "integer",
+      "description": "Demo timeline day (0–90).",
+      "minimum": 0,
+      "maximum": 90
+    },
+    "affected_provider_ids": {
+      "type": "array",
+      "description": "Provider IDs showing correlated anomaly. Minimum 2 required to trigger pattern detection.",
+      "minItems": 2,
+      "items": {
+        "type": "string",
+        "enum": ["northstar", "alpha", "beta", "gamma", "delta", "epsilon"]
+      },
+      "uniqueItems": true
+    },
+    "correlation_score": {
+      "type": "number",
+      "description": "Statistical correlation score across affected providers. 0.0 = uncorrelated, 1.0 = perfectly correlated.",
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "baseline_likelihood_pct": {
+      "type": "number",
+      "description": "Probability (%) that this many independent anomalies within this time window are unrelated. Sub-1% triggers Reversal 1.",
+      "minimum": 0.0,
+      "maximum": 100.0
+    },
+    "recommended_goal_shift": {
+      "type": "string",
+      "description": "Text for the new master case CaseGoal variable after Reversal 1."
+    }
+  },
+  "maestro_trigger_filter_hint": {
+    "description": "Paste this as the Maestro Trigger FilterTree JSON when wiring this event to a stage transition in Slice 010/012. Routes to edge_KyX7sx (Initial Response → Multi-Customer Investigation).",
+    "filterTree": {
+      "operator": "AND",
+      "conditions": [
+        { "field": "event_type", "operator": "eq", "value": "multi-customer-correlation" },
+        { "field": "correlation_score", "operator": "gte", "value": 0.8 },
+        { "field": "baseline_likelihood_pct", "operator": "lte", "value": 1.0 }
+      ]
+    },
+    "routes_to_transition": "edge_KyX7sx",
+    "sets_variable": { "ReversalNumber": 1 }
+  }
+}

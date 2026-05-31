@@ -1,0 +1,23 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "clearflow-stakeholder-parent",
+    "kind": "package",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "projectKey": "3b9700dd-facf-4fba-be12-122a56c8ecdb",
+    "isOverridable": true,
+    "dependencies": [],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "name": "clearflow-stakeholder-parent"
+    },
+    "locks": [],
+    "key": "c7f7a475-f003-4630-9e1b-4e1022918226",
+    "files": []
+  }
+}

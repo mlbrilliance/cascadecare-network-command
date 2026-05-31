@@ -1,0 +1,226 @@
+{
+  "schemaVersion": "2.0",
+  "screenId": "main",
+  "displayName": "ClearFlow Network Command",
+  "theme": {
+    "brandName": "ClearFlow Network Command",
+    "logo": "assets/clearflow-logo.svg",
+    "palette": {
+      "accent": "#0E7C86",
+      "muted": "#6B7785",
+      "success": "#2E8B57",
+      "warning": "#C9831F",
+      "danger": "#B23A48",
+      "surface": "#0F1B2D",
+      "text": "#E8EEF4"
+    },
+    "typography": {
+      "fontFamily": "Inter, system-ui, sans-serif",
+      "headingWeight": 600
+    }
+  },
+  "dataSources": [
+    {
+      "id": "ds-dashboard",
+      "type": "codedApp",
+      "endpoint": "/dashboard",
+      "method": "GET",
+      "refreshIntervalSeconds": 5,
+      "description": "Full dashboard payload from Coded App backend"
+    },
+    {
+      "id": "ds-override",
+      "type": "codedApp",
+      "endpoint": "/override",
+      "method": "POST",
+      "description": "Override action trigger endpoint"
+    }
+  ],
+  "layout": {
+    "type": "grid",
+    "columns": 12,
+    "rows": "auto",
+    "gap": 16,
+    "padding": 16
+  },
+  "components": [
+    {
+      "id": "header",
+      "type": "header",
+      "gridArea": { "col": 1, "colSpan": 12, "row": 1, "rowSpan": 1 },
+      "props": {
+        "title": "ClearFlow Network Command",
+        "subtitle": "Cyber Crisis Operations — Live Case State",
+        "badge": {
+          "text": "LIVE",
+          "color": "accent",
+          "blink": true
+        }
+      }
+    },
+    {
+      "id": "cascade-tree",
+      "type": "container",
+      "gridArea": { "col": 1, "colSpan": 6, "row": 2, "rowSpan": 4 },
+      "props": {
+        "title": "Cascade Tree",
+        "icon": "hierarchy",
+        "dataSource": "ds-dashboard",
+        "dataField": "cascade_tree",
+        "refreshOnMount": true
+      },
+      "children": [
+        {
+          "id": "tree-master",
+          "type": "treeNode",
+          "props": {
+            "bind": "cascade_tree.master",
+            "labelField": "display_name",
+            "statusField": "status",
+            "badgeField": "stage",
+            "level": 0,
+            "expandedByDefault": true
+          }
+        },
+        {
+          "id": "tree-parents",
+          "type": "treeNodeList",
+          "props": {
+            "bind": "cascade_tree.parents",
+            "labelField": "display_name",
+            "statusField": "status",
+            "badgeField": "stage",
+            "level": 1,
+            "parentIdField": "parent_id",
+            "expandedByDefault": true
+          }
+        },
+        {
+          "id": "tree-grandchildren",
+          "type": "treeNodeList",
+          "props": {
+            "bind": "cascade_tree.grandchildren",
+            "labelField": "display_name",
+            "statusField": "status",
+            "badgeField": "stage",
+            "level": 2,
+            "parentIdField": "parent_id",
+            "expandedByDefault": false,
+            "emptyText": "No grandchild cases yet (spawn at Reversal 3)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "reversal-timeline",
+      "type": "container",
+      "gridArea": { "col": 7, "colSpan": 6, "row": 2, "rowSpan": 2 },
+      "props": {
+        "title": "Reversal Timeline",
+        "icon": "timeline",
+        "dataSource": "ds-dashboard",
+        "dataField": "reversal_timeline"
+      },
+      "children": [
+        {
+          "id": "timeline-track",
+          "type": "horizontalTimeline",
+          "props": {
+            "bind": "reversal_timeline",
+            "labelField": "name",
+            "subLabelField": "day",
+            "subLabelPrefix": "Day ",
+            "activeField": "active",
+            "tooltipFields": ["goal_from", "goal_to"],
+            "tooltipTemplate": "{goal_from} → {goal_to}",
+            "activeColor": "accent",
+            "inactiveColor": "muted",
+            "highlightIndex": 2,
+            "highlightLabel": "★ Hero moment"
+          }
+        }
+      ]
+    },
+    {
+      "id": "agent-activity-feed",
+      "type": "container",
+      "gridArea": { "col": 1, "colSpan": 6, "row": 6, "rowSpan": 3 },
+      "props": {
+        "title": "Agent Activity Feed",
+        "icon": "robot",
+        "dataSource": "ds-dashboard",
+        "dataField": "agent_activity",
+        "scrollable": true
+      },
+      "children": [
+        {
+          "id": "agent-list",
+          "type": "activityList",
+          "props": {
+            "bind": "agent_activity",
+            "idField": "agent_id",
+            "labelField": "display_name",
+            "statusField": "status",
+            "badgeField": "agent_type",
+            "subtitleField": "last_output",
+            "metaField": "last_invoked_at",
+            "countField": "invocation_count",
+            "statusColorMap": {
+              "idle": "muted",
+              "running": "warning",
+              "completed": "success",
+              "error": "danger"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "override-controls",
+      "type": "container",
+      "gridArea": { "col": 7, "colSpan": 6, "row": 4, "rowSpan": 5 },
+      "props": {
+        "title": "Override Controls",
+        "icon": "zap",
+        "dataSource": "ds-dashboard",
+        "dataField": "override_controls",
+        "description": "Demo operator triggers — fires Maestro events out of timeline order"
+      },
+      "children": [
+        {
+          "id": "override-buttons",
+          "type": "buttonGrid",
+          "props": {
+            "bind": "override_controls",
+            "labelField": "label",
+            "disabledField": "enabled",
+            "disabledWhen": "!enabled",
+            "tooltipField": "tooltip",
+            "columns": 2,
+            "onClickAction": {
+              "type": "apiCall",
+              "dataSource": "ds-override",
+              "body": { "action": "{{item.action}}" },
+              "onSuccess": {
+                "type": "refresh",
+                "target": "ds-dashboard"
+              },
+              "onError": {
+                "type": "toast",
+                "message": "Override failed: {{error.detail}}",
+                "severity": "error"
+              }
+            },
+            "styleOverrides": {
+              "fire_reversal_3": {
+                "variant": "accent",
+                "size": "large",
+                "pulse": true
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

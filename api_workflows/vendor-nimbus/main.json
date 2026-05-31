@@ -1,0 +1,98 @@
+{
+  "document": {
+    "dsl": "1.0.0",
+    "name": "vendor-nimbus — Vendor Attribution Event Emitter",
+    "version": "0.0.1",
+    "namespace": "cascadecare",
+    "metadata": {
+      "description": "Integration Service API Workflow for source_system 'vendor-nimbus'. Emits a 'vendor-attribution' event payload (schema: specs/003-uipath-native/event-contracts/vendor-attribution.json-schema.json) consumed by the Maestro Trigger on transition edge_ALryM7 (Multi-Customer Investigation -> Vector Isolation) and drives Reversal 2. DEPLOY-TIME NOTE: the live Data Fabric read (Vendor.connected_providers entity) and the Maestro Trigger emission are wired at deploy via 'uip api-workflow registry stub' against a live tenant. Here the payload is shaped from workflow inputs (Data Fabric defaults) by a JavaScript/Assign activity; the connector read is NOT hand-authored.",
+      "variables": {
+        "schema": {
+          "format": "json",
+          "document": {
+            "type": "object",
+            "properties": {
+              "eventPayload": { "type": "object", "default": {} }
+            },
+            "title": "Variables"
+          }
+        }
+      }
+    }
+  },
+  "input": {
+    "schema": {
+      "format": "json",
+      "document": {
+        "type": "object",
+        "properties": {
+          "simulated_day": { "type": "integer", "default": 5 },
+          "evidence_signal_strength": { "type": "string", "default": "strong" },
+          "connected_provider_ids": { "type": "array", "default": ["northstar", "alpha", "beta", "gamma", "delta", "epsilon"] },
+          "clearflow_cleared": { "type": "boolean", "default": true },
+          "vector_hypothesis_confidence": { "type": "number", "default": 0.92 }
+        },
+        "title": "Inputs"
+      }
+    }
+  },
+  "output": {
+    "schema": {
+      "format": "json",
+      "document": {
+        "type": "object",
+        "properties": {
+          "event_type": { "type": "string" },
+          "source_system": { "type": "string" },
+          "simulated_day": { "type": "integer" },
+          "vendor_id": { "type": "string" },
+          "evidence_signal_strength": { "type": "string" },
+          "connected_provider_ids": { "type": "array" },
+          "clearflow_cleared": { "type": "boolean" },
+          "vector_hypothesis_confidence": { "type": "number" }
+        },
+        "title": "Outputs"
+      }
+    }
+  },
+  "do": [
+    {
+      "Sequence_1": {
+        "do": [
+          {
+            "WorkflowStart": {
+              "set": "${Object.entries($workflow.definition?.document?.metadata?.variables?.schema?.document?.properties || {}).reduce((acc, [name, def]) => ({ ...acc, [name]: def?.default }), {}) }",
+              "output": { "as": "${$input}" },
+              "export": { "as": "{ ...$context, variables: { ...$context.variables, ...$output } }" },
+              "metadata": { "activityType": "Assign", "displayName": "Workflow start", "fullName": "Assign", "isTransparent": true }
+            }
+          },
+          {
+            "Javascript_BuildPayload": {
+              "run": {
+                "script": {
+                  "code": "return { event_type: 'vendor-attribution', source_system: 'vendor-nimbus', simulated_day: $workflow.input.simulated_day, vendor_id: 'nimbus', evidence_signal_strength: $workflow.input.evidence_signal_strength, connected_provider_ids: $workflow.input.connected_provider_ids, clearflow_cleared: $workflow.input.clearflow_cleared, vector_hypothesis_confidence: $workflow.input.vector_hypothesis_confidence };",
+                  "language": "javascript",
+                  "arguments": "${{ \"$context\": $context, \"$workflow\": $workflow, \"$input\": $input }}"
+                }
+              },
+              "export": { "as": "{ ...$context, outputs: { ...$context?.outputs, \"Javascript_BuildPayload\": $output } }" },
+              "metadata": { "activityType": "JsInvoke", "displayName": "Build Vendor Attribution Payload", "fullName": "JsInvoke" }
+            }
+          },
+          {
+            "Response_1": {
+              "response": "${{ event_type: $context.outputs.Javascript_BuildPayload.event_type, source_system: $context.outputs.Javascript_BuildPayload.source_system, simulated_day: $context.outputs.Javascript_BuildPayload.simulated_day, vendor_id: $context.outputs.Javascript_BuildPayload.vendor_id, evidence_signal_strength: $context.outputs.Javascript_BuildPayload.evidence_signal_strength, connected_provider_ids: $context.outputs.Javascript_BuildPayload.connected_provider_ids, clearflow_cleared: $context.outputs.Javascript_BuildPayload.clearflow_cleared, vector_hypothesis_confidence: $context.outputs.Javascript_BuildPayload.vector_hypothesis_confidence }}",
+              "markJobAsFailed": false,
+              "then": "end",
+              "export": { "as": "{ ...$context, outputs: { ...$context?.outputs, \"Response_1\": $output } }" },
+              "metadata": { "activityType": "Response", "displayName": "Response", "fullName": "Response" }
+            }
+          }
+        ],
+        "metadata": { "activityType": "Sequence", "displayName": "Sequence", "fullName": "Sequence" }
+      }
+    }
+  ],
+  "evaluate": { "mode": "strict", "language": "javascript" }
+}

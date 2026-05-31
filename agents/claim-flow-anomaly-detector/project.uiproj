@@ -1,0 +1,6 @@
+{
+  "ProjectType": "Function",
+  "Name": "claim-flow-anomaly-detector",
+  "Description": "Classifies an anomaly score on a single provider claim telemetry feed (CascadeCare Network Command, Slice 009).",
+  "MainFile": null
+}

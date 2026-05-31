@@ -1,0 +1,6 @@
+{
+  "Name": "provider-epsilon",
+  "ProjectType": "Api",
+  "Description": "Claim Anomaly Event Emitter API Workflow for source_system 'provider-epsilon'.",
+  "main": "main.json"
+}

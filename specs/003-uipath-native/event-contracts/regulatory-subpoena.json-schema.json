@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cascadecare.local/event-contracts/regulatory-subpoena.json",
+  "title": "Regulatory Subpoena Event",
+  "description": "HERO EVENT (Reversal 3). Emitted by the regulator-tn-doi Integration Service API Workflow when the Tennessee Department of Insurance issues a subpoena for all claim flow records. This event triggers the BAA Boundary Reasoner and spawns 6 stakeholder-parent cases simultaneously in the Regulatory Response stage — the fan-spawn hero moment visible on the Maestro Case canvas at t+150s (simulated Day 30).",
+  "type": "object",
+  "required": ["event_type", "source_system", "simulated_day", "regulator_id", "template_id", "scope", "response_deadline_days"],
+  "additionalProperties": false,
+  "properties": {
+    "event_type": {
+      "type": "string",
+      "const": "regulatory-subpoena"
+    },
+    "source_system": {
+      "type": "string",
+      "description": "The regulator Integration Service API Workflow.",
+      "enum": ["regulator-tn-doi"]
+    },
+    "simulated_day": {
+      "type": "integer",
+      "description": "Demo timeline day (0–90). Subpoena arrives Day 30 in the narrative.",
+      "minimum": 0,
+      "maximum": 90
+    },
+    "regulator_id": {
+      "type": "string",
+      "description": "Issuing regulator. Must match vocabulary.stakeholders.regulator id.",
+      "const": "tn-doi"
+    },
+    "template_id": {
+      "type": "string",
+      "description": "Which RegulatorTemplate Data Fabric entity defines the discovery requests.",
+      "const": "tn-doi-subpoena-2026"
+    },
+    "scope": {
+      "type": "string",
+      "description": "Which providers are covered by the subpoena.",
+      "enum": ["single_provider", "all_providers", "named_providers"]
+    },
+    "named_provider_ids": {
+      "type": "array",
+      "description": "Populated only when scope=named_providers.",
+      "items": {
+        "type": "string",
+        "enum": ["northstar", "alpha", "beta", "gamma", "delta", "epsilon"]
+      },
+      "uniqueItems": true
+    },
+    "response_deadline_days": {
+      "type": "integer",
+      "description": "Calendar days from subpoena receipt to required response. Typically 14.",
+      "minimum": 1
+    },
+    "legal_basis": {
+      "type": "string",
+      "description": "Statutory basis for the subpoena (from RegulatorTemplate.legal_basis). Fictional but plausible."
+    }
+  },
+  "maestro_trigger_filter_hint": {
+    "description": "Paste this as the Maestro Trigger FilterTree JSON when wiring this event in Slice 010/012. Routes to edge_myTR8u (Vector Isolation → Regulatory Response) AND fires BAA Boundary Analysis task (tNWPCipI7) AND spawns 6 stakeholder-parent cases via case-management tasks in Stage_JM1SVs.",
+    "filterTree": {
+      "operator": "AND",
+      "conditions": [
+        { "field": "event_type", "operator": "eq", "value": "regulatory-subpoena" },
+        { "field": "regulator_id", "operator": "eq", "value": "tn-doi" }
+      ]
+    },
+    "routes_to_transition": "edge_myTR8u",
+    "fires_task": "tNWPCipI7",
+    "spawns_parent_cases": "all_providers",
+    "sets_variable": { "ReversalNumber": 3 },
+    "canvas_note": "This is the HERO MOMENT. Stage_JM1SVs must have 6 case-management task tiles in a horizontal fan (layout.x spaced by ~320px) so all 6 provider spawns are visible simultaneously."
+  }
+}

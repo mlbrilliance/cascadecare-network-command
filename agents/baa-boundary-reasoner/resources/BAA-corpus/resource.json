@@ -1,0 +1,25 @@
+{
+  "$resourceType": "context",
+  "id": "d9f89098-0b8c-476b-a4f5-4ba313c75c73",
+  "referenceKey": null,
+  "name": "BAA-corpus",
+  "description": "Context Grounding index of provider Business Associate Agreement terms.",
+  "contextType": "index",
+  "folderPath": "Shared",
+  "indexName": "BAA-corpus",
+  "settings": {
+    "retrievalMode": "semantic",
+    "query": {
+      "variant": "dynamic",
+      "description": "Query for relevant BAA provisions for the given provider and subpoena scope"
+    },
+    "folderPathPrefix": {
+      "variant": "static"
+    },
+    "fileExtension": {
+      "value": "All"
+    },
+    "threshold": 0,
+    "resultCount": 5
+  }
+}

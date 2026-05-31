@@ -1,0 +1,151 @@
+{
+  "document": {
+    "dsl": "1.0.0",
+    "name": "regulator-tn-doi — Regulatory Subpoena / Litigation Event Emitter (parameterized)",
+    "version": "0.0.1",
+    "namespace": "cascadecare",
+    "metadata": {
+      "description": "Integration Service API Workflow for source_system 'regulator-tn-doi' (Tennessee Department of Insurance). PARAMETERIZED on input 'event_type': 'regulatory-subpoena' (Reversal 3, the HERO fan-spawn at t+150s, schema regulatory-subpoena.json-schema.json) vs 'litigation-event' (Reversal 5 co-defendant beat at t+260s, schema litigation-event.json-schema.json). The regulator workflow doubles as the litigation event source in the compressed demo timeline. DEPLOY-TIME NOTE: the live Data Fabric read (RegulatorTemplate entity) and the Maestro Trigger emission are wired at deploy via 'uip api-workflow registry stub' against a live tenant. Here both payloads are shaped from workflow inputs (Data Fabric defaults) by JavaScript/Assign activities; the connector read is NOT hand-authored.",
+      "variables": {
+        "schema": {
+          "format": "json",
+          "document": {
+            "type": "object",
+            "properties": {
+              "eventPayload": { "type": "object", "default": {} }
+            },
+            "title": "Variables"
+          }
+        }
+      }
+    }
+  },
+  "input": {
+    "schema": {
+      "format": "json",
+      "document": {
+        "type": "object",
+        "properties": {
+          "event_type": { "type": "string", "default": "regulatory-subpoena" },
+          "simulated_day": { "type": "integer", "default": 30 },
+          "scope": { "type": "string", "default": "all_providers" },
+          "named_provider_ids": { "type": "array", "default": [] },
+          "response_deadline_days": { "type": "integer", "default": 14 },
+          "legal_basis": { "type": "string", "default": "Tennessee Insurance Holding Company System Act, examination authority" },
+          "event_subtype": { "type": "string", "default": "co_defendant_named" },
+          "named_parties": { "type": "array", "default": ["ClearFlow Health Network", "Nimbus Patient Engagement Platform"] },
+          "clearflow_named_co_defendant": { "type": "boolean", "default": true },
+          "theory": { "type": "string", "default": "negligent monitoring" },
+          "privilege_reshuffle_required": { "type": "boolean", "default": true }
+        },
+        "title": "Inputs"
+      }
+    }
+  },
+  "output": {
+    "schema": {
+      "format": "json",
+      "document": {
+        "type": "object",
+        "properties": {
+          "event_type": { "type": "string" },
+          "source_system": { "type": "string" }
+        },
+        "title": "Outputs"
+      }
+    }
+  },
+  "do": [
+    {
+      "Sequence_1": {
+        "do": [
+          {
+            "WorkflowStart": {
+              "set": "${Object.entries($workflow.definition?.document?.metadata?.variables?.schema?.document?.properties || {}).reduce((acc, [name, def]) => ({ ...acc, [name]: def?.default }), {}) }",
+              "output": { "as": "${$input}" },
+              "export": { "as": "{ ...$context, variables: { ...$context.variables, ...$output } }" },
+              "metadata": { "activityType": "Assign", "displayName": "Workflow start", "fullName": "Assign", "isTransparent": true }
+            }
+          },
+          {
+            "If_1#Wrapper": {
+              "do": [
+                {
+                  "If_1": {
+                    "switch": [
+                      { "case": { "when": "${$workflow.input.event_type === 'litigation-event'}", "then": "If_1#Then" } },
+                      { "default": { "then": "If_1#Else" } }
+                    ],
+                    "metadata": { "displayName": "If" }
+                  }
+                },
+                {
+                  "If_1#Then": {
+                    "do": [
+                      {
+                        "Javascript_BuildLitigation": {
+                          "run": {
+                            "script": {
+                              "code": "return { event_type: 'litigation-event', source_system: 'regulator-tn-doi', simulated_day: $workflow.input.simulated_day, event_subtype: $workflow.input.event_subtype, named_parties: $workflow.input.named_parties, clearflow_named_co_defendant: $workflow.input.clearflow_named_co_defendant, theory: $workflow.input.theory, privilege_reshuffle_required: $workflow.input.privilege_reshuffle_required };",
+                              "language": "javascript",
+                              "arguments": "${{ \"$context\": $context, \"$workflow\": $workflow, \"$input\": $input }}"
+                            }
+                          },
+                          "export": { "as": "{ ...$context, outputs: { ...$context?.outputs, \"Javascript_BuildLitigation\": $output } }" },
+                          "metadata": { "activityType": "JsInvoke", "displayName": "Build Litigation Event Payload", "fullName": "JsInvoke" }
+                        }
+                      },
+                      {
+                        "Response_Litigation": {
+                          "response": "${{ event_type: $context.outputs.Javascript_BuildLitigation.event_type, source_system: $context.outputs.Javascript_BuildLitigation.source_system, simulated_day: $context.outputs.Javascript_BuildLitigation.simulated_day, event_subtype: $context.outputs.Javascript_BuildLitigation.event_subtype, named_parties: $context.outputs.Javascript_BuildLitigation.named_parties, clearflow_named_co_defendant: $context.outputs.Javascript_BuildLitigation.clearflow_named_co_defendant, theory: $context.outputs.Javascript_BuildLitigation.theory, privilege_reshuffle_required: $context.outputs.Javascript_BuildLitigation.privilege_reshuffle_required }}",
+                          "markJobAsFailed": false,
+                          "then": "end",
+                          "export": { "as": "{ ...$context, outputs: { ...$context?.outputs, \"Response_Litigation\": $output } }" },
+                          "metadata": { "activityType": "Response", "displayName": "Response (Litigation)", "fullName": "Response" }
+                        }
+                      }
+                    ],
+                    "then": "exit"
+                  }
+                },
+                {
+                  "If_1#Else": {
+                    "do": [
+                      {
+                        "Javascript_BuildSubpoena": {
+                          "run": {
+                            "script": {
+                              "code": "return { event_type: 'regulatory-subpoena', source_system: 'regulator-tn-doi', simulated_day: $workflow.input.simulated_day, regulator_id: 'tn-doi', template_id: 'tn-doi-subpoena-2026', scope: $workflow.input.scope, named_provider_ids: $workflow.input.named_provider_ids, response_deadline_days: $workflow.input.response_deadline_days, legal_basis: $workflow.input.legal_basis };",
+                              "language": "javascript",
+                              "arguments": "${{ \"$context\": $context, \"$workflow\": $workflow, \"$input\": $input }}"
+                            }
+                          },
+                          "export": { "as": "{ ...$context, outputs: { ...$context?.outputs, \"Javascript_BuildSubpoena\": $output } }" },
+                          "metadata": { "activityType": "JsInvoke", "displayName": "Build Regulatory Subpoena Payload", "fullName": "JsInvoke" }
+                        }
+                      },
+                      {
+                        "Response_Subpoena": {
+                          "response": "${{ event_type: $context.outputs.Javascript_BuildSubpoena.event_type, source_system: $context.outputs.Javascript_BuildSubpoena.source_system, simulated_day: $context.outputs.Javascript_BuildSubpoena.simulated_day, regulator_id: $context.outputs.Javascript_BuildSubpoena.regulator_id, template_id: $context.outputs.Javascript_BuildSubpoena.template_id, scope: $context.outputs.Javascript_BuildSubpoena.scope, named_provider_ids: $context.outputs.Javascript_BuildSubpoena.named_provider_ids, response_deadline_days: $context.outputs.Javascript_BuildSubpoena.response_deadline_days, legal_basis: $context.outputs.Javascript_BuildSubpoena.legal_basis }}",
+                          "markJobAsFailed": false,
+                          "then": "end",
+                          "export": { "as": "{ ...$context, outputs: { ...$context?.outputs, \"Response_Subpoena\": $output } }" },
+                          "metadata": { "activityType": "Response", "displayName": "Response (Subpoena)", "fullName": "Response" }
+                        }
+                      }
+                    ],
+                    "then": "exit"
+                  }
+                }
+              ],
+              "export": { "as": "{ ...$context, outputs: { ...$context?.outputs, \"If_1\": $output } }" },
+              "metadata": { "activityType": "If", "displayName": "If event_type is litigation-event", "fullName": "If" }
+            }
+          }
+        ],
+        "metadata": { "activityType": "Sequence", "displayName": "Sequence", "fullName": "Sequence" }
+      }
+    }
+  ],
+  "evaluate": { "mode": "strict", "language": "javascript" }
+}

@@ -1,0 +1,134 @@
+{
+    "$schema": "https://cloud.uipath.com/draft/2024-12/entry-point",
+    "$id": "entry-points.json",
+    "entryPoints": [
+        {
+            "filePath": "main",
+            "uniqueId": "3c53cb06-157a-48fc-a27a-4e0fc989b2b1",
+            "type": "function",
+            "input": {
+                "type": "object",
+                "properties": {
+                    "simulated_day": {
+                        "default": 0,
+                        "description": "Demo timeline day (0-90).",
+                        "title": "Simulated Day",
+                        "type": "integer"
+                    },
+                    "provider_results": {
+                        "items": {
+                            "description": "One provider's anomaly result (typically a Claim Flow Anomaly Detector output).",
+                            "properties": {
+                                "provider_id": {
+                                    "default": "",
+                                    "title": "Provider Id",
+                                    "type": "string"
+                                },
+                                "anomaly_score": {
+                                    "default": 0.0,
+                                    "title": "Anomaly Score",
+                                    "type": "number"
+                                }
+                            },
+                            "title": "ProviderResult",
+                            "type": "object"
+                        },
+                        "title": "Provider Results",
+                        "type": "array"
+                    }
+                },
+                "required": [],
+                "title": "Input"
+            },
+            "output": {
+                "type": "object",
+                "properties": {
+                    "affected_provider_ids": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "title": "Affected Provider Ids",
+                        "type": "array"
+                    },
+                    "correlation_score": {
+                        "default": 0.0,
+                        "title": "Correlation Score",
+                        "type": "number"
+                    },
+                    "baseline_likelihood_pct": {
+                        "default": 100.0,
+                        "title": "Baseline Likelihood Pct",
+                        "type": "number"
+                    },
+                    "cascade_signal": {
+                        "default": false,
+                        "title": "Cascade Signal",
+                        "type": "boolean"
+                    },
+                    "error_type": {
+                        "default": "",
+                        "title": "Error Type",
+                        "type": "string"
+                    },
+                    "error_message": {
+                        "default": "",
+                        "title": "Error Message",
+                        "type": "string"
+                    }
+                },
+                "required": [],
+                "title": "Output"
+            },
+            "graph": {
+                "nodes": [
+                    {
+                        "id": "agent.py:104",
+                        "name": "main",
+                        "type": "function",
+                        "metadata": {
+                            "file": "agent.py"
+                        }
+                    },
+                    {
+                        "id": "agent.py:94",
+                        "name": "correlate",
+                        "type": "function",
+                        "metadata": {
+                            "file": "agent.py"
+                        }
+                    },
+                    {
+                        "id": "agent.py:73",
+                        "name": "_dedupe_highest",
+                        "type": "function",
+                        "metadata": {
+                            "file": "agent.py"
+                        }
+                    },
+                    {
+                        "id": "agent.py:81",
+                        "name": "_baseline_likelihood_pct",
+                        "type": "function",
+                        "metadata": {
+                            "file": "agent.py"
+                        }
+                    }
+                ],
+                "edges": [
+                    {
+                        "source": "agent.py:94",
+                        "target": "agent.py:73"
+                    },
+                    {
+                        "source": "agent.py:94",
+                        "target": "agent.py:81"
+                    },
+                    {
+                        "source": "agent.py:104",
+                        "target": "agent.py:94"
+                    }
+                ]
+            }
+        }
+    ]
+}

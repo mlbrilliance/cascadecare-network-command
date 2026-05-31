@@ -1,0 +1,97 @@
+{
+  "document": {
+    "dsl": "1.0.0",
+    "name": "payer-apex — Payer Demand Event Emitter",
+    "version": "0.0.1",
+    "namespace": "cascadecare",
+    "metadata": {
+      "description": "Integration Service API Workflow for source_system 'payer-apex'. Emits a 'payer-demand' event payload (schema: specs/003-uipath-native/event-contracts/payer-demand.json-schema.json) consumed by the Fiduciary Conflict Review Maestro Trigger (task tvlKcFYnW, transition edge_qrohED) and drives Reversal 4. DEPLOY-TIME NOTE: the live Data Fabric read (Payer + BAA-conflict entities) and the Maestro Trigger emission are wired at deploy via 'uip api-workflow registry stub' against a live tenant. Here the payload is shaped from workflow inputs (Data Fabric defaults) by a JavaScript/Assign activity; the connector read is NOT hand-authored.",
+      "variables": {
+        "schema": {
+          "format": "json",
+          "document": {
+            "type": "object",
+            "properties": {
+              "eventPayload": { "type": "object", "default": {} }
+            },
+            "title": "Variables"
+          }
+        }
+      }
+    }
+  },
+  "input": {
+    "schema": {
+      "format": "json",
+      "document": {
+        "type": "object",
+        "properties": {
+          "simulated_day": { "type": "integer", "default": 45 },
+          "target_provider_ids": { "type": "array", "default": ["northstar"] },
+          "contractual_basis": { "type": "string", "default": "operational visibility clause, section 4.2" },
+          "conflicts_with_baa_ids": { "type": "array", "default": ["baa-northstar"] }
+        },
+        "title": "Inputs"
+      }
+    }
+  },
+  "output": {
+    "schema": {
+      "format": "json",
+      "document": {
+        "type": "object",
+        "properties": {
+          "event_type": { "type": "string" },
+          "source_system": { "type": "string" },
+          "simulated_day": { "type": "integer" },
+          "payer_id": { "type": "string" },
+          "demand_type": { "type": "string" },
+          "target_provider_ids": { "type": "array" },
+          "contractual_basis": { "type": "string" },
+          "conflicts_with_baa_ids": { "type": "array" }
+        },
+        "title": "Outputs"
+      }
+    }
+  },
+  "do": [
+    {
+      "Sequence_1": {
+        "do": [
+          {
+            "WorkflowStart": {
+              "set": "${Object.entries($workflow.definition?.document?.metadata?.variables?.schema?.document?.properties || {}).reduce((acc, [name, def]) => ({ ...acc, [name]: def?.default }), {}) }",
+              "output": { "as": "${$input}" },
+              "export": { "as": "{ ...$context, variables: { ...$context.variables, ...$output } }" },
+              "metadata": { "activityType": "Assign", "displayName": "Workflow start", "fullName": "Assign", "isTransparent": true }
+            }
+          },
+          {
+            "Javascript_BuildPayload": {
+              "run": {
+                "script": {
+                  "code": "return { event_type: 'payer-demand', source_system: 'payer-apex', simulated_day: $workflow.input.simulated_day, payer_id: 'apex', demand_type: 'data_access', target_provider_ids: $workflow.input.target_provider_ids, contractual_basis: $workflow.input.contractual_basis, conflicts_with_baa_ids: $workflow.input.conflicts_with_baa_ids };",
+                  "language": "javascript",
+                  "arguments": "${{ \"$context\": $context, \"$workflow\": $workflow, \"$input\": $input }}"
+                }
+              },
+              "export": { "as": "{ ...$context, outputs: { ...$context?.outputs, \"Javascript_BuildPayload\": $output } }" },
+              "metadata": { "activityType": "JsInvoke", "displayName": "Build Payer Demand Payload", "fullName": "JsInvoke" }
+            }
+          },
+          {
+            "Response_1": {
+              "response": "${{ event_type: $context.outputs.Javascript_BuildPayload.event_type, source_system: $context.outputs.Javascript_BuildPayload.source_system, simulated_day: $context.outputs.Javascript_BuildPayload.simulated_day, payer_id: $context.outputs.Javascript_BuildPayload.payer_id, demand_type: $context.outputs.Javascript_BuildPayload.demand_type, target_provider_ids: $context.outputs.Javascript_BuildPayload.target_provider_ids, contractual_basis: $context.outputs.Javascript_BuildPayload.contractual_basis, conflicts_with_baa_ids: $context.outputs.Javascript_BuildPayload.conflicts_with_baa_ids }}",
+              "markJobAsFailed": false,
+              "then": "end",
+              "export": { "as": "{ ...$context, outputs: { ...$context?.outputs, \"Response_1\": $output } }" },
+              "metadata": { "activityType": "Response", "displayName": "Response", "fullName": "Response" }
+            }
+          }
+        ],
+        "metadata": { "activityType": "Sequence", "displayName": "Sequence", "fullName": "Sequence" }
+      }
+    }
+  ],
+  "evaluate": { "mode": "strict", "language": "javascript" }
+}

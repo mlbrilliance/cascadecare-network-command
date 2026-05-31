@@ -1,0 +1,77 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cascadecare.local/event-contracts/payer-demand.json",
+  "title": "Payer Demand Event",
+  "description": "Emitted by a payer Integration Service API Workflow (primarily payer-apex) when a payer asserts contractual rights that conflict with provider BAA terms. This feeds into the Fiduciary Conflict Detector and drives Reversal 4 — the tri-party HITL gate in Action Center.",
+  "type": "object",
+  "required": ["event_type", "source_system", "simulated_day", "payer_id", "demand_type", "target_provider_ids"],
+  "additionalProperties": false,
+  "properties": {
+    "event_type": {
+      "type": "string",
+      "const": "payer-demand"
+    },
+    "source_system": {
+      "type": "string",
+      "description": "The payer Integration Service API Workflow that emits this demand.",
+      "enum": ["payer-apex", "payer-summitblue", "payer-union-prairie", "payer-lakeshore"]
+    },
+    "simulated_day": {
+      "type": "integer",
+      "description": "Demo timeline day (0–90).",
+      "minimum": 0,
+      "maximum": 90
+    },
+    "payer_id": {
+      "type": "string",
+      "description": "The payer making the demand. Must match vocabulary.stakeholders.payers id.",
+      "enum": ["apex", "summitblue", "union-prairie", "lakeshore"]
+    },
+    "demand_type": {
+      "type": "string",
+      "description": "Nature of the payer demand.",
+      "enum": [
+        "data_access",
+        "idr_pause",
+        "settlement_pressure",
+        "coverage_challenge"
+      ]
+    },
+    "target_provider_ids": {
+      "type": "array",
+      "description": "Which providers' data the payer is demanding access to or action on.",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "enum": ["northstar", "alpha", "beta", "gamma", "delta", "epsilon"]
+      },
+      "uniqueItems": true
+    },
+    "contractual_basis": {
+      "type": "string",
+      "description": "The payer's stated contractual right (e.g. 'operational visibility clause, section 4.2')."
+    },
+    "conflicts_with_baa_ids": {
+      "type": "array",
+      "description": "Which BAA ids this demand conflicts with (pre-computed by the API Workflow reading Data Fabric).",
+      "items": {
+        "type": "string",
+        "enum": ["baa-northstar", "baa-alpha", "baa-beta", "baa-gamma", "baa-delta", "baa-epsilon"]
+      }
+    }
+  },
+  "maestro_trigger_filter_hint": {
+    "description": "Paste this as the Maestro Trigger FilterTree JSON when wiring this event in Slice 010/012. Routes to edge_qrohED (Regulatory Response → Fiduciary Review) and fires Tri-Party Fiduciary Conflict Review task (tvlKcFYnW).",
+    "filterTree": {
+      "operator": "AND",
+      "conditions": [
+        { "field": "event_type", "operator": "eq", "value": "payer-demand" },
+        { "field": "payer_id", "operator": "eq", "value": "apex" },
+        { "field": "demand_type", "operator": "eq", "value": "data_access" }
+      ]
+    },
+    "routes_to_transition": "edge_qrohED",
+    "fires_task": "tvlKcFYnW",
+    "sets_variable": { "ReversalNumber": 4 }
+  }
+}

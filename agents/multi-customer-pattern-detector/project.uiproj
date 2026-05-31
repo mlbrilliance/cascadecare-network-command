@@ -1,0 +1,6 @@
+{
+  "ProjectType": "Function",
+  "Name": "multi-customer-pattern-detector",
+  "Description": "Cross-provider correlation that emits the Reversal 1 cascade signal (CascadeCare Network Command, Slice 009).",
+  "MainFile": null
+}

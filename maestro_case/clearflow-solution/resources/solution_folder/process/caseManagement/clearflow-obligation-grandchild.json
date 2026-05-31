@@ -1,0 +1,39 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "clearflow-obligation-grandchild",
+    "kind": "process",
+    "type": "caseManagement",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "projectKey": "12ae6713-8ad0-4480-8064-bbba88e909f4",
+    "isOverridable": true,
+    "dependencies": [
+      {
+        "kind": "package",
+        "name": "clearflow-obligation-grandchild"
+      }
+    ],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "type": "CaseManagement",
+      "name": "clearflow-obligation-grandchild",
+      "package": {
+        "key": "cc68afad-4090-43ac-a9b3-5cfd12be5e18"
+      },
+      "inputArguments": "{}",
+      "targetFrameworkValue": "Portable",
+      "retentionAction": "Delete",
+      "retentionPeriod": 30,
+      "staleRetentionAction": "Delete",
+      "staleRetentionPeriod": 180
+    },
+    "locks": [],
+    "key": "22f77cec-2289-4b02-9218-800813830b59",
+    "files": []
+  }
+}

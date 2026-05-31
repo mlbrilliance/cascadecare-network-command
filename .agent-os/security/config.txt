@@ -1,0 +1,5 @@
+# Path to the cloned Anthropic-Cybersecurity-Skills/skills directory.
+# Relative paths are resolved from the repo root.
+# Clone it with:
+#   git clone https://github.com/mukul975/Anthropic-Cybersecurity-Skills.git ../Anthropic-Cybersecurity-Skills
+../Anthropic-Cybersecurity-Skills/skills

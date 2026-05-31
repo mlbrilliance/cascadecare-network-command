@@ -1,0 +1,66 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "POST /override — Override Control Contract",
+  "description": "Accepts a demo operator override action and acknowledges it. Stub in Slice 013; full Maestro trigger wiring in Slice 014.",
+  "endpoint": "/override",
+  "method": "POST",
+  "request": {
+    "contentType": "application/json",
+    "schema": {
+      "type": "object",
+      "required": ["action"],
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "fire_reversal_1",
+            "fire_reversal_2",
+            "fire_reversal_3",
+            "fire_reversal_4",
+            "fire_reversal_5",
+            "spawn_grandchildren",
+            "trigger_hitl_gate",
+            "reset_demo"
+          ],
+          "description": "The override action to fire"
+        }
+      }
+    }
+  },
+  "responses": {
+    "200": {
+      "description": "Action accepted",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "accepted": { "type": "boolean", "const": true },
+          "action": { "type": "string" }
+        }
+      },
+      "example": { "accepted": true, "action": "fire_reversal_3" }
+    },
+    "422": {
+      "description": "Validation error — invalid or missing action",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "error": { "type": "string" },
+          "status": { "type": "integer", "const": 422 }
+        }
+      },
+      "example": { "error": "Invalid action 'bad_action'", "status": 422 }
+    },
+    "409": {
+      "description": "Control already fired (Slice 014 — state tracking wired after tenant deploy)",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "detail": { "type": "string" },
+          "control_id": { "type": "string" }
+        }
+      },
+      "example": { "detail": "control already fired", "control_id": "fire_r3" }
+    }
+  }
+}

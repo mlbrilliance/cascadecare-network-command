@@ -1,0 +1,20 @@
+{
+  "type": "App",
+  "schemaVersion": "2.0",
+  "name": "clearflow-network-command",
+  "displayName": "ClearFlow Network Command",
+  "description": "Narrative dashboard for the ClearFlow Financial Cyber Shockwave case. Shows cascade tree, reversal timeline, agent activity, and override controls for the 300-second demo run.",
+  "version": "1.0.0",
+  "backend": "backend/",
+  "entryPoint": "main:handler",
+  "screens": ["main"],
+  "defaultScreen": "main",
+  "theme": {
+    "primaryColor": "#1565C0",
+    "backgroundColor": "#0D1117",
+    "surfaceColor": "#161B22",
+    "textColor": "#E6EDF3",
+    "accentColor": "#F85149"
+  },
+  "refreshIntervalSeconds": 5
+}

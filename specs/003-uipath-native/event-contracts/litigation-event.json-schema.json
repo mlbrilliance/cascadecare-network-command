@@ -1,0 +1,73 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cascadecare.local/event-contracts/litigation-event.json",
+  "title": "Litigation Event",
+  "description": "Emitted by the regulator-tn-doi Integration Service API Workflow (second call, t+260s) when ClearFlow is named as a co-defendant under the 'negligent monitoring' theory. This drives Reversal 5 — bystander becomes co-defendant, privilege flags reshuffle across all grandchild cases, and the Negligent Monitoring Risk Agent fires in the Litigation Defense stage.",
+  "type": "object",
+  "required": ["event_type", "source_system", "simulated_day", "event_subtype", "named_parties"],
+  "additionalProperties": false,
+  "properties": {
+    "event_type": {
+      "type": "string",
+      "const": "litigation-event"
+    },
+    "source_system": {
+      "type": "string",
+      "description": "The API Workflow that emits this event. The regulator workflow doubles as the litigation event source in the compressed demo timeline.",
+      "enum": ["regulator-tn-doi"]
+    },
+    "simulated_day": {
+      "type": "integer",
+      "description": "Demo timeline day (0–90). Litigation event arrives Day 90 in the narrative.",
+      "minimum": 0,
+      "maximum": 90
+    },
+    "event_subtype": {
+      "type": "string",
+      "description": "The specific litigation development.",
+      "enum": [
+        "class_action_filed",
+        "co_defendant_named",
+        "evidence_hold_triggered",
+        "cross_proceeding_request"
+      ]
+    },
+    "named_parties": {
+      "type": "array",
+      "description": "Entities named in the litigation action. For the Reversal 5 demo beat: ClearFlow and Nimbus. IP-SAFETY: the emitting Integration Service API Workflow MUST populate this array only from the approved vocabulary stakeholder display names (see case-vocabulary.yaml → stakeholders[].display_name, e.g. 'ClearFlow Health Network', 'Nimbus Patient Engagement Platform'). Never emit a real-world entity name.",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "clearflow_named_co_defendant": {
+      "type": "boolean",
+      "description": "Whether ClearFlow is explicitly named as co-defendant. True for the Reversal 5 beat."
+    },
+    "theory": {
+      "type": "string",
+      "description": "Legal theory under which the action is brought. For R5: 'negligent monitoring'."
+    },
+    "privilege_reshuffle_required": {
+      "type": "boolean",
+      "description": "Whether this event requires privilege flag reshuffling on grandchild cases. True for co_defendant_named."
+    }
+  },
+  "maestro_trigger_filter_hint": {
+    "description": "Paste this as the Maestro Trigger FilterTree JSON when wiring this event in Slice 010/012. Routes to edge_praZo8 (Fiduciary Review → Litigation Defense) and fires Litigation Defense Posture Review task (thCAPt9PP).",
+    "filterTree": {
+      "operator": "AND",
+      "conditions": [
+        { "field": "event_type", "operator": "eq", "value": "litigation-event" },
+        { "field": "clearflow_named_co_defendant", "operator": "eq", "value": true }
+      ]
+    },
+    "routes_to_transition": "edge_praZo8",
+    "fires_task": "thCAPt9PP",
+    "sets_variable": {
+      "ReversalNumber": 5,
+      "ClearFlowVectorStatus": "co-defendant"
+    },
+    "privilege_reshuffle_note": "When this trigger fires, all obligation-grandchild cases must have their PrivilegeFlag variable updated from 'operational' to 'attorney-client' or 'work-product' per Hawthorne Mercer directives."
+  }
+}

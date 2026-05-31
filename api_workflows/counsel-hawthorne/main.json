@@ -1,0 +1,93 @@
+{
+  "document": {
+    "dsl": "1.0.0",
+    "name": "counsel-hawthorne — Privilege Determination Utility (NON-EVENT)",
+    "version": "0.0.1",
+    "namespace": "cascadecare",
+    "metadata": {
+      "description": "UTILITY API Workflow for source_system 'counsel-hawthorne' (Hawthorne Mercer LLP, outside counsel). This is NOT a Maestro event emitter — no event-contract schema lists it. It performs a privilege/legal determination operation invoked as a process step (e.g. during the Litigation Defense stage privilege reshuffle). Returns an operational object, not an event payload. DEPLOY-TIME NOTE: a live Data Fabric read (counsel matter/privilege-register entity) is wired at deploy via 'uip api-workflow registry stub' against a live tenant. Here the operation result is shaped from workflow inputs (defaults) by a JavaScript/Assign activity; the connector read is NOT hand-authored.",
+      "variables": {
+        "schema": {
+          "format": "json",
+          "document": {
+            "type": "object",
+            "properties": {
+              "operationResult": { "type": "object", "default": {} }
+            },
+            "title": "Variables"
+          }
+        }
+      }
+    }
+  },
+  "input": {
+    "schema": {
+      "format": "json",
+      "document": {
+        "type": "object",
+        "properties": {
+          "simulated_day": { "type": "integer", "default": 90 },
+          "privilege_flag": { "type": "string", "default": "attorney-client" },
+          "determination": { "type": "string", "default": "Reclassify grandchild-case communications from operational to attorney-client following co-defendant naming; assert work-product over forensic interim reports." }
+        },
+        "title": "Inputs"
+      }
+    }
+  },
+  "output": {
+    "schema": {
+      "format": "json",
+      "document": {
+        "type": "object",
+        "properties": {
+          "operation": { "type": "string" },
+          "counsel_id": { "type": "string" },
+          "simulated_day": { "type": "integer" },
+          "privilege_flag": { "type": "string" },
+          "determination": { "type": "string" }
+        },
+        "title": "Outputs"
+      }
+    }
+  },
+  "do": [
+    {
+      "Sequence_1": {
+        "do": [
+          {
+            "WorkflowStart": {
+              "set": "${Object.entries($workflow.definition?.document?.metadata?.variables?.schema?.document?.properties || {}).reduce((acc, [name, def]) => ({ ...acc, [name]: def?.default }), {}) }",
+              "output": { "as": "${$input}" },
+              "export": { "as": "{ ...$context, variables: { ...$context.variables, ...$output } }" },
+              "metadata": { "activityType": "Assign", "displayName": "Workflow start", "fullName": "Assign", "isTransparent": true }
+            }
+          },
+          {
+            "Javascript_BuildResult": {
+              "run": {
+                "script": {
+                  "code": "return { operation: 'privilege-determination', counsel_id: 'hawthorne-mercer', simulated_day: $workflow.input.simulated_day, privilege_flag: $workflow.input.privilege_flag, determination: $workflow.input.determination };",
+                  "language": "javascript",
+                  "arguments": "${{ \"$context\": $context, \"$workflow\": $workflow, \"$input\": $input }}"
+                }
+              },
+              "export": { "as": "{ ...$context, outputs: { ...$context?.outputs, \"Javascript_BuildResult\": $output } }" },
+              "metadata": { "activityType": "JsInvoke", "displayName": "Build Privilege Determination Result", "fullName": "JsInvoke" }
+            }
+          },
+          {
+            "Response_1": {
+              "response": "${{ operation: $context.outputs.Javascript_BuildResult.operation, counsel_id: $context.outputs.Javascript_BuildResult.counsel_id, simulated_day: $context.outputs.Javascript_BuildResult.simulated_day, privilege_flag: $context.outputs.Javascript_BuildResult.privilege_flag, determination: $context.outputs.Javascript_BuildResult.determination }}",
+              "markJobAsFailed": false,
+              "then": "end",
+              "export": { "as": "{ ...$context, outputs: { ...$context?.outputs, \"Response_1\": $output } }" },
+              "metadata": { "activityType": "Response", "displayName": "Response", "fullName": "Response" }
+            }
+          }
+        ],
+        "metadata": { "activityType": "Sequence", "displayName": "Sequence", "fullName": "Sequence" }
+      }
+    }
+  ],
+  "evaluate": { "mode": "strict", "language": "javascript" }
+}

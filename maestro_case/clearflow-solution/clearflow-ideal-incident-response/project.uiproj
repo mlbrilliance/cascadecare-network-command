@@ -1,0 +1,7 @@
+{
+  "projectVersion": "1.0.0",
+  "ProjectType": "ProcessOrchestration",
+  "Name": "ClearFlowIdealIncidentResponse",
+  "description": "Maestro BPMN ideal cyber-incident response playbook (intake, triage, contain, notify, close) with an is_cascade? gateway that spawns the ClearFlow master crisis case.",
+  "main": "clearflow-ideal-incident-response.bpmn"
+}

@@ -1,0 +1,6 @@
+{
+  "ProjectType": "Function",
+  "Name": "forensic-self-exam-agent",
+  "Description": "Coordinates the ClearFlow internal investigation; routes and sets vector status (CascadeCare Network Command, Slice 009).",
+  "MainFile": null
+}

@@ -1,0 +1,23 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "BAABoundaryReasoner",
+    "kind": "package",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "projectKey": "91e99654-b12f-4612-b1d6-6353f80740de",
+    "isOverridable": true,
+    "dependencies": [],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "name": "BAABoundaryReasoner"
+    },
+    "locks": [],
+    "key": "458576f1-b6f9-4eea-8c29-94cf7ae93068",
+    "files": []
+  }
+}

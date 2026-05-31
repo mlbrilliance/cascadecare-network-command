@@ -1,0 +1,23 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "clearflow-obligation-grandchild",
+    "kind": "package",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "projectKey": "12ae6713-8ad0-4480-8064-bbba88e909f4",
+    "isOverridable": true,
+    "dependencies": [],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "name": "clearflow-obligation-grandchild"
+    },
+    "locks": [],
+    "key": "cc68afad-4090-43ac-a9b3-5cfd12be5e18",
+    "files": []
+  }
+}

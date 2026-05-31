@@ -1,0 +1,89 @@
+{
+    "$schema": "https://cloud.uipath.com/draft/2024-12/entry-point",
+    "$id": "entry-points.json",
+    "entryPoints": [
+        {
+            "filePath": "main",
+            "uniqueId": "01e0f5cd-0593-4cc9-a748-5dc72e90d0bd",
+            "type": "function",
+            "input": {
+                "type": "object",
+                "properties": {
+                    "clearflow_indicators": {
+                        "default": 0,
+                        "description": "Count of forensic indicators implicating ClearFlow's own systems.",
+                        "title": "Clearflow Indicators",
+                        "type": "integer"
+                    },
+                    "nimbus_indicators": {
+                        "default": 0,
+                        "description": "Count of forensic indicators pointing at the Nimbus vendor.",
+                        "title": "Nimbus Indicators",
+                        "type": "integer"
+                    },
+                    "clearflow_self_victim": {
+                        "default": false,
+                        "description": "Whether ClearFlow's own systems were also compromised once cleared as vector.",
+                        "title": "Clearflow Self Victim",
+                        "type": "boolean"
+                    }
+                },
+                "required": [],
+                "title": "Input"
+            },
+            "output": {
+                "type": "object",
+                "properties": {
+                    "route_to": {
+                        "default": "escalate",
+                        "title": "Route To",
+                        "type": "string"
+                    },
+                    "clearflow_vector_status": {
+                        "default": "unknown",
+                        "title": "Clearflow Vector Status",
+                        "type": "string"
+                    },
+                    "error_type": {
+                        "default": "",
+                        "title": "Error Type",
+                        "type": "string"
+                    },
+                    "error_message": {
+                        "default": "",
+                        "title": "Error Message",
+                        "type": "string"
+                    }
+                },
+                "required": [],
+                "title": "Output"
+            },
+            "graph": {
+                "nodes": [
+                    {
+                        "id": "agent.py:89",
+                        "name": "main",
+                        "type": "function",
+                        "metadata": {
+                            "file": "agent.py"
+                        }
+                    },
+                    {
+                        "id": "agent.py:84",
+                        "name": "route_investigation",
+                        "type": "function",
+                        "metadata": {
+                            "file": "agent.py"
+                        }
+                    }
+                ],
+                "edges": [
+                    {
+                        "source": "agent.py:89",
+                        "target": "agent.py:84"
+                    }
+                ]
+            }
+        }
+    ]
+}

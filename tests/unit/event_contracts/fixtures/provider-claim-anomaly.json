@@ -1,0 +1,9 @@
+{
+  "event_type": "provider-claim-anomaly",
+  "source_system": "provider-northstar",
+  "simulated_day": 0,
+  "provider_id": "northstar",
+  "claim_drop_pct": 91.0,
+  "anomaly_score": 0.97,
+  "business_continuity_runway_days": 45
+}

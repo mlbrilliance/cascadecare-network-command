@@ -1,0 +1,10 @@
+{
+  "event_type": "regulatory-subpoena",
+  "source_system": "regulator-tn-doi",
+  "simulated_day": 30,
+  "regulator_id": "tn-doi",
+  "template_id": "tn-doi-subpoena-2026",
+  "scope": "all_providers",
+  "response_deadline_days": 14,
+  "legal_basis": "TCA 56-7-1003 et seq. (fictional)"
+}

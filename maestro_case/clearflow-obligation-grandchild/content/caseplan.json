@@ -1,0 +1,401 @@
+{
+    "id": "case-c8zQ2eMNGs",
+    "version": "20.0.0",
+    "name": "clearflow-obligation-grandchild",
+    "metadata": {
+        "displayName": "ClearFlow Obligation Grandchild Case",
+        "caseIdentifier": "CFOG",
+        "caseIdentifierType": "constant",
+        "caseAppEnabled": true,
+        "publishVersion": 2,
+        "caseUnifiedSchemaEnabled": true,
+        "intsvcActivityConfig": "v2",
+        "description": "Per-obligation grandchild case (per-BAA, per-regulator, or per-investigation). Spawned by a stakeholder-parent case. The leaf level of the three-level nesting.",
+        "defaultSla": {
+            "duration": 1814400,
+            "durationUnit": "seconds",
+            "alertThreshold": 80
+        },
+        "slaRules": [
+            {
+                "expression": "=js:true",
+                "count": 21,
+                "unit": "d",
+                "escalationRule": []
+            }
+        ],
+        "arguments": [],
+        "caseExitRules": [
+            {
+                "id": "Condition_OGexit",
+                "displayName": "Obligation discharged",
+                "rules": [
+                    [
+                        {
+                            "rule": "required-stages-completed",
+                            "id": "Rule_OGexit"
+                        }
+                    ]
+                ],
+                "marksCaseComplete": true
+            }
+        ]
+    },
+    "bindings": [],
+    "variables": {
+        "inputs": [],
+        "outputs": [],
+        "inputOutputs": [
+            {
+                "id": "var_obligation_type",
+                "name": "ObligationType",
+                "type": "string",
+                "custom": true,
+                "elementId": "root",
+                "default": "baa-compliance"
+            },
+            {
+                "id": "var_subpoena_reference_id",
+                "name": "SubpoenaReferenceId",
+                "type": "string",
+                "custom": true,
+                "elementId": "root",
+                "default": ""
+            },
+            {
+                "id": "var_parent_case_id",
+                "name": "ParentCaseId",
+                "type": "string",
+                "custom": true,
+                "elementId": "root",
+                "default": ""
+            },
+            {
+                "id": "var_master_case_id",
+                "name": "MasterCaseId",
+                "type": "string",
+                "custom": true,
+                "elementId": "root",
+                "default": ""
+            }
+        ]
+    },
+    "nodes": [
+        {
+            "id": "Stage_6x5Dzu",
+            "type": "case-management:Stage",
+            "data": {
+                "label": "Obligation Intake",
+                "parentElement": {
+                    "id": "root",
+                    "type": "case-management:root"
+                },
+                "isInvalidDropTarget": false,
+                "isPendingParent": false,
+                "tasks": [
+                    [
+                        {
+                            "id": "tE0pwsV58",
+                            "elementId": "Stage_6x5Dzu-tE0pwsV58",
+                            "displayName": "Classify Obligation",
+                            "description": "Determines whether this obligation is a BAA-compliance, regulatory-response, or investigation item and sets ObligationType.",
+                            "type": "process",
+                            "data": {},
+                            "isRequired": true,
+                            "entryConditions": [
+                                {
+                                    "id": "Condition_83MVvd",
+                                    "displayName": "Stage entered",
+                                    "rules": [
+                                        [
+                                            {
+                                                "rule": "current-stage-entered",
+                                                "id": "Rule_xsk0IY"
+                                            }
+                                        ]
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                ],
+                "description": "Receive and classify the obligation handed down from the stakeholder-parent case.",
+                "entryConditions": [
+                    {
+                        "id": "Condition_2qG09U",
+                        "displayName": "Grandchild case opened",
+                        "rules": [
+                            [
+                                {
+                                    "rule": "case-entered",
+                                    "id": "Rule_mR26pY"
+                                }
+                            ]
+                        ]
+                    }
+                ],
+                "exitConditions": [
+                    {
+                        "id": "Condition_QrfYAc",
+                        "displayName": "Stage complete",
+                        "rules": [
+                            [
+                                {
+                                    "rule": "required-tasks-completed",
+                                    "id": "Rule_AIY4vA"
+                                }
+                            ]
+                        ],
+                        "marksStageComplete": true
+                    }
+                ]
+            }
+        },
+        {
+            "id": "Stage_F95sBP",
+            "type": "case-management:Stage",
+            "data": {
+                "label": "Obligation Response",
+                "parentElement": {
+                    "id": "root",
+                    "type": "case-management:root"
+                },
+                "isInvalidDropTarget": false,
+                "isPendingParent": false,
+                "tasks": [
+                    [
+                        {
+                            "id": "t9BUmAX8k",
+                            "elementId": "Stage_F95sBP-t9BUmAX8k",
+                            "displayName": "Prepare & File Obligation Response",
+                            "description": "HUMAN ACTION: prepares the obligation response document and files it with the requesting party (regulator, payer, or counsel) within the BAA / subpoena deadline.",
+                            "type": "action",
+                            "data": {
+                                "taskTitle": "Prepare & File Obligation Response",
+                                "priority": "High"
+                            },
+                            "isRequired": true,
+                            "entryConditions": [
+                                {
+                                    "id": "Condition_3UWLDS",
+                                    "displayName": "Stage entered",
+                                    "rules": [
+                                        [
+                                            {
+                                                "rule": "current-stage-entered",
+                                                "id": "Rule_iUP6VH"
+                                            }
+                                        ]
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    [
+                        {
+                            "id": "tIy5SWPeX",
+                            "elementId": "Stage_F95sBP-tIy5SWPeX",
+                            "displayName": "Generate Audit Record",
+                            "description": "Writes the discharge audit record (who, what, when, under which privilege flag) for the master crisis case's compliance ledger.",
+                            "type": "process",
+                            "data": {},
+                            "isRequired": true,
+                            "entryConditions": [
+                                {
+                                    "id": "Condition_3o94Ug",
+                                    "displayName": "After response filed",
+                                    "rules": [
+                                        [
+                                            {
+                                                "rule": "selected-tasks-completed",
+                                                "id": "Rule_sf28C2",
+                                                "selectedTasksIds": [
+                                                    "t9BUmAX8k"
+                                                ]
+                                            }
+                                        ]
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                ],
+                "slaRules": [
+                    {
+                        "expression": "=js:true",
+                        "count": 9,
+                        "unit": "d",
+                        "escalationRule": [
+                            {
+                                "id": "esc_SLAbr1",
+                                "displayName": "SLA-Breach Notification",
+                                "triggerInfo": {
+                                    "type": "sla-breached"
+                                },
+                                "action": {
+                                    "type": "notification",
+                                    "recipients": [
+                                        {
+                                            "scope": "User",
+                                            "target": "=vars.ParentCaseId",
+                                            "value": "Parent case owner"
+                                        },
+                                        {
+                                            "scope": "User",
+                                            "target": "=metadata.caseOwner",
+                                            "value": "Grandchild case owner"
+                                        }
+                                    ],
+                                    "messageTemplate": "=js:`Obligation response SLA breached for ${vars.ObligationType} (case ${metadata.caseId}). Immediate action required.`"
+                                }
+                            },
+                            {
+                                "id": "esc_SLAar1",
+                                "displayName": "SLA At-Risk Notification",
+                                "triggerInfo": {
+                                    "type": "at-risk",
+                                    "atRiskPercentage": 80
+                                },
+                                "action": {
+                                    "type": "notification",
+                                    "recipients": [
+                                        {
+                                            "scope": "User",
+                                            "target": "=vars.ParentCaseId",
+                                            "value": "Parent case owner"
+                                        }
+                                    ],
+                                    "messageTemplate": "=js:`Obligation response approaching SLA breach for ${vars.ObligationType} (case ${metadata.caseId}).`"
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "description": "Prepare, file, and audit the obligation response. SLA-breach + at-risk targeted notifications fire via the stage escalation rules (Maestro notification action) to the ParentCaseId owner and grandchild case owner.",
+                "entryConditions": [
+                    {
+                        "id": "Condition_M4JaGg",
+                        "displayName": "Previous stage completed",
+                        "rules": [
+                            [
+                                {
+                                    "rule": "selected-stage-completed",
+                                    "id": "Rule_Kx3yWo",
+                                    "selectedStageId": "Stage_6x5Dzu"
+                                }
+                            ]
+                        ]
+                    }
+                ],
+                "exitConditions": [
+                    {
+                        "id": "Condition_UFtUMD",
+                        "displayName": "Stage complete",
+                        "rules": [
+                            [
+                                {
+                                    "rule": "required-tasks-completed",
+                                    "id": "Rule_Ce2Jzo"
+                                }
+                            ]
+                        ],
+                        "marksStageComplete": true
+                    }
+                ]
+            }
+        },
+        {
+            "id": "Stage_otF4rP",
+            "type": "case-management:Stage",
+            "data": {
+                "label": "Obligation Discharged",
+                "parentElement": {
+                    "id": "root",
+                    "type": "case-management:root"
+                },
+                "isInvalidDropTarget": false,
+                "isPendingParent": false,
+                "tasks": [],
+                "description": "Terminal stage. The obligation has been responded to, filed, and audited.",
+                "isRequired": true,
+                "entryConditions": [
+                    {
+                        "id": "Condition_4Bu4ZR",
+                        "displayName": "Previous stage completed",
+                        "rules": [
+                            [
+                                {
+                                    "rule": "selected-stage-completed",
+                                    "id": "Rule_IQrSGS",
+                                    "selectedStageId": "Stage_F95sBP"
+                                }
+                            ]
+                        ]
+                    }
+                ],
+                "exitConditions": [
+                    {
+                        "id": "Condition_3TO44A",
+                        "displayName": "Obligation closed",
+                        "rules": [
+                            [
+                                {
+                                    "rule": "required-tasks-completed",
+                                    "id": "Rule_fzTeil"
+                                }
+                            ]
+                        ],
+                        "marksStageComplete": true
+                    }
+                ]
+            }
+        },
+        {
+            "id": "b12c4b51-1b2b-468a-9fc0-8f843b12bbbc",
+            "type": "case-management:Trigger",
+            "data": {
+                "displayName": "Trigger 1",
+                "triggerType": "manual",
+                "isInterrupting": false,
+                "runOnlyOnce": true,
+                "marksStageComplete": false
+            }
+        }
+    ],
+    "edges": [
+        {
+            "id": "edge_OGtrg1",
+            "source": "b12c4b51-1b2b-468a-9fc0-8f843b12bbbc",
+            "target": "Stage_6x5Dzu",
+            "sourceHandle": "b12c4b51-1b2b-468a-9fc0-8f843b12bbbc____source____right",
+            "targetHandle": "Stage_6x5Dzu____target____left",
+            "data": {
+                "label": "Grandchild Case Spawned"
+            },
+            "type": "case-management:TriggerEdge"
+        },
+        {
+            "id": "edge_OGe001",
+            "source": "Stage_6x5Dzu",
+            "target": "Stage_F95sBP",
+            "sourceHandle": "Stage_6x5Dzu____source____right",
+            "targetHandle": "Stage_F95sBP____target____left",
+            "data": {
+                "label": "Obligation classified"
+            },
+            "type": "case-management:Edge"
+        },
+        {
+            "id": "edge_OGe002",
+            "source": "Stage_F95sBP",
+            "target": "Stage_otF4rP",
+            "sourceHandle": "Stage_F95sBP____source____right",
+            "targetHandle": "Stage_otF4rP____target____left",
+            "data": {
+                "label": "Response filed & audited"
+            },
+            "type": "case-management:Edge"
+        }
+    ],
+    "layout": {}
+}
