@@ -51,14 +51,14 @@ ENTRY_POINT_SCHEMA = "https://cloud.uipath.com/draft/2024-12/entry-point"
 NAMESPACE = uuid.UUID("c45cadec-a4e0-4f10-9b00-0000c45cadec")
 
 
-def _schema_props(io_block: dict) -> dict:
+def _schema_document(io_block: dict) -> dict:
     """Return the JSON-schema `document` for an input/output block, sans wrapper."""
     return io_block.get("schema", {}).get("document", {})
 
 
 def _entry_points(slug: str, main: dict) -> dict:
-    in_doc = _schema_props(main.get("input", {}))
-    out_doc = _schema_props(main.get("output", {}))
+    in_doc = _schema_document(main.get("input", {}))
+    out_doc = _schema_document(main.get("output", {}))
     return {
         "$schema": ENTRY_POINT_SCHEMA,
         "$id": "entry-points.json",
