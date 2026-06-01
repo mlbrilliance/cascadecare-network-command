@@ -229,8 +229,18 @@ This is the executable slice plan for the pure-UiPath build. Each slice ends wit
 
 ---
 
-## Slice 017 — Submission package
+## Slice 017 — Submission package — ✅ offline portion done (Devpost page / live video / deck → human capture)
 **Goal**: Devpost submission complete; all 4 required artifacts in place.
+
+> **Status (2026-05-31):** Offline-completable artifacts DONE + machine-verified. `README.md`
+> rewritten to the real built state — full UiPath component inventory (27 artifacts + 9 Data
+> Fabric entities + 2 Context Grounding indexes + 2 Trust Layer pools), honest live-vs-offline
+> status, Built-with-Coding-Agents section, MIT `LICENSE` linked. New gate
+> `tests/unit/docs/test_readme_completeness.py` (15 assertions, filesystem-driven) GREEN; full
+> suite 509 passed; IP-safety clean. Name-honesty fix: `CODING_AGENTS.md` no longer claims the
+> non-existent `seed_data_fabric.sh`. Carry-forward in `docs/submission/README.md`: Devpost page,
+> ≤5-min live demo video, deck, 1-min coding-agent reel, and the `agenthack-2026-submission` tag
+> (tag waits for the recorded live demo). Spec-kit artifact: `slice-017-tasks.md`.
 
 **Tasks**:
 - Rewrite `README.md` — UiPath components list (every Maestro Case, BPMN, Flow, agent, API Workflow, Data Fabric entity, Context Grounding index, Trust Layer policy, UiPath Apps screen), setup instructions, prerequisites, "Built with Coding Agents" section, LICENSE (MIT or Apache 2.0)
