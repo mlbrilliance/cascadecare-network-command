@@ -4,7 +4,7 @@ The caseplan is the core runtime artifact (the canvas IS the orchestrator),
 so it gets the same structural guard the event contracts get. These assertions
 encode the V20 recipe from the uipath-maestro-case skill: object-shaped
 variables, the required metadata markers, per-task elementId, and referential
-integrity of edges. Discovers every maestro_case/**/content/caseplan.json so a
+integrity of edges. Discovers every maestro_case/**/caseplan.json so a
 new caseplan (parent/grandchild, Slice 010) is covered automatically.
 """
 
@@ -19,7 +19,7 @@ import pytest
 REPO_ROOT = Path(__file__).resolve().parents[3]
 MAESTRO_ROOT = REPO_ROOT / "maestro_case"
 
-CASEPLANS = sorted(MAESTRO_ROOT.glob("**/content/caseplan.json"))
+CASEPLANS = sorted(MAESTRO_ROOT.glob("**/caseplan.json"))
 
 # Required V20 metadata markers (uipath-maestro-case skill, case-schema.md).
 REQUIRED_METADATA = {
@@ -62,7 +62,7 @@ PARAMS = [pytest.param(p, id=str(p.relative_to(MAESTRO_ROOT))) for p in CASEPLAN
 
 
 def test_at_least_one_caseplan_exists() -> None:
-    assert CASEPLANS, "No maestro_case/**/content/caseplan.json found (master required from Slice 003)."
+    assert CASEPLANS, "No maestro_case/**/caseplan.json found (master required from Slice 003)."
 
 
 @pytest.mark.parametrize("path", PARAMS)

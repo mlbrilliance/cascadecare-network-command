@@ -38,8 +38,8 @@ from typing import Any
 REPO_ROOT = Path(__file__).resolve().parents[3]
 MAESTRO_ROOT = REPO_ROOT / "maestro_case"
 
-MASTER = MAESTRO_ROOT / "clearflow-master-crisis" / "content" / "caseplan.json"
-GRANDCHILD = MAESTRO_ROOT / "clearflow-obligation-grandchild" / "content" / "caseplan.json"
+MASTER = MAESTRO_ROOT / "clearflow-master-crisis" / "caseplan.json"
+GRANDCHILD = MAESTRO_ROOT / "clearflow-obligation-grandchild" / "caseplan.json"
 
 # The six provider customers fanned out at Reversal 3 (CLAUDE.md naming table).
 EXPECTED_PROVIDERS = {"northstar", "alpha", "beta", "gamma", "delta", "epsilon"}

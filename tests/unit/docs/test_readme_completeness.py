@@ -68,7 +68,7 @@ def _owning_slug(match: Path, base: Path) -> str:
 def _maestro_cases() -> list[str]:
     base = REPO_ROOT / "maestro_case"
     # Canonical standalone definitions only; clearflow-solution/* are packaged copies.
-    return _slugs(base, "*/content/caseplan.json", exclude=("clearflow-solution",))
+    return _slugs(base, "*/caseplan.json", exclude=("clearflow-solution",))
 
 
 def _lowcode_agents() -> list[str]:
