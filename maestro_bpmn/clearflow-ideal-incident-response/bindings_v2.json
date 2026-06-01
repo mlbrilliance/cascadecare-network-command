@@ -5,14 +5,14 @@
       "id": "Binding_MasterCrisisCase",
       "name": "ClearFlow Master Crisis Case",
       "kind": "process",
-      "resourceKey": "clearflow-crisis",
+      "resourceKey": "clearflow-master-crisis",
       "metadata": {
         "BindingsVersion": "v1",
         "DisplayLabel": "ClearFlow Master Crisis Case",
         "SolutionsSupport": "Required",
         "SubType": "CaseManagement"
       },
-      "resource": "clearflow-crisis",
+      "resource": "clearflow-master-crisis",
       "resourceSubType": "CaseManagement"
     }
   ]

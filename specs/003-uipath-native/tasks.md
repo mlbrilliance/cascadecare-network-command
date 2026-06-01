@@ -256,6 +256,37 @@ This is the executable slice plan for the pure-UiPath build. Each slice ends wit
 
 ---
 
+## Slice 018 — Live-deployment unblock (cases render + BPMN installs) — ✅ done (post-roadmap)
+**Goal**: Both Slice-014 live-install blockers cleared end-to-end on the tenant.
+
+> **Status (2026-05-31):** (1) Cases "Unable to load diagram" — `caseplan.json.bpmn` is generated
+> ONLY by the Studio Web designer canvas; the 3 case projects were wrongly `content/`-nested when
+> the packer needs FLAT layout. Flattened all 3 + committed generated diagrams; cases render live
+> (5d1a4f6). (2) BPMN Error 1654 — aligned entry-points/package-descriptor/operate/.bpmn to the
+> canonical `processorchestration` shape discovered by diffing a fresh `uip maestro bpmn init`
+> scaffold (61a10cd). Full solution `clearflow-solution v1.0.3` (9 projects) DeploymentSucceeded
+> to `CascadeCare-Full`. 509 tests pass; IP clean. Carried forward → Slice 019.
+
+---
+
+## Slice 019 — Live-deployment completion (binding + cleanup + seed) — ✅ offline done (live ops → human)
+**Goal**: Close the 3 Slice-018 carry-forwards so the live R1→R5 demo runs on one clean deployment.
+
+> **Status (2026-05-31):** Offline portions DONE + machine-verified via spec-kit flow
+> (`slice-019-tasks.md`). (a) BPMN→case bridge: binding `clearflow-crisis` was dangling (matched no
+> solution resource); retargeted canonical `bindings_v2.json` + the committed registration manifest
+> `bindingType` to `clearflow-master-crisis` (the real process-resource name); 5-assert
+> binding-resolution gate GREEN. (b) `scripts/cleanup_deployments.sh` — guarded uninstall of stale
+> deployments (keep-list protects `CascadeCare-Full`, `--confirm` required); 8-assert gate GREEN.
+> (c) `scripts/seed_data_fabric.sh` + `seed_data_fabric.py` — data-table seed of 9 entities (4341
+> rows) + 2 CG indexes; 19-assert dry-run gate GREEN (counts, FKs, 3 BAA conflict patterns,
+> IP-clean, deterministic). Full suite 541 passed/7 skipped; IP clean; thermo-nuclear ↔
+> architecture loop 0 Blockers. Carry-forward (human/online): T-a4 BPMN spawns case, T-b3 single
+> clean deployment, T-c4 live seed — runbook in `slice-019-tasks.md`. Polish candidate: extract
+> `src/cascadecare/ip_safety.py` (FORBIDDEN now in 5 sites).
+
+---
+
 ## Cross-cutting rules
 
 - **TDD**: Slice 009 (Coded Agents) requires test files before source files (`tests/unit/agents/<name>/test_*.py` before `agents/<name>/agent.py`)

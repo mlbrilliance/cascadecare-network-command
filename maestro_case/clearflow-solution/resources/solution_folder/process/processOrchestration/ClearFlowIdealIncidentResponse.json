@@ -15,7 +15,7 @@
     ],
     "runtimeDependencies": [
       {
-        "bindingType": "clearflow-crisis",
+        "bindingType": "clearflow-master-crisis",
         "bindingValues": {},
         "bindingMetadata": {
           "bindingsVersion": "v1",
