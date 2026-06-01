@@ -2,103 +2,184 @@
 
 **The living case layer for healthcare financial shockwaves.**
 
+A UiPath **Maestro Case** demonstration built for **UiPath AgentHack 2026 — Track 1**. Everything
+runs on UiPath Automation Cloud; Python exists only as build-time tooling.
+
 ## What This Is
 
-When a provider goes dark, the payment network feels it first. CascadeCare Network Command demonstrates how ClearFlow Health Network -- a fictional US healthcare payment intermediary -- orchestrates a multi-customer cyber cascade as one evolving Maestro Case. The system uses three-level case nesting, agentic reasoning, and human judgment gates to manage a crisis that spans six provider customers, four payers, and five master-level goal reversals.
+When a provider goes dark, the payment network feels it first. CascadeCare Network Command shows
+how **ClearFlow Health Network** — a fictional US healthcare payment intermediary — manages a
+multi-customer cyber cascade as **one evolving Maestro Case**. A master crisis case spawns
+per-stakeholder parent cases, which in turn spawn per-obligation grandchild cases — **three levels
+of native case nesting** — while five master-level goal reversals reshape the response across a
+90-day simulated timeline.
 
-Built for **UiPath AgentHack 2026 Track 1** (Maestro Case). Everything runs on UiPath Automation Cloud.
+The hero moment: **Reversal 3** (a state DOI subpoena) fans out **six grandchild cases
+simultaneously** on the Maestro Case canvas.
 
-## Key Features
+> **Status (2026-05-31):** Every UiPath artifact below is **authored and offline-validated**
+> against its UiPath contract (V20 / CNCF Serverless 1.0.0 / Agent Builder). Tenant publish and
+> live demo runs are tracked in [`DEVIATIONS.md`](DEVIATIONS.md) and
+> [`docs/demo/run-playbook.md`](docs/demo/run-playbook.md) (open items: API workflow re-add to
+> clear Orchestrator Error 2005, Maestro folder context, BPMN incident 1654).
 
-- Three-level case nesting: master, stakeholder-parent, and obligation-grandchild cases wired via native `case-management` task type (master `caseplan.json` exists today; stakeholder-parent and obligation-grandchild planned — Slice 010)
-- Five master-level reversals that reshape the crisis response in real time
-- Multi-customer pattern detection across six provider organizations
-- BAA boundary reasoning via UiPath Agent Builder + Claude BYO-LLM
-- Context Grounding over BAA documents with Trust Layer PHI/PII guardrails
-- Six provider customers managed in full parallel with materially-different BAA terms
-- Action Center HITL gate for tri-party fiduciary conflict (Reversal 4)
-- Hero moment: Reversal 3 fan-spawn — six grandchild cases appear simultaneously on the Maestro Case canvas
+## Demo: Five Reversals
 
-## Tech Stack
+| # | Name | Day | Master goal shift |
+|---|---|-----|-------------------|
+| 1 | Multi-customer correlation | 1 | "Assist isolated customers" → "Determine if ClearFlow is the vector" |
+| 2 | ClearFlow cleared, Nimbus identified | 5 | "Am I the cause?" → "Visible bystander with a posture decision" |
+| 3 | State DOI subpoena collision | 30 | Three-level nesting goes live — **6 grandchild cases spawn** |
+| 4 | Payer demands vs. BAAs | 45 | Fiduciary Conflict Detector fires; tri-party HITL gate |
+| 5 | Litigation cascade | 90 | Bystander → co-defendant; privilege reshuffles |
 
-| Layer | Technologies | Status |
-|-------|-------------|--------|
-| Orchestration | UiPath Maestro Case (V20, 3-level nesting) | master caseplan present; parent + grandchild planned — Slice 010 |
-| Process model | UiPath Maestro BPMN | planned — Slice 011 |
-| Demo driver | UiPath Maestro Flow | planned — Slice 012/013 |
-| Agents (reasoning) | UiPath Agent Builder × 4 (Claude BYO-LLM) | planned — Slice 008 |
-| Agents (computation) | UiPath Coded Agents × 3 (Python SDK) | planned — Slice 009 |
-| Mock systems | Integration Service API Workflows × 13 | planned — Slice 006 |
-| Reference data | UiPath Data Fabric + Context Grounding | planned — Slice 005 |
-| Governance | UiPath Trust Layer (PHI/PII detection) | planned — Slice 007 |
-| HITL | UiPath Action Center | planned — Slice 010 |
-| Narrative UI | UiPath Apps | planned — later slice |
-| Build | Python 3.12+, uv, uip CLI | present |
+## UiPath Component Inventory
+
+Every runtime asset is a UiPath artifact. **27 core artifacts** plus the Data Fabric, Context
+Grounding, and Trust Layer surfaces below.
+
+### Maestro Case — three-level nesting (3 case definitions, V20)
+
+| Case definition | Level | Role |
+|-----------------|-------|------|
+| `clearflow-master-crisis` | Master | The crisis spine; drives the five reversals and spawns stakeholder parents |
+| `clearflow-stakeholder-parent` | Parent | One per provider / payer / vendor stakeholder; spawns obligation grandchildren |
+| `clearflow-obligation-grandchild` | Grandchild | Per-BAA / per-regulator / per-investigation obligation |
+
+Wired with the native `case-management` task type — no Postgres mirror, no level-flag superset.
+
+### Agent Builder agents (4, low-code, Claude BYO-LLM)
+
+| Agent | Role |
+|-------|------|
+| `vector-hypothesis-agent` | Determines the attack vector (ClearFlow vs. Nimbus) |
+| `baa-boundary-reasoner` | Analyzes BAA terms (+ Context Grounding on `BAA-corpus`); finds cross-BAA conflicts |
+| `fiduciary-conflict-detector` | Multi-party obligation conflicts; builds the HITL form payload (Reversal 4) |
+| `negligent-monitoring-risk-agent` | Co-defendant exposure analysis (Reversal 5) |
+
+### Coded Agents (3, Python SDK)
+
+| Agent | Role |
+|-------|------|
+| `claim-flow-anomaly-detector` | Classifies an anomaly score on claim telemetry |
+| `multi-customer-pattern-detector` | Cross-provider correlation; emits the cascade signal |
+| `forensic-self-exam-agent` | Coordinates the other agents; routing |
+
+### Integration Service API Workflows (14, `Type:"Api"`)
+
+Mock external-system fronts — `counsel-hawthorne`, `insurer-aurora-specialty`, `payer-apex`,
+`payer-lakeshore`, `payer-summitblue`, `payer-union-prairie`, `provider-alpha`, `provider-beta`,
+`provider-delta`, `provider-epsilon`, `provider-gamma`, `provider-northstar`, `regulator-tn-doi`,
+`vendor-nimbus`.
+
+### Maestro BPMN (1) and Maestro Flow (1)
+
+| Artifact | Type | Role |
+|----------|------|------|
+| `clearflow-ideal-incident-response` | Maestro BPMN | The ideal-response playbook (hybrid BPMN + Case) |
+| `clearflow-demo-driver` | Maestro Flow | The Demo Driver that paces the 90-day timeline to wall-clock |
+
+### UiPath Apps (1)
+
+| App | Role |
+|-----|------|
+| `clearflow-network-command` | Narrative dashboard: cascade tree, reversal timeline, agent activity, HITL overrides |
+
+### Data Fabric entities (9)
+
+`Provider`, `Payer`, `Vendor`, `Regulator`, `Insurer`, `Counsel`, `BAA`, `ClaimTelemetry`,
+`RegulatorTemplate` — schemas specified in
+[`specs/003-uipath-native/data-model.md`](specs/003-uipath-native/data-model.md).
+
+### Context Grounding indexes (2)
+
+`BAA-corpus` (BAA full text → BAA Boundary Reasoner) and `ClaimTelemetry-corpus` (90-day claim
+time-series → Vector Hypothesis Agent + Pattern Detector).
+
+### Trust Layer policies (2 pools)
+
+Every LLM call flows through the **UiPath LLM Gateway → Trust Layer**: a **PHI/PII** detection
+pool (blocks/redacts patient identifiers, SSNs, NPI-format claim numbers) and a
+**content filtering** pool (healthcare-sensitive output guardrails). Demo narrative: *PHI never
+leaves the UiPath governance boundary.*
 
 ## Repo Map
 
 ```
 cascade_command/
-  maestro_case/         # Maestro Case definitions (master caseplan.json exists; parent + grandchild planned — Slice 010)
-  maestro_bpmn/         # Maestro BPMN ideal-response model (planned — Slice 011)
-  maestro_flow/         # Demo Driver flow (planned — Slice 012/013)
-  agents/               # Agent Builder JSON (planned — Slice 008) + Coded Agent Python packages (planned — Slice 009)
-    prompts/            # Agent system prompts (Markdown, one per agent)
-  api_workflows/        # Integration Service API Workflows (~13) (planned — Slice 006)
-  apps/                 # UiPath Apps narrative dashboard (planned — later slice)
-  src/                  # Build-time Python utilities (dev only)
-  tests/                # Test suite
-  specs/                # Specification files (active: specs/003-uipath-native/)
-  scripts/              # pack-solution.sh; seed_data_fabric.sh (planned — Slice 005)
-  knowledge/            # Immutable source-of-truth documents
-  docs/                 # Architecture, usage, changelog
+  maestro_case/         # 3 caseplan.json definitions + clearflow-solution/ (.uipx packaging)
+  maestro_bpmn/         # clearflow-ideal-incident-response.bpmn
+  maestro_flow/         # clearflow-demo-driver.flow (Demo Driver)
+  agents/               # 4 Agent Builder (agent.json) + 3 Coded Agents (agent.py)
+    prompts/            # 7 agent system prompts (Markdown — never inlined in Python)
+  api_workflows/        # 14 Integration Service API Workflows
+  apps/                 # clearflow-network-command UiPath App
+  src/cascadecare/      # build-time Python wrappers (auth, maestro_client) — dev only
+  tests/                # 470+ offline structure/contract gates
+  specs/                # active spec: specs/003-uipath-native/
+  scripts/              # pack-solution.sh, gen_api_entry_points.py (build-time)
+  knowledge/            # immutable source-of-truth documents
+  docs/                 # architecture, usage, changelog, coding-agent evidence, demo run-playbook
 ```
 
-## Quickstart
+## Prerequisites
 
-> The seed, publish, and demo-run steps below describe the target end-to-end flow. They depend
-> on assets that are still planned (`seed_data_fabric.sh` — Slice 005; API Workflows — Slice 006;
-> agents — Slices 008/009; the Demo Driver flow — Slice 012/013). Today only the master
-> `caseplan.json` and the build-time Python tooling exist.
+- **UiPath Automation Cloud** tenant with Maestro, Agent Builder, Integration Service, Data Fabric,
+  Context Grounding, Trust Layer, Action Center, and Apps enabled.
+- **Anthropic (Claude) BYO-LLM** registered in the UiPath LLM Gateway for the four low-code agents.
+- **Python 3.12+** and [`uv`](https://docs.astral.sh/uv/) for the build-time tooling.
+- The UiPath **`uip` CLI** (installed via the project's dev dependencies).
+
+## Quickstart (build-time)
 
 ```bash
-# Install dependencies (build tooling only — no runtime Python service)
+# Install the build tooling (no runtime Python service exists)
 uv sync --extra dev
+
+# Run the offline gate suite (470+ structure/contract tests)
+uv run pytest
 
 # Authenticate against the UiPath tenant
 uv run python -m cascadecare.uipath.auth
 
-# Seed Data Fabric with synthetic providers, payers, BAAs, claim telemetry
-bash scripts/seed_data_fabric.sh
-
-# Publish all case definitions, agents, API Workflows, and Apps to the tenant
+# Pack the solution (.uipx) for Studio Web / Orchestrator publish
 bash scripts/pack-solution.sh
-uip solution upload maestro_case/clearflow-solution/ --output json
-
-# Start a demo run (triggers the Demo Driver flow)
-uip maestro flow run clearflow-demo-driver --folder-key <FOLDER_KEY>
-
-# Watch the cascade unfold on the Maestro Case canvas in UiPath Automation Cloud
 ```
+
+> Data Fabric entity seeding is **specified** in
+> [`data-model.md`](specs/003-uipath-native/data-model.md) but not yet scripted; seed records are
+> authored directly in the tenant. Live publish and the end-to-end demo run are documented in
+> [`docs/demo/run-playbook.md`](docs/demo/run-playbook.md).
+
+## Built with Coding Agents
+
+This entire repository — every UiPath artifact, test, spec, and build script — was authored by
+**Claude Code** (Anthropic's CLI) driving the `uip` CLI and the official `uipath-*` authoring
+skills, under a test-gated spec-kit workflow. The AgentHack coding-agent bonus evidence
+((a) which tool, (b) how it contributed, (c) verifiable evidence) is consolidated in:
+
+- [`CODING_AGENTS.md`](CODING_AGENTS.md) — canonical authorship table for all 27 artifacts.
+- [`CLAUDE_CODE_USAGE.md`](CLAUDE_CODE_USAGE.md) — the Devpost bonus write-up.
+- [`docs/coding-agents/`](docs/coding-agents/) — per-artifact-type evidence pages + prompt logs.
 
 ## Documentation
 
 - [Architecture](docs/architecture.md)
 - [Usage & Demo Storyboard](docs/usage-examples.md)
+- [Demo Run Playbook](docs/demo/run-playbook.md)
 - [Active Specification](specs/003-uipath-native/plan.md)
 - [Deviations Log](DEVIATIONS.md)
 
 ## Demo Video
 
-[Coming soon — 5-minute video, hero moment at ~2:30 (Reversal 3 subpoena fan-spawn)]
-
-## Built with Coding Agents
-
-This project was built using AI coding agents (Claude Code, Codex, and others). A full evidence trail — which agent built which component, key prompt excerpts, and prompt logs — will be consolidated in `CODING_AGENTS.md` and `docs/coding-agents/` (planned — Slice 016).
+_Carried forward to final submission capture — a ≤5-minute video showing the solution running live
+on UiPath Automation Cloud, hero moment (Reversal 3 subpoena fan-spawn) at ~2:30._
 
 ## IP Safety Notice
 
-All company names, patient data, claim numbers, and regulatory citations in this project are fictional. No real healthcare organizations, patients, or legal proceedings are referenced. The `/audit-ip-safety` command enforces a forbidden-token list before every commit.
+All company names, patient data, claim numbers, and regulatory citations are **fictional**. No real
+healthcare organizations, patients, or legal proceedings are referenced. The `/audit-ip-safety`
+command enforces a forbidden-token denylist before every commit.
 
 ## License
 

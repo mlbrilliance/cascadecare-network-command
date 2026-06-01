@@ -49,8 +49,9 @@ offline `uip solution pack` probes). Diagnoses were empirical, not guessed — e
 | 27 | `clearflow-network-command` | UiPath **Apps** (narrative dashboard) | 013 / 015 | Claude Code + `uipath-coded-apps` | [apps](docs/coding-agents/apps.md) |
 
 Plus the connective tissue Claude Code authored: the `clearflow-solution` `.uipx` packaging
-(`scripts/pack-solution.sh`), Data Fabric seeding (`scripts/seed_data_fabric.sh`), Context
-Grounding index resources, the 470+ offline test gates, and this evidence set.
+(`scripts/pack-solution.sh`), Data Fabric entity schemas (specified in
+`specs/003-uipath-native/data-model.md`), Context Grounding index resources, the 470+ offline
+test gates, and this evidence set.
 
 ## Build methodology (how a slice was driven)
 
