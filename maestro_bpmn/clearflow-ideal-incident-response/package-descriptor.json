@@ -1,10 +1,9 @@
 {
-  "id": "CascadeCare.ClearFlowIdealIncidentResponse",
-  "version": "1.0.0",
-  "content": [
-    "content/clearflow-ideal-incident-response.bpmn",
-    "content/bindings_v2.json",
-    "content/entry-points.json",
-    "content/operate.json"
-  ]
+  "$schema": "https://cloud.uipath.com/draft/2024-12/package-descriptor",
+  "files": {
+    "operate.json": "operate.json",
+    "entry-points.json": "entry-points.json",
+    "bindings.json": "bindings_v2.json",
+    "clearflow-ideal-incident-response.bpmn": "clearflow-ideal-incident-response.bpmn"
+  }
 }

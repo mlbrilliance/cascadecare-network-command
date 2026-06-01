@@ -1,9 +1,10 @@
 {
-  "projectId": "CascadeCare.ClearFlowIdealIncidentResponse",
-  "main": "clearflow-ideal-incident-response.bpmn",
-  "contentType": "ProcessOrchestration",
+  "$schema": "https://cloud.uipath.com/draft/2024-12/operate",
+  "projectId": "98524e60-0302-47c3-892f-86a069ddc154",
+  "contentType": "processOrchestration",
   "targetFramework": "Portable",
   "runtimeOptions": {
-    "requiresUserInteraction": false
+    "requiresUserInteraction": false,
+    "isAttended": false
   }
 }
