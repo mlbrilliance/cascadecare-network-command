@@ -5,6 +5,7 @@
       <uipath:variables version="v1">
         <uipath:inputOutput id="incidentId" name="incidentId" type="string" default="" elementId="Process_IdealIncidentResponse" custom="true" />
         <uipath:inputOutput id="affectedCustomerCount" name="affectedCustomerCount" type="integer" default="1" elementId="Process_IdealIncidentResponse" custom="true" />
+        <uipath:inputOutput id="isCascade" name="isCascade" type="boolean" default="false" elementId="Process_IdealIncidentResponse" custom="true" />
         <uipath:output id="masterCaseId" name="masterCaseId" type="string" default="" elementId="Process_IdealIncidentResponse" custom="true" />
         <uipath:output id="disposition" name="disposition" type="string" default="completed" elementId="Process_IdealIncidentResponse" custom="true" />
       </uipath:variables>
@@ -62,7 +63,7 @@
     <bpmn:sequenceFlow id="Flow_Intake_To_Triage" sourceRef="Start_IncidentIntake" targetRef="Task_Triage" />
     <bpmn:sequenceFlow id="Flow_Triage_To_Gateway" sourceRef="Task_Triage" targetRef="Gateway_IsCascade" />
     <bpmn:sequenceFlow id="Flow_Gateway_To_SpawnMaster" name="cascade" sourceRef="Gateway_IsCascade" targetRef="Call_SpawnMasterCrisis">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">=vars.affectedCustomerCount &gt;= 3</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">=vars.isCascade == true</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_Gateway_To_Join" name="single incident" sourceRef="Gateway_IsCascade" targetRef="Gateway_Join" />
     <bpmn:sequenceFlow id="Flow_SpawnMaster_To_Join" sourceRef="Call_SpawnMasterCrisis" targetRef="Gateway_Join" />
