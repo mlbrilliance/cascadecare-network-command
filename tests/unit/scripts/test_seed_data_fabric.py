@@ -113,3 +113,53 @@ def test_seed_is_deterministic(seed: dict) -> None:
     )
     assert again.returncode == 0
     assert json.loads(again.stdout) == seed
+
+
+# --------------------------------------------------------------------------- #
+# Live-translation helpers (pure functions; no tenant). Guard the contract     #
+# verified live on 2026-06-04: DF rejects field name `id` and Text/Number/etc. #
+# --------------------------------------------------------------------------- #
+
+import importlib.util  # noqa: E402
+
+_spec = importlib.util.spec_from_file_location(
+    "seed_data_fabric", REPO_ROOT / "scripts" / "seed_data_fabric.py"
+)
+seed_mod = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(seed_mod)
+
+_VALID_DF_TYPES = {"STRING", "INTEGER", "DECIMAL", "BOOLEAN", "DATETIME_WITH_TZ"}
+
+
+def test_live_field_defs_use_valid_df_types_and_shape() -> None:
+    for entity in seed_mod.SCHEMAS:
+        for f in seed_mod.live_field_defs(entity):
+            assert set(f) == {"fieldName", "type", "isRequired"}
+            assert f["type"] in _VALID_DF_TYPES, (entity, f)
+
+
+def test_live_field_names_have_no_underscore_and_no_id() -> None:
+    # DF insert silently drops underscore-named fields; `id` is reserved.
+    for entity in seed_mod.SCHEMAS:
+        names = {f["fieldName"] for f in seed_mod.live_field_defs(entity)}
+        assert "id" not in names, f"{entity} still emits reserved field 'id'"
+        assert all("_" not in n for n in names), f"{entity} has underscore field: {names}"
+        if "id" in seed_mod.SCHEMAS[entity]:
+            assert "slug" in names, f"{entity} did not rename id->slug"
+
+
+def test_live_field_name_mapping() -> None:
+    assert seed_mod.live_field_name("id") == "slug"
+    assert seed_mod.live_field_name("display_name") == "displayName"
+    assert seed_mod.live_field_name("provider_id") == "providerId"
+    assert seed_mod.live_field_name("business_continuity_runway_days") == "businessContinuityRunwayDays"
+    assert seed_mod.live_field_name("vertical") == "vertical"
+
+
+def test_live_record_renames_and_serializes_collections() -> None:
+    rec = {"id": "alpha", "permitted_disclosures": ["regulator", "counsel"],
+           "claim_count": 3, "anomaly_flag": True}
+    out = seed_mod.live_record(rec)
+    assert "id" not in out and out["slug"] == "alpha"
+    assert out["permittedDisclosures"] == '["regulator", "counsel"]'  # JSON string, camel key
+    assert out["claimCount"] == 3 and out["anomalyFlag"] is True  # scalars unchanged

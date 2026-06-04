@@ -26,6 +26,7 @@ import json
 import os
 import subprocess
 import sys
+import tempfile
 from datetime import datetime, timedelta, timezone
 
 # Forbidden real-company tokens (CLAUDE.md / constitution II). Mirrored from the
@@ -36,13 +37,27 @@ FORBIDDEN = (
     "change healthcare", "wex ", "rivet", "bcbs", "hartley", "zipp", "zapp",
 )
 
-# Our field types → Data Fabric field types (live `uip df entities create`).
+# Our field types → Data Fabric field-type tokens (verified live against
+# `uip df entities create` on 2026-06-04 — the API rejects Text/Number/YesNo).
 TYPE_MAP = {
-    "string": "Text", "int": "Number", "float": "Decimal",
-    "decimal": "Decimal", "bool": "YesNo", "datetime": "DateTime",
-    "array<string>": "Text",  # serialized JSON in a Text field for the demo
-    "uuid": "Text",
+    "string": "STRING", "int": "INTEGER", "float": "DECIMAL",
+    "decimal": "DECIMAL", "bool": "BOOLEAN", "datetime": "DATETIME_WITH_TZ",
+    "array<string>": "STRING",  # serialized JSON in a STRING field for the demo
+    "uuid": "STRING",
 }
+
+# Data Fabric reserves the field name `id` (collides with the system `Id` UUID
+# primary key). Our data-model uses `id` as the logical slug key; rename it for
+# the LIVE entities only. The offline seed doc keeps `id` (FK tests rely on it).
+LIVE_FIELD_RENAME = {"id": "slug"}
+
+# Verified live 2026-06-04: `uip df records insert` silently DROPS values for any
+# field whose name contains an underscore (the field is created, but inserts to
+# it never persist). camelCase field names work. So the live layer camelCases
+# every field name; the offline doc keeps snake_case (data-model + FK tests).
+
+# Records are inserted in batches via a temp file (telemetry = 4320 rows).
+RECORD_CHUNK = 500
 
 # Fixed base for deterministic ClaimTelemetry timestamps (narrative "Day 1").
 BASE_DAY = datetime(2026, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
@@ -318,24 +333,122 @@ def assert_ip_clean(seed: dict) -> None:
 # Live apply (UIPATH_LIVE=1)                                                  #
 # --------------------------------------------------------------------------- #
 
-def _uip(*args: str) -> None:
-    print(f"    $ uip {' '.join(args)}", file=sys.stderr)
-    subprocess.run(["uip", *args], check=True)
+# Per-entity descriptions for the live `displayName`/`description` body.
+ENTITY_DESCRIPTIONS = {
+    "Provider": "Healthcare provider customer of ClearFlow Health Network (synthetic AgentHack demo data).",
+    "Payer": "Health plan / payer counterparties (synthetic AgentHack demo data).",
+    "Vendor": "Third-party vendor / attack-vector candidate (synthetic AgentHack demo data).",
+    "Regulator": "State/federal regulators (synthetic AgentHack demo data).",
+    "Insurer": "Cyber-specialty insurer (synthetic AgentHack demo data).",
+    "Counsel": "Outside breach-response counsel (synthetic AgentHack demo data).",
+    "BAA": "Business Associate Agreements with engineered conflict patterns (synthetic AgentHack demo data).",
+    "ClaimTelemetry": "Hourly claim-flow telemetry carrying the cascade anomaly (synthetic AgentHack demo data).",
+    "RegulatorTemplate": "Regulator subpoena/discovery templates (synthetic AgentHack demo data).",
+}
+
+
+def _camel(name: str) -> str:
+    """snake_case -> camelCase (no underscores)."""
+    head, *rest = name.split("_")
+    return head + "".join(w[:1].upper() + w[1:] for w in rest)
+
+
+def live_field_name(field: str) -> str:
+    """Offline field name -> live DF field name: id->slug, then camelCase."""
+    return _camel(LIVE_FIELD_RENAME.get(field, field))
+
+
+def live_field_defs(entity: str) -> list[dict]:
+    """CLI create-body field objects: {fieldName, type, isRequired}.
+
+    Uses live_field_name() (id->slug, camelCase) and DF type tokens.
+    """
+    return [
+        {
+            "fieldName": live_field_name(field),
+            "type": TYPE_MAP[our_type],
+            "isRequired": False,
+        }
+        for field, our_type in SCHEMAS[entity].items()
+    ]
+
+
+def live_record(rec: dict) -> dict:
+    """Translate one offline record to a live record body.
+
+    Maps keys via live_field_name() (id->slug, camelCase) and JSON-serializes
+    list/dict values (stored in STRING fields). Scalars pass through unchanged.
+    """
+    out: dict = {}
+    for key, val in rec.items():
+        out[live_field_name(key)] = (
+            json.dumps(val) if isinstance(val, (list, dict)) else val
+        )
+    return out
+
+
+def _uip(*args: str, capture: bool = False):
+    shown = " ".join(a if len(a) < 80 else a[:77] + "…" for a in args)
+    print(f"    $ uip {shown}", file=sys.stderr)
+    res = subprocess.run(["uip", *args], check=True, capture_output=True, text=True)
+    if capture:
+        return json.loads(res.stdout) if res.stdout.strip() else {}
+    return None
+
+
+def _existing_entities() -> dict:
+    """name -> entity ID for non-system Data Fabric entities."""
+    res = _uip("df", "entities", "list", "--output", "json", capture=True)
+    return {
+        e["Name"]: e["ID"]
+        for e in res.get("Data", [])
+        if e.get("Type") != "SystemEntity"
+    }
 
 
 def apply_live(seed: dict) -> None:
     if os.environ.get("UIPATH_LIVE") != "1":
         raise SystemExit("Refusing to apply: set UIPATH_LIVE=1 and run `uip login` first.")
+
+    existing = _existing_entities()
     for name, payload in seed["entities"].items():
-        print(f"==> Ensuring entity {name} ({len(payload['records'])} records)", file=sys.stderr)
-        _uip("df", "entities", "create", name, "--body", json.dumps(payload["schema"]))
-        # Records are inserted by entity name; the live operator confirms the
-        # entity id returned by `create`/`list` maps to this name.
-        _uip("df", "records", "insert", name, "--body", json.dumps(payload["records"]))
-    for index in seed["contextGroundingIndexes"]:
-        print(f"==> Creating Context Grounding index {index}", file=sys.stderr)
-        _uip("context-grounding", "create", index)
-    print("==> Live seed complete.", file=sys.stderr)
+        records = [live_record(r) for r in payload["records"]]
+        # Idempotent reseed: drop any existing entity of this name first.
+        if name in existing:
+            print(f"==> {name} exists — deleting to reseed clean", file=sys.stderr)
+            _uip("df", "entities", "delete", existing[name],
+                 "--confirm", "--reason", "CascadeCare idempotent demo reseed")
+        body = {
+            "displayName": name,
+            "description": ENTITY_DESCRIPTIONS.get(
+                name, f"{name} — synthetic CascadeCare AgentHack demo data."),
+            "fields": live_field_defs(name),
+        }
+        print(f"==> Creating entity {name} ({len(records)} records)", file=sys.stderr)
+        created = _uip("df", "entities", "create", name, "--body", json.dumps(body),
+                       "--output", "json", capture=True)
+        entity_id = created["Data"]["ID"]
+        for i in range(0, len(records), RECORD_CHUNK):
+            chunk = records[i:i + RECORD_CHUNK]
+            with tempfile.NamedTemporaryFile(
+                    "w", suffix=".json", delete=False, encoding="utf-8") as fh:
+                json.dump(chunk, fh)
+                tmp = fh.name
+            try:
+                print(f"    inserting records [{i}:{i + len(chunk)}]", file=sys.stderr)
+                _uip("df", "records", "insert", entity_id, "--file", tmp,
+                     "--output", "json")
+            finally:
+                os.unlink(tmp)
+
+    # Context Grounding indexes need source DOCUMENTS in a storage bucket
+    # (BAA PDFs, telemetry corpus) — those are not authored yet. Creating empty
+    # indexes adds no value, so this is a separate task. Surfaced, not faked.
+    print("==> SKIPPED Context Grounding indexes "
+          f"{seed['contextGroundingIndexes']} — need source documents "
+          "(BAA PDFs / telemetry corpus) in a storage bucket; author + ingest "
+          "separately.", file=sys.stderr)
+    print("==> Live seed complete (9 entities + records).", file=sys.stderr)
 
 
 def main(argv: list[str] | None = None) -> int:

@@ -70,14 +70,15 @@ Your project is a **bundle of files in this repo**. To make it real, that bundle
 ### ⏸ Pending (mostly live tenant + human capture)
 1. ~~**Re-deploy** so the fixes go live.~~ ✅ **DONE** → `CascadeCare-v105` (v1.0.5).
 2. ~~**Re-trigger the BPMN** in `CascadeCare-v105` → confirm a `clearflow-master-crisis` case spawns.~~ ✅ **DONE & CONFIRMED 2026-06-04** — BPMN completed all-green, spawn node green, master case `clearflow-master-crisis-66114817` spawned + Running in CascadeCare-v105 with all stages/reversals rendered, no incidents.
-3. **Run the 5 reversals** end-to-end (demo dry-run).
-4. **Seed Data Fabric** live.
+3. ~~**Seed Data Fabric** live.~~ ✅ **DONE & VERIFIED 2026-06-04** — 9 entities populated (4,320 telemetry rows, 4,176 anomalous). CG indexes deferred (need source docs). **← STEP 5**
+4. **Run the 5 reversals** end-to-end (demo dry-run). **← NEXT (STEP 6)**
 5. **Clean up** stale/failed deployments.
 6. **(Optional)** Unblock the UiPath **App** (OAuth External Application).
-7. **Record** the ≤5-min demo video + 1-min coding-agent reel.
-8. **Write & submit** the Devpost page.
-9. **Build** the slides deck.
-10. **Tag** `agenthack-2026-submission` (only *after* the live video exists).
+7. **(Deferred)** Author Context Grounding source docs + create `BAA-corpus` / `ClaimTelemetry-corpus` indexes (only the BAA Boundary Reasoner needs CG).
+8. **Record** the ≤5-min demo video + 1-min coding-agent reel.
+9. **Write & submit** the Devpost page.
+10. **Build** the slides deck.
+11. **Tag** `agenthack-2026-submission` (only *after* the live video exists).
 
 ### Current tenant deployments (live query, 2026-06-04)
 - ✅ **`CascadeCare-v105`** — folder key **`bc56e117-70f0-4234-b320-b751df1c4546`**, `clearflow-solution v1.0.5`, all 9 projects, **Active**. **← THIS is now your master deployment** (has isCascade + the spawn folderId fix).
@@ -257,19 +258,29 @@ uip maestro case process run "<dotted-ProcessKey>" bc56e117-70f0-4234-b320-b751d
 
 ---
 
-### STEP 5 — Seed the Data Fabric database (live)
-**Owner:** 🟡 YOU-RUN
+### STEP 5 — Seed the Data Fabric database (live) ✅ DONE & VERIFIED 2026-06-04
+**Owner:** 🟡 YOU-RUN — **completed.**
 
-**Why:** The agents reason over synthetic providers/payers/BAAs/telemetry. If the database is empty, their output is hollow. Do this *before* a full reversal run.
+**Why:** The agents reason over synthetic providers/payers/BAAs/telemetry. Empty DB = hollow output.
 
 **Do:**
 ```bash
 UIPATH_LIVE=1 bash scripts/seed_data_fabric.sh --apply
 ```
 
-**Expect:** It creates **9 entity types** (6 providers, 4 payers, 1 vendor, 1 regulator, 1 insurer, 1 counsel, 6 BAAs, ~4,320 telemetry rows, 1 template) + **2 Context Grounding indexes** (`BAA-corpus`, `ClaimTelemetry-corpus`). Verify in **Data Fabric → Entities** that the row counts are non-zero.
+**Result (verified):** **9 entities** created + populated and confirmed on the tenant — Provider 6, Payer 4, Vendor 1, Regulator 1, Insurer 1, Counsel 1, BAA 6, **ClaimTelemetry 4,320** (4,176 anomalous rows = the R1 cascade), RegulatorTemplate 1. All fields populated, FKs resolve.
 
-**If it breaks:** Without `UIPATH_LIVE=1` it runs in *dry-run* (emits JSON, touches nothing) — if you see JSON instead of tenant writes, you forgot the flag. Index build can take a minute; refresh the Context Grounding page.
+**⚠️ The script needed real fixes first** (the offline gate passed but the live path was never validated against `uip df`). Hard-won contract, now baked into `scripts/seed_data_fabric.py`:
+- **`records insert` takes the entity ID (GUID), not the name.**
+- **entity-create body** is an object `{"displayName","description","fields":[{"fieldName","type","isRequired"}]}` — not a bare array.
+- **field types** are `STRING/INTEGER/DECIMAL/BOOLEAN/DATETIME_WITH_TZ` (not Text/Number/YesNo).
+- **field name `id` is reserved** (collides with system `Id`) → renamed to `slug`.
+- **🔑 `uip df records insert` silently DROPS values for underscore-named fields** — the field is created but inserts never persist. The script now **camelCases every live field name** (`display_name`→`displayName`, `provider_id`→`providerId`, …). The offline doc keeps snake_case (data-model + FK tests).
+- The script is **idempotent** — it deletes any existing same-named entity and reseeds clean. Safe to re-run.
+
+**Context Grounding indexes** (`BAA-corpus`, `ClaimTelemetry-corpus`) are **deferred** — they need source *documents* (BAA PDFs / telemetry corpus) in a storage bucket, which aren't authored yet. The script skips them with a clear message. *(Only the BAA Boundary Reasoner uses CG; the other agents read Data Fabric directly and are now fed.)*
+
+**If you re-run:** Without `UIPATH_LIVE=1` it's a dry-run (prints JSON, touches nothing).
 
 ---
 
