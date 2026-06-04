@@ -48,6 +48,15 @@ Grounding, and Trust Layer surfaces below.
 
 Wired with the native `case-management` task type — no Postgres mirror, no level-flag superset.
 
+**Canonical case surfaces** — the Maestro Case patterns Devpost judges are trained to recognize, built into the caseplans:
+
+- **SLA + escalation → Maestro Notification**, at case and stage level across all three nesting levels — on-track / at-risk / breached, firing notification actions on breach and at-risk.
+- **Agent-driven progression** — the master advances itself: the Forensic Self-Exam agent's output drives the Vector Isolation → Regulatory Response exit when ClearFlow's vector status clears (`=js:vars.var_clearflow_vector_status === 'cleared'`).
+- **Targeted re-entry** — at Reversal 5 (ClearFlow → co-defendant), the master re-opens the Multi-Customer Investigation stage via an interrupting entry condition (`=js:vars.var_reversal_number >= 5`) and a `return-to-origin` exit, re-running **only** the cross-provider correlation while the settled anomaly classification is skipped (`shouldRunOnlyOnce`).
+- **Agent Evaluations** — eval sets for all seven agents (low-code under `agents/<name>/evals/`, coded under `agents/<name>/evaluations/`).
+
+Per-agent Agent Memory is a deploy-time toggle, not fabricated offline config; cross-timeline state is carried by the master's root variables + Data Fabric (see `docs/adr/0004-agent-memory-is-deploy-time-not-fabricated-config.md`).
+
 ### Agent Builder agents (4, low-code, Claude BYO-LLM)
 
 | Agent | Role |
