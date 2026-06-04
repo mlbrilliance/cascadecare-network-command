@@ -16,6 +16,52 @@
             "durationUnit": "seconds",
             "alertThreshold": 80
         },
+        "slaRules": [
+            {
+                "expression": "=js:true",
+                "count": 45,
+                "unit": "d",
+                "escalationRule": [
+                    {
+                        "id": "esc_SLAbr_Crisiscase",
+                        "displayName": "SLA-Breach Notification",
+                        "triggerInfo": {
+                            "type": "sla-breached"
+                        },
+                        "action": {
+                            "type": "notification",
+                            "recipients": [
+                                {
+                                    "scope": "User",
+                                    "target": "=metadata.caseOwner",
+                                    "value": "Case owner"
+                                }
+                            ],
+                            "messageTemplate": "=js:`Crisis case overall SLA breached (case ${metadata.caseId}). Immediate action required.`"
+                        }
+                    },
+                    {
+                        "id": "esc_SLAar_Crisiscase",
+                        "displayName": "SLA At-Risk Notification",
+                        "triggerInfo": {
+                            "type": "at-risk",
+                            "atRiskPercentage": 80
+                        },
+                        "action": {
+                            "type": "notification",
+                            "recipients": [
+                                {
+                                    "scope": "User",
+                                    "target": "=metadata.caseOwner",
+                                    "value": "Case owner"
+                                }
+                            ],
+                            "messageTemplate": "=js:`Crisis case overall approaching SLA breach (case ${metadata.caseId}).`"
+                        }
+                    }
+                ]
+            }
+        ],
         "arguments": [],
         "caseExitRules": [
             {
@@ -71,6 +117,66 @@
             "resource": "process",
             "resourceSubType": "Agent",
             "resourceKey": ".baa-boundary-reasoner",
+            "default": "",
+            "propertyAttribute": "folderPath"
+        },
+        {
+            "id": "bMRSAWNm1",
+            "name": "name",
+            "type": "string",
+            "resource": "process",
+            "resourceSubType": "ApiWorkflow",
+            "resourceKey": ".solution-medical-records-summarization",
+            "default": "solution-medical-records-summarization",
+            "propertyAttribute": "name"
+        },
+        {
+            "id": "bMRSAWFp2",
+            "name": "folderPath",
+            "type": "string",
+            "resource": "process",
+            "resourceSubType": "ApiWorkflow",
+            "resourceKey": ".solution-medical-records-summarization",
+            "default": "",
+            "propertyAttribute": "folderPath"
+        },
+        {
+            "id": "bCDPAWNm1",
+            "name": "name",
+            "type": "string",
+            "resource": "process",
+            "resourceSubType": "ApiWorkflow",
+            "resourceKey": ".solution-claim-denial-prevention",
+            "default": "solution-claim-denial-prevention",
+            "propertyAttribute": "name"
+        },
+        {
+            "id": "bCDPAWFp2",
+            "name": "folderPath",
+            "type": "string",
+            "resource": "process",
+            "resourceSubType": "ApiWorkflow",
+            "resourceKey": ".solution-claim-denial-prevention",
+            "default": "",
+            "propertyAttribute": "folderPath"
+        },
+        {
+            "id": "bPACAWNm1",
+            "name": "name",
+            "type": "string",
+            "resource": "process",
+            "resourceSubType": "ApiWorkflow",
+            "resourceKey": ".solution-prior-auth-continuity",
+            "default": "solution-prior-auth-continuity",
+            "propertyAttribute": "name"
+        },
+        {
+            "id": "bPACAWFp2",
+            "name": "folderPath",
+            "type": "string",
+            "resource": "process",
+            "resourceSubType": "ApiWorkflow",
+            "resourceKey": ".solution-prior-auth-continuity",
             "default": "",
             "propertyAttribute": "folderPath"
         }
@@ -181,6 +287,52 @@
                         ],
                         "marksStageComplete": true
                     }
+                ],
+                "slaRules": [
+                    {
+                        "expression": "=js:true",
+                        "count": 3,
+                        "unit": "d",
+                        "escalationRule": [
+                            {
+                                "id": "esc_SLAbr_Stakeholde",
+                                "displayName": "SLA-Breach Notification",
+                                "triggerInfo": {
+                                    "type": "sla-breached"
+                                },
+                                "action": {
+                                    "type": "notification",
+                                    "recipients": [
+                                        {
+                                            "scope": "User",
+                                            "target": "=metadata.caseOwner",
+                                            "value": "Case owner"
+                                        }
+                                    ],
+                                    "messageTemplate": "=js:`Stakeholder Onboarding SLA breached (case ${metadata.caseId}). Immediate action required.`"
+                                }
+                            },
+                            {
+                                "id": "esc_SLAar_Stakeholde",
+                                "displayName": "SLA At-Risk Notification",
+                                "triggerInfo": {
+                                    "type": "at-risk",
+                                    "atRiskPercentage": 80
+                                },
+                                "action": {
+                                    "type": "notification",
+                                    "recipients": [
+                                        {
+                                            "scope": "User",
+                                            "target": "=metadata.caseOwner",
+                                            "value": "Case owner"
+                                        }
+                                    ],
+                                    "messageTemplate": "=js:`Stakeholder Onboarding approaching SLA breach (case ${metadata.caseId}).`"
+                                }
+                            }
+                        ]
+                    }
                 ]
             }
         },
@@ -220,6 +372,120 @@
                                 }
                             ]
                         }
+                    ],
+                    [
+                        {
+                            "id": "tMRS001",
+                            "elementId": "Stage_BHfIGb-tMRS001",
+                            "displayName": "Medical Records Summarization & PHI Exposure Quantification",
+                            "description": "UiPath Healthcare Agentic Solution (Medical Records Summarization): summarizes affected patient records to quantify PHI exposure scope post-exfiltration. DEPLOY-TIME: Data Fabric qem:Provider refs resolve at publish.",
+                            "type": "api-workflow",
+                            "shouldRunOnlyOnce": false,
+                            "isRequired": false,
+                            "data": {
+                                "name": "=bindings.bMRSAWNm1",
+                                "folderPath": "=bindings.bMRSAWFp2",
+                                "inputs": [
+                                    {
+                                        "id": "inp_mc_tMRS001",
+                                        "name": "master_case_id",
+                                        "type": "string",
+                                        "value": "=js:metadata.caseId"
+                                    }
+                                ],
+                                "outputs": []
+                            },
+                            "entryConditions": [
+                                {
+                                    "id": "Cond_tMRS001e",
+                                    "displayName": "Stage entered",
+                                    "rules": [
+                                        [
+                                            {
+                                                "rule": "current-stage-entered",
+                                                "id": "Rule_tMRS001e"
+                                            }
+                                        ]
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    [
+                        {
+                            "id": "tCDP001",
+                            "elementId": "Stage_BHfIGb-tCDP001",
+                            "displayName": "Claim Denial Prevention & Resolution",
+                            "description": "UiPath Healthcare Agentic Solution (Claim Denial Prevention & Resolution): detects denial root causes and orchestrates corrective actions to protect claim revenue during the crisis.",
+                            "type": "api-workflow",
+                            "shouldRunOnlyOnce": false,
+                            "isRequired": false,
+                            "data": {
+                                "name": "=bindings.bCDPAWNm1",
+                                "folderPath": "=bindings.bCDPAWFp2",
+                                "inputs": [
+                                    {
+                                        "id": "inp_mc_tCDP001",
+                                        "name": "master_case_id",
+                                        "type": "string",
+                                        "value": "=js:metadata.caseId"
+                                    }
+                                ],
+                                "outputs": []
+                            },
+                            "entryConditions": [
+                                {
+                                    "id": "Cond_tCDP001e",
+                                    "displayName": "Stage entered",
+                                    "rules": [
+                                        [
+                                            {
+                                                "rule": "current-stage-entered",
+                                                "id": "Rule_tCDP001e"
+                                            }
+                                        ]
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    [
+                        {
+                            "id": "tPAC001",
+                            "elementId": "Stage_BHfIGb-tPAC001",
+                            "displayName": "Prior Authorization Continuity",
+                            "description": "UiPath Healthcare Agentic Solution (Prior Authorization): maintains prior-auth continuity (evidence gathering, medical-necessity validation) while payment systems are disrupted.",
+                            "type": "api-workflow",
+                            "shouldRunOnlyOnce": false,
+                            "isRequired": false,
+                            "data": {
+                                "name": "=bindings.bPACAWNm1",
+                                "folderPath": "=bindings.bPACAWFp2",
+                                "inputs": [
+                                    {
+                                        "id": "inp_mc_tPAC001",
+                                        "name": "master_case_id",
+                                        "type": "string",
+                                        "value": "=js:metadata.caseId"
+                                    }
+                                ],
+                                "outputs": []
+                            },
+                            "entryConditions": [
+                                {
+                                    "id": "Cond_tPAC001e",
+                                    "displayName": "Stage entered",
+                                    "rules": [
+                                        [
+                                            {
+                                                "rule": "current-stage-entered",
+                                                "id": "Rule_tPAC001e"
+                                            }
+                                        ]
+                                    ]
+                                }
+                            ]
+                        }
                     ]
                 ],
                 "description": "Measure the operational and financial impact of the cascade on this stakeholder.",
@@ -251,6 +517,52 @@
                             ]
                         ],
                         "marksStageComplete": true
+                    }
+                ],
+                "slaRules": [
+                    {
+                        "expression": "=js:true",
+                        "count": 7,
+                        "unit": "d",
+                        "escalationRule": [
+                            {
+                                "id": "esc_SLAbr_ImpactAsse",
+                                "displayName": "SLA-Breach Notification",
+                                "triggerInfo": {
+                                    "type": "sla-breached"
+                                },
+                                "action": {
+                                    "type": "notification",
+                                    "recipients": [
+                                        {
+                                            "scope": "User",
+                                            "target": "=metadata.caseOwner",
+                                            "value": "Case owner"
+                                        }
+                                    ],
+                                    "messageTemplate": "=js:`Impact Assessment SLA breached (case ${metadata.caseId}). Immediate action required.`"
+                                }
+                            },
+                            {
+                                "id": "esc_SLAar_ImpactAsse",
+                                "displayName": "SLA At-Risk Notification",
+                                "triggerInfo": {
+                                    "type": "at-risk",
+                                    "atRiskPercentage": 80
+                                },
+                                "action": {
+                                    "type": "notification",
+                                    "recipients": [
+                                        {
+                                            "scope": "User",
+                                            "target": "=metadata.caseOwner",
+                                            "value": "Case owner"
+                                        }
+                                    ],
+                                    "messageTemplate": "=js:`Impact Assessment approaching SLA breach (case ${metadata.caseId}).`"
+                                }
+                            }
+                        ]
                     }
                 ]
             }
@@ -362,6 +674,52 @@
                             ]
                         ],
                         "marksStageComplete": true
+                    }
+                ],
+                "slaRules": [
+                    {
+                        "expression": "=js:true",
+                        "count": 14,
+                        "unit": "d",
+                        "escalationRule": [
+                            {
+                                "id": "esc_SLAbr_Obligation",
+                                "displayName": "SLA-Breach Notification",
+                                "triggerInfo": {
+                                    "type": "sla-breached"
+                                },
+                                "action": {
+                                    "type": "notification",
+                                    "recipients": [
+                                        {
+                                            "scope": "User",
+                                            "target": "=metadata.caseOwner",
+                                            "value": "Case owner"
+                                        }
+                                    ],
+                                    "messageTemplate": "=js:`Obligation Determination SLA breached (case ${metadata.caseId}). Immediate action required.`"
+                                }
+                            },
+                            {
+                                "id": "esc_SLAar_Obligation",
+                                "displayName": "SLA At-Risk Notification",
+                                "triggerInfo": {
+                                    "type": "at-risk",
+                                    "atRiskPercentage": 80
+                                },
+                                "action": {
+                                    "type": "notification",
+                                    "recipients": [
+                                        {
+                                            "scope": "User",
+                                            "target": "=metadata.caseOwner",
+                                            "value": "Case owner"
+                                        }
+                                    ],
+                                    "messageTemplate": "=js:`Obligation Determination approaching SLA breach (case ${metadata.caseId}).`"
+                                }
+                            }
+                        ]
                     }
                 ]
             }

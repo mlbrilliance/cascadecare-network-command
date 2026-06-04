@@ -1,0 +1,93 @@
+{
+  "document": {
+    "dsl": "1.0.0",
+    "name": "solution-prior-auth-continuity — Prior Authorization Continuity",
+    "version": "0.0.1",
+    "namespace": "cascadecare",
+    "metadata": {
+      "description": "Integration Service API Workflow representing the UiPath Healthcare Agentic Solution 'Prior Authorization Continuity'. Maintains prior-authorization continuity (evidence gathering, medical-necessity validation) while payment systems are disrupted. Consumed by the Stakeholder-Parent Impact Assessment stage. Shapes a deterministic synthetic continuity payload (pending_auth_count, continuity_risk, expedited_queue, sla_breach_projection) from workflow inputs by a JavaScript/Assign activity. DEPLOY-TIME NOTE: Data Fabric refs (qem:Provider[slug=...]) resolve at deploy via 'uip api-workflow registry stub' against a live tenant; the connector read is NOT hand-authored here.",
+      "variables": {
+        "schema": {
+          "format": "json",
+          "document": {
+            "type": "object",
+            "properties": {
+              "continuityPayload": { "type": "object", "default": {} }
+            },
+            "title": "Variables"
+          }
+        }
+      }
+    }
+  },
+  "input": {
+    "schema": {
+      "format": "json",
+      "document": {
+        "type": "object",
+        "properties": {
+          "stakeholder_id": { "type": "string", "default": "northstar" },
+          "master_case_id": { "type": "string", "default": "clearflow-master-crisis" },
+          "provider_slug": { "type": "string", "default": "northstar" },
+          "simulated_day": { "type": "integer", "default": 1 }
+        },
+        "title": "Inputs"
+      }
+    }
+  },
+  "output": {
+    "schema": {
+      "format": "json",
+      "document": {
+        "type": "object",
+        "properties": {
+          "pending_auth_count": { "type": "integer" },
+          "continuity_risk": { "type": "string" },
+          "expedited_queue": { "type": "array" },
+          "sla_breach_projection": { "type": "string" }
+        },
+        "title": "Outputs"
+      }
+    }
+  },
+  "do": [
+    {
+      "Sequence_1": {
+        "do": [
+          {
+            "WorkflowStart": {
+              "set": "${Object.entries($workflow.definition?.document?.metadata?.variables?.schema?.document?.properties || {}).reduce((acc, [name, def]) => ({ ...acc, [name]: def?.default }), {}) }",
+              "output": { "as": "${$input}" },
+              "export": { "as": "{ ...$context, variables: { ...$context.variables, ...$output } }" },
+              "metadata": { "activityType": "Assign", "displayName": "Workflow start", "fullName": "Assign", "isTransparent": true }
+            }
+          },
+          {
+            "Javascript_BuildContinuity": {
+              "run": {
+                "script": {
+                  "code": "var day = $workflow.input.simulated_day; var slug = $workflow.input.provider_slug; var pending = 120 + (day * 7); var risk = day >= 45 ? 'critical' : (day >= 14 ? 'elevated' : 'stable'); var queue = [{ auth_id: slug + '-PA-1001', service_line: 'oncology-infusion', priority: 'expedited', medical_necessity: 'validated' }, { auth_id: slug + '-PA-1002', service_line: 'cardiac-imaging', priority: 'expedited', medical_necessity: 'evidence-pending' }, { auth_id: slug + '-PA-1003', service_line: 'inpatient-surgical', priority: 'expedited', medical_necessity: 'validated' }]; var breachDay = day + 9; var projection = 'projected SLA breach on simulated_day ' + breachDay + ' for ' + slug + ' prior-auth backlog'; return { pending_auth_count: pending, continuity_risk: risk, expedited_queue: queue, sla_breach_projection: projection };",
+                  "language": "javascript",
+                  "arguments": "${{ \"$context\": $context, \"$workflow\": $workflow, \"$input\": $input }}"
+                }
+              },
+              "export": { "as": "{ ...$context, outputs: { ...$context?.outputs, \"Javascript_BuildContinuity\": $output } }" },
+              "metadata": { "activityType": "JsInvoke", "displayName": "Build Prior-Auth Continuity Payload", "fullName": "JsInvoke" }
+            }
+          },
+          {
+            "Response_1": {
+              "response": "${{ pending_auth_count: $context.outputs.Javascript_BuildContinuity.pending_auth_count, continuity_risk: $context.outputs.Javascript_BuildContinuity.continuity_risk, expedited_queue: $context.outputs.Javascript_BuildContinuity.expedited_queue, sla_breach_projection: $context.outputs.Javascript_BuildContinuity.sla_breach_projection }}",
+              "markJobAsFailed": false,
+              "then": "end",
+              "export": { "as": "{ ...$context, outputs: { ...$context?.outputs, \"Response_1\": $output } }" },
+              "metadata": { "activityType": "Response", "displayName": "Response", "fullName": "Response" }
+            }
+          }
+        ],
+        "metadata": { "activityType": "Sequence", "displayName": "Sequence", "fullName": "Sequence" }
+      }
+    }
+  ],
+  "evaluate": { "mode": "strict", "language": "javascript" }
+}

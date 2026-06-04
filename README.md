@@ -65,12 +65,18 @@ Wired with the native `case-management` task type — no Postgres mirror, no lev
 | `multi-customer-pattern-detector` | Cross-provider correlation; emits the cascade signal |
 | `forensic-self-exam-agent` | Coordinates the other agents; routing |
 
-### Integration Service API Workflows (14, `Type:"Api"`)
+### Integration Service API Workflows (17, `Type:"Api"`)
 
-Mock external-system fronts — `counsel-hawthorne`, `insurer-aurora-specialty`, `payer-apex`,
+**Source-system mocks (14)** — `counsel-hawthorne`, `insurer-aurora-specialty`, `payer-apex`,
 `payer-lakeshore`, `payer-summitblue`, `payer-union-prairie`, `provider-alpha`, `provider-beta`,
 `provider-delta`, `provider-epsilon`, `provider-gamma`, `provider-northstar`, `regulator-tn-doi`,
 `vendor-nimbus`.
+
+**UiPath Healthcare Agentic Solutions (3)** — the *vertical bridge*: CascadeCare orchestrates
+UiPath's own ViVE-2026 Healthcare Solutions as case-invoked tasks inside the stakeholder-parent's
+Impact Assessment stage — `solution-medical-records-summarization` (Medical Records Summarization),
+`solution-claim-denial-prevention` (Claim Denial Prevention & Resolution), and
+`solution-prior-auth-continuity` (Prior Authorization).
 
 ### Maestro BPMN (1) and Maestro Flow (1)
 

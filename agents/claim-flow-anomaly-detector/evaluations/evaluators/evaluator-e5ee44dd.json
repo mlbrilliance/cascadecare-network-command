@@ -1,0 +1,11 @@
+{
+  "fileName": "evaluator-e5ee44dd.json",
+  "id": "e5ee44dd-3afe-5249-83aa-3d2ed0c9f034",
+  "name": "content-quality",
+  "description": "Semantic Similarity",
+  "category": 1,
+  "type": 5,
+  "prompt": "As an expert evaluator, analyze semantic similarity of outputs, score 0-100.\n----\nExpectedOutput:\n{{ExpectedOutput}}\n----\nActualOutput:\n{{ActualOutput}}\n",
+  "model": "same-as-agent",
+  "targetOutputKey": "*"
+}

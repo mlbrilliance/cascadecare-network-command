@@ -1,0 +1,76 @@
+{
+  "version": "1.0",
+  "id": "claim-flow-anomaly-classification",
+  "name": "Claim Flow Anomaly Classification",
+  "description": "Anomaly score classification on per-provider claim telemetry for ClearFlow Health Network. Covers normal claim flow, a single anomalous provider, and a cascade-level critical drop. Grounded in the deterministic contract: anomaly_score = clamp(claim_drop_pct, 0, 100) / 100, with severity bands none (<0.25), low (0.25-0.50), elevated (0.50-0.70), critical (>=0.70).",
+  "batchSize": 10,
+  "evaluatorRefs": [
+    "e5ee44dd-3afe-5249-83aa-3d2ed0c9f034"
+  ],
+  "evaluations": [
+    {
+      "id": "normal-claim-flow",
+      "name": "Normal claim flow (Provider Alpha)",
+      "inputs": {
+        "provider_id": "alpha",
+        "claim_drop_pct": 8.0,
+        "business_continuity_runway_days": 120
+      },
+      "expectedOutput": {
+        "provider_id": "alpha",
+        "claim_drop_pct": 8.0,
+        "anomaly_score": 0.08,
+        "severity": "none",
+        "error_type": "",
+        "error_message": ""
+      },
+      "expectedAgentBehavior": "",
+      "simulateInput": false,
+      "simulateTools": false
+    },
+    {
+      "id": "anomalous-single-provider",
+      "name": "Anomalous single provider (Northstar)",
+      "inputs": {
+        "provider_id": "northstar",
+        "claim_drop_pct": 58.0,
+        "business_continuity_runway_days": 45
+      },
+      "expectedOutput": {
+        "provider_id": "northstar",
+        "claim_drop_pct": 58.0,
+        "anomaly_score": 0.58,
+        "severity": "elevated",
+        "error_type": "",
+        "error_message": ""
+      },
+      "expectedAgentBehavior": "",
+      "simulateInput": false,
+      "simulateTools": false
+    },
+    {
+      "id": "anomalous-cascade-critical",
+      "name": "Anomalous cascade, critical drop derived from volumes (Provider Gamma)",
+      "inputs": {
+        "provider_id": "gamma",
+        "baseline_claim_volume": 12000,
+        "observed_claim_volume": 1080,
+        "business_continuity_runway_days": 12
+      },
+      "expectedOutput": {
+        "provider_id": "gamma",
+        "claim_drop_pct": 91.0,
+        "anomaly_score": 0.91,
+        "severity": "critical",
+        "error_type": "",
+        "error_message": ""
+      },
+      "expectedAgentBehavior": "",
+      "simulateInput": false,
+      "simulateTools": false
+    }
+  ],
+  "agentMemoryEnabled": false,
+  "agentMemorySettings": [],
+  "lineByLineEvaluation": false
+}

@@ -1,0 +1,88 @@
+{
+  "version": "1.0",
+  "id": "cross-provider-cascade-correlation",
+  "name": "Cross-Provider Cascade Correlation",
+  "description": "Validates the Multi-Customer Pattern Detector's deterministic cross-provider correlation: the cascade_signal must fire iff 3 or more ClearFlow provider customers are anomalous (anomaly_score >= 0.70). Covers below-threshold (2 anomalous, no cascade), cascade-confirmed (5 anomalous, Reversal 1 trip), and the exactly-3 boundary.",
+  "batchSize": 10,
+  "evaluatorRefs": [
+    "7a1c9f3e-mcpd-4b2a-9c61-d0e5f6a7b8c9"
+  ],
+  "evaluations": [
+    {
+      "id": "below-threshold-two-anomalous",
+      "name": "Below threshold — two anomalous providers, no cascade",
+      "inputs": {
+        "simulated_day": 1,
+        "provider_results": [
+          { "provider_id": "alpha", "anomaly_score": 0.82 },
+          { "provider_id": "beta", "anomaly_score": 0.91 },
+          { "provider_id": "gamma", "anomaly_score": 0.40 }
+        ]
+      },
+      "expectedOutput": {
+        "affected_provider_ids": ["alpha", "beta"],
+        "correlation_score": 0.865,
+        "baseline_likelihood_pct": 1.0,
+        "cascade_signal": false,
+        "error_type": "",
+        "error_message": ""
+      },
+      "expectedAgentBehavior": "",
+      "simulateInput": false,
+      "simulateTools": false
+    },
+    {
+      "id": "cascade-confirmed-five-anomalous",
+      "name": "Cascade confirmed — five anomalous providers trip Reversal 1",
+      "inputs": {
+        "simulated_day": 1,
+        "provider_results": [
+          { "provider_id": "northstar", "anomaly_score": 0.88 },
+          { "provider_id": "alpha", "anomaly_score": 0.93 },
+          { "provider_id": "beta", "anomaly_score": 0.77 },
+          { "provider_id": "gamma", "anomaly_score": 0.81 },
+          { "provider_id": "delta", "anomaly_score": 0.95 },
+          { "provider_id": "epsilon", "anomaly_score": 0.30 }
+        ]
+      },
+      "expectedOutput": {
+        "affected_provider_ids": ["alpha", "beta", "delta", "gamma", "northstar"],
+        "correlation_score": 0.868,
+        "baseline_likelihood_pct": 0.001,
+        "cascade_signal": true,
+        "error_type": "",
+        "error_message": ""
+      },
+      "expectedAgentBehavior": "",
+      "simulateInput": false,
+      "simulateTools": false
+    },
+    {
+      "id": "edge-exactly-three-anomalous",
+      "name": "Edge — exactly three anomalous providers fire the cascade",
+      "inputs": {
+        "simulated_day": 1,
+        "provider_results": [
+          { "provider_id": "northstar", "anomaly_score": 0.90 },
+          { "provider_id": "alpha", "anomaly_score": 0.70 },
+          { "provider_id": "gamma", "anomaly_score": 0.85 },
+          { "provider_id": "beta", "anomaly_score": 0.69 }
+        ]
+      },
+      "expectedOutput": {
+        "affected_provider_ids": ["alpha", "gamma", "northstar"],
+        "correlation_score": 0.816667,
+        "baseline_likelihood_pct": 0.1,
+        "cascade_signal": true,
+        "error_type": "",
+        "error_message": ""
+      },
+      "expectedAgentBehavior": "",
+      "simulateInput": false,
+      "simulateTools": false
+    }
+  ],
+  "agentMemoryEnabled": false,
+  "agentMemorySettings": [],
+  "lineByLineEvaluation": false
+}

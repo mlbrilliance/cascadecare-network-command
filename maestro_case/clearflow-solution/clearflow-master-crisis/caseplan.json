@@ -16,6 +16,52 @@
             "durationUnit": "seconds",
             "alertThreshold": 80
         },
+        "slaRules": [
+            {
+                "expression": "=js:true",
+                "count": 90,
+                "unit": "d",
+                "escalationRule": [
+                    {
+                        "id": "esc_SLAbr_Crisiscase",
+                        "displayName": "SLA-Breach Notification",
+                        "triggerInfo": {
+                            "type": "sla-breached"
+                        },
+                        "action": {
+                            "type": "notification",
+                            "recipients": [
+                                {
+                                    "scope": "User",
+                                    "target": "=metadata.caseOwner",
+                                    "value": "Case owner"
+                                }
+                            ],
+                            "messageTemplate": "=js:`Crisis case overall SLA breached (case ${metadata.caseId}). Immediate action required.`"
+                        }
+                    },
+                    {
+                        "id": "esc_SLAar_Crisiscase",
+                        "displayName": "SLA At-Risk Notification",
+                        "triggerInfo": {
+                            "type": "at-risk",
+                            "atRiskPercentage": 80
+                        },
+                        "action": {
+                            "type": "notification",
+                            "recipients": [
+                                {
+                                    "scope": "User",
+                                    "target": "=metadata.caseOwner",
+                                    "value": "Case owner"
+                                }
+                            ],
+                            "messageTemplate": "=js:`Crisis case overall approaching SLA breach (case ${metadata.caseId}).`"
+                        }
+                    }
+                ]
+            }
+        ],
         "arguments": [],
         "caseExitRules": [
             {
@@ -342,6 +388,52 @@
                         ],
                         "marksStageComplete": true
                     }
+                ],
+                "slaRules": [
+                    {
+                        "expression": "=js:true",
+                        "count": 30,
+                        "unit": "d",
+                        "escalationRule": [
+                            {
+                                "id": "esc_SLAbr_Litigation",
+                                "displayName": "SLA-Breach Notification",
+                                "triggerInfo": {
+                                    "type": "sla-breached"
+                                },
+                                "action": {
+                                    "type": "notification",
+                                    "recipients": [
+                                        {
+                                            "scope": "User",
+                                            "target": "=metadata.caseOwner",
+                                            "value": "Case owner"
+                                        }
+                                    ],
+                                    "messageTemplate": "=js:`Litigation Defense SLA breached (case ${metadata.caseId}). Immediate action required.`"
+                                }
+                            },
+                            {
+                                "id": "esc_SLAar_Litigation",
+                                "displayName": "SLA At-Risk Notification",
+                                "triggerInfo": {
+                                    "type": "at-risk",
+                                    "atRiskPercentage": 80
+                                },
+                                "action": {
+                                    "type": "notification",
+                                    "recipients": [
+                                        {
+                                            "scope": "User",
+                                            "target": "=metadata.caseOwner",
+                                            "value": "Case owner"
+                                        }
+                                    ],
+                                    "messageTemplate": "=js:`Litigation Defense approaching SLA breach (case ${metadata.caseId}).`"
+                                }
+                            }
+                        ]
+                    }
                 ]
             }
         },
@@ -458,6 +550,52 @@
                             ]
                         ],
                         "marksStageComplete": true
+                    }
+                ],
+                "slaRules": [
+                    {
+                        "expression": "=js:true",
+                        "count": 10,
+                        "unit": "d",
+                        "escalationRule": [
+                            {
+                                "id": "esc_SLAbr_FiduciaryR",
+                                "displayName": "SLA-Breach Notification",
+                                "triggerInfo": {
+                                    "type": "sla-breached"
+                                },
+                                "action": {
+                                    "type": "notification",
+                                    "recipients": [
+                                        {
+                                            "scope": "User",
+                                            "target": "=metadata.caseOwner",
+                                            "value": "Case owner"
+                                        }
+                                    ],
+                                    "messageTemplate": "=js:`Fiduciary Review SLA breached (case ${metadata.caseId}). Immediate action required.`"
+                                }
+                            },
+                            {
+                                "id": "esc_SLAar_FiduciaryR",
+                                "displayName": "SLA At-Risk Notification",
+                                "triggerInfo": {
+                                    "type": "at-risk",
+                                    "atRiskPercentage": 80
+                                },
+                                "action": {
+                                    "type": "notification",
+                                    "recipients": [
+                                        {
+                                            "scope": "User",
+                                            "target": "=metadata.caseOwner",
+                                            "value": "Case owner"
+                                        }
+                                    ],
+                                    "messageTemplate": "=js:`Fiduciary Review approaching SLA breach (case ${metadata.caseId}).`"
+                                }
+                            }
+                        ]
                     }
                 ]
             }
@@ -818,6 +956,52 @@
                         ],
                         "marksStageComplete": true
                     }
+                ],
+                "slaRules": [
+                    {
+                        "expression": "=js:true",
+                        "count": 14,
+                        "unit": "d",
+                        "escalationRule": [
+                            {
+                                "id": "esc_SLAbr_Regulatory",
+                                "displayName": "SLA-Breach Notification",
+                                "triggerInfo": {
+                                    "type": "sla-breached"
+                                },
+                                "action": {
+                                    "type": "notification",
+                                    "recipients": [
+                                        {
+                                            "scope": "User",
+                                            "target": "=metadata.caseOwner",
+                                            "value": "Case owner"
+                                        }
+                                    ],
+                                    "messageTemplate": "=js:`Regulatory Response SLA breached (case ${metadata.caseId}). Immediate action required.`"
+                                }
+                            },
+                            {
+                                "id": "esc_SLAar_Regulatory",
+                                "displayName": "SLA At-Risk Notification",
+                                "triggerInfo": {
+                                    "type": "at-risk",
+                                    "atRiskPercentage": 80
+                                },
+                                "action": {
+                                    "type": "notification",
+                                    "recipients": [
+                                        {
+                                            "scope": "User",
+                                            "target": "=metadata.caseOwner",
+                                            "value": "Case owner"
+                                        }
+                                    ],
+                                    "messageTemplate": "=js:`Regulatory Response approaching SLA breach (case ${metadata.caseId}).`"
+                                }
+                            }
+                        ]
+                    }
                 ]
             }
         },
@@ -876,7 +1060,18 @@
                                 "name": "=bindings.bFSEDaNm7",
                                 "folderPath": "=bindings.bFSEDaFp8",
                                 "inputs": [],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "ClearFlowVectorStatus",
+                                        "id": "clearFlowVectorStatus",
+                                        "var": "var_clearflow_vector_status",
+                                        "value": "clearFlowVectorStatus",
+                                        "source": "=ClearFlowVectorStatus",
+                                        "target": "=vars.var_clearflow_vector_status",
+                                        "type": "string",
+                                        "elementId": "Stage_TJUXJV-tFSEXam01"
+                                    }
+                                ]
                             },
                             "isRequired": true,
                             "entryConditions": [
@@ -925,6 +1120,71 @@
                             ]
                         ],
                         "marksStageComplete": true
+                    },
+                    {
+                        "id": "Condition_vClear",
+                        "displayName": "ClearFlow cleared by Forensic Self-Exam Agent",
+                        "type": "exit-only",
+                        "marksStageComplete": false,
+                        "exitToStageId": "Stage_JM1SVs",
+                        "rules": [
+                            [
+                                {
+                                    "id": "Rule_FSEclr",
+                                    "rule": "selected-tasks-completed",
+                                    "selectedTasksIds": [
+                                        "tFSEXam01"
+                                    ],
+                                    "conditionExpression": "=js:vars.var_clearflow_vector_status === 'cleared'"
+                                }
+                            ]
+                        ]
+                    }
+                ],
+                "slaRules": [
+                    {
+                        "expression": "=js:true",
+                        "count": 7,
+                        "unit": "d",
+                        "escalationRule": [
+                            {
+                                "id": "esc_SLAbr_VectorIsol",
+                                "displayName": "SLA-Breach Notification",
+                                "triggerInfo": {
+                                    "type": "sla-breached"
+                                },
+                                "action": {
+                                    "type": "notification",
+                                    "recipients": [
+                                        {
+                                            "scope": "User",
+                                            "target": "=metadata.caseOwner",
+                                            "value": "Case owner"
+                                        }
+                                    ],
+                                    "messageTemplate": "=js:`Vector Isolation SLA breached (case ${metadata.caseId}). Immediate action required.`"
+                                }
+                            },
+                            {
+                                "id": "esc_SLAar_VectorIsol",
+                                "displayName": "SLA At-Risk Notification",
+                                "triggerInfo": {
+                                    "type": "at-risk",
+                                    "atRiskPercentage": 80
+                                },
+                                "action": {
+                                    "type": "notification",
+                                    "recipients": [
+                                        {
+                                            "scope": "User",
+                                            "target": "=metadata.caseOwner",
+                                            "value": "Case owner"
+                                        }
+                                    ],
+                                    "messageTemplate": "=js:`Vector Isolation approaching SLA breach (case ${metadata.caseId}).`"
+                                }
+                            }
+                        ]
                     }
                 ]
             }
@@ -1034,6 +1294,52 @@
                         ],
                         "marksStageComplete": true
                     }
+                ],
+                "slaRules": [
+                    {
+                        "expression": "=js:true",
+                        "count": 5,
+                        "unit": "d",
+                        "escalationRule": [
+                            {
+                                "id": "esc_SLAbr_Multi-Cust",
+                                "displayName": "SLA-Breach Notification",
+                                "triggerInfo": {
+                                    "type": "sla-breached"
+                                },
+                                "action": {
+                                    "type": "notification",
+                                    "recipients": [
+                                        {
+                                            "scope": "User",
+                                            "target": "=metadata.caseOwner",
+                                            "value": "Case owner"
+                                        }
+                                    ],
+                                    "messageTemplate": "=js:`Multi-Customer Investigation SLA breached (case ${metadata.caseId}). Immediate action required.`"
+                                }
+                            },
+                            {
+                                "id": "esc_SLAar_Multi-Cust",
+                                "displayName": "SLA At-Risk Notification",
+                                "triggerInfo": {
+                                    "type": "at-risk",
+                                    "atRiskPercentage": 80
+                                },
+                                "action": {
+                                    "type": "notification",
+                                    "recipients": [
+                                        {
+                                            "scope": "User",
+                                            "target": "=metadata.caseOwner",
+                                            "value": "Case owner"
+                                        }
+                                    ],
+                                    "messageTemplate": "=js:`Multi-Customer Investigation approaching SLA breach (case ${metadata.caseId}).`"
+                                }
+                            }
+                        ]
+                    }
                 ]
             }
         },
@@ -1103,6 +1409,52 @@
                             ]
                         ],
                         "marksStageComplete": true
+                    }
+                ],
+                "slaRules": [
+                    {
+                        "expression": "=js:true",
+                        "count": 2,
+                        "unit": "d",
+                        "escalationRule": [
+                            {
+                                "id": "esc_SLAbr_InitialRes",
+                                "displayName": "SLA-Breach Notification",
+                                "triggerInfo": {
+                                    "type": "sla-breached"
+                                },
+                                "action": {
+                                    "type": "notification",
+                                    "recipients": [
+                                        {
+                                            "scope": "User",
+                                            "target": "=metadata.caseOwner",
+                                            "value": "Case owner"
+                                        }
+                                    ],
+                                    "messageTemplate": "=js:`Initial Response SLA breached (case ${metadata.caseId}). Immediate action required.`"
+                                }
+                            },
+                            {
+                                "id": "esc_SLAar_InitialRes",
+                                "displayName": "SLA At-Risk Notification",
+                                "triggerInfo": {
+                                    "type": "at-risk",
+                                    "atRiskPercentage": 80
+                                },
+                                "action": {
+                                    "type": "notification",
+                                    "recipients": [
+                                        {
+                                            "scope": "User",
+                                            "target": "=metadata.caseOwner",
+                                            "value": "Case owner"
+                                        }
+                                    ],
+                                    "messageTemplate": "=js:`Initial Response approaching SLA breach (case ${metadata.caseId}).`"
+                                }
+                            }
+                        ]
                     }
                 ]
             }

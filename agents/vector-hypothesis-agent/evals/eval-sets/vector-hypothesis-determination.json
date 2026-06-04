@@ -1,0 +1,66 @@
+{
+  "version": "1.0",
+  "id": "vector-hypothesis-determination",
+  "name": "Vector Hypothesis Determination",
+  "description": "Evaluates attack-vector determination for the CascadeCare multi-customer claim-flow disruption: ClearFlow-as-vector vs Nimbus-as-vector hypotheses from forensic findings and vendor attribution signals. Covers clearflow-cleared (nimbus identified), nimbus-identified, and inconclusive cases.",
+  "batchSize": 10,
+  "evaluatorRefs": [
+    "ad0b4583-a508-5f63-a8cc-d39b7bb38e80"
+  ],
+  "evaluations": [
+    {
+      "id": "nimbus-identified-shared-vendor",
+      "name": "Nimbus identified via shared upstream vendor",
+      "inputs": {
+        "forensic_findings": "ClearFlow internal self-examination of the ClearFlow Pricing Engine and ClearFlow Payment Network found no evidence of compromise: integrity checks on the pricing tables pass, access logs show no unauthorized sessions, and no internal lateral movement was detected across the claim-routing tier.",
+        "vendor_attribution_signal": "Strong vendor attribution signal: the Nimbus Patient Engagement Platform processed anomalous outbound traffic during the same window the claim-flow drops began, and Nimbus integration tokens for the affected providers were exercised from an unrecognized origin. Signal strength: strong.",
+        "affected_provider_ids": ["northstar", "alpha", "beta", "gamma", "delta"]
+      },
+      "expectedOutput": {
+        "vector_determination": "nimbus",
+        "confidence": 0.88,
+        "rationale": "Decision-support draft, not a legal conclusion: ClearFlow's self-examination surfaced no internal compromise of the Pricing Engine or Payment Network, while a strong vendor attribution signal places anomalous activity at the Nimbus Patient Engagement Platform during the same window. All five affected providers (Northstar, Alpha, Beta, Gamma, Delta) share the Nimbus integration, making the shared upstream vendor the strongest single indicator. Evidence consistently points to Nimbus as the vector."
+      },
+      "expectedAgentBehavior": "",
+      "simulateInput": false,
+      "simulateTools": false
+    },
+    {
+      "id": "clearflow-internal-compromise",
+      "name": "ClearFlow internal compromise with weak vendor signal",
+      "inputs": {
+        "forensic_findings": "ClearFlow internal self-examination found an affirmative internal compromise: unauthorized configuration changes to the ClearFlow Pricing Engine claim-routing rules, plus access-log entries showing a privileged session from an unrecognized host that altered payment-network throughput limits during the disruption window.",
+        "vendor_attribution_signal": "Weak vendor attribution signal: no anomalous Nimbus Patient Engagement Platform traffic was observed, and Nimbus integration tokens show normal usage patterns. Signal strength: weak.",
+        "affected_provider_ids": ["northstar", "alpha", "gamma"]
+      },
+      "expectedOutput": {
+        "vector_determination": "clearflow",
+        "confidence": 0.85,
+        "rationale": "Decision-support draft, not a legal conclusion: the forensic self-examination affirmatively places the compromise inside ClearFlow's own systems, with unauthorized configuration changes to the Pricing Engine and a privileged session altering Payment Network throughput during the disruption window. The vendor attribution signal for the Nimbus Patient Engagement Platform is weak with normal token usage, so the evidence points to ClearFlow's platform as the vector rather than the shared vendor."
+      },
+      "expectedAgentBehavior": "",
+      "simulateInput": false,
+      "simulateTools": false
+    },
+    {
+      "id": "inconclusive-contradictory-evidence",
+      "name": "Inconclusive on contradictory weak evidence",
+      "inputs": {
+        "forensic_findings": "ClearFlow internal self-examination is incomplete and contradictory: one integrity scan of the Pricing Engine flagged an anomaly that a follow-up scan could not reproduce, and Payment Network access logs for the disruption window are partially missing. No affirmative internal compromise was confirmed or ruled out.",
+        "vendor_attribution_signal": "Weak and ambiguous vendor attribution signal: a single Nimbus Patient Engagement Platform log line shows an unusual event, but it cannot be correlated to the claim-flow drops and may be unrelated maintenance. Signal strength: weak.",
+        "affected_provider_ids": ["beta", "epsilon"]
+      },
+      "expectedOutput": {
+        "vector_determination": "inconclusive",
+        "confidence": 0.35,
+        "rationale": "Decision-support draft, not a legal conclusion: the evidence is contradictory and thin. ClearFlow's self-examination neither confirmed nor ruled out an internal compromise, with an unreproducible anomaly and partially missing Payment Network logs, while the Nimbus Patient Engagement Platform signal is weak and uncorrelated. Coverage spans only two affected providers (Beta, Epsilon), which is insufficient to attribute the vector confidently. No determination can be made."
+      },
+      "expectedAgentBehavior": "",
+      "simulateInput": false,
+      "simulateTools": false
+    }
+  ],
+  "agentMemoryEnabled": false,
+  "agentMemorySettings": [],
+  "lineByLineEvaluation": false
+}
