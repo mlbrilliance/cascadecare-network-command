@@ -13,17 +13,7 @@
         "name": "ClearFlowIdealIncidentResponse"
       }
     ],
-    "runtimeDependencies": [
-      {
-        "bindingType": "clearflow-master-crisis",
-        "bindingValues": {},
-        "bindingMetadata": {
-          "bindingsVersion": "v1",
-          "solutionsSupport": "Required"
-        },
-        "resourceKind": "Unknown"
-      }
-    ],
+    "runtimeDependencies": [],
     "folders": [
       {
         "fullyQualifiedName": "solution_folder"

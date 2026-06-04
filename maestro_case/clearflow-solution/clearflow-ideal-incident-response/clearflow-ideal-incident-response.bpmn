@@ -9,6 +9,10 @@
         <uipath:output id="masterCaseId" name="masterCaseId" type="string" default="" elementId="Process_IdealIncidentResponse" custom="true" />
         <uipath:output id="disposition" name="disposition" type="string" default="completed" elementId="Process_IdealIncidentResponse" custom="true" />
       </uipath:variables>
+      <uipath:bindings version="v1">
+        <uipath:binding id="bPu0H79Xw" name="folderPath" type="string" resource="process" resourceSubType="CaseManagement" resourceKey="clearflow-master-crisis" propertyAttribute="folderPath" />
+        <uipath:binding id="b6im9cyz8" name="name" type="string" default="clearflow-master-crisis" resource="process" resourceSubType="CaseManagement" resourceKey="clearflow-master-crisis" propertyAttribute="name" />
+      </uipath:bindings>
       <uipath:migrationVersion version="2026.1" />
     </bpmn:extensionElements>
     <bpmn:startEvent id="Start_IncidentIntake" name="Incident Intake">
@@ -29,9 +33,10 @@
     <bpmn:callActivity id="Call_SpawnMasterCrisis" name="Spawn ClearFlow master crisis case">
       <bpmn:extensionElements>
         <uipath:activity version="v1">
-          <uipath:type value="Orchestrator.StartCaseMgmtProcessAsync" version="v1" />
+          <uipath:type value="Orchestrator.StartCaseMgmtProcessAsync" version="v2" />
           <uipath:context>
-            <uipath:input name="releaseKey" type="resource" value="=bindings.Binding_MasterCrisisCase" />
+            <uipath:input name="name" type="string" value="=bindings.b6im9cyz8" />
+            <uipath:input name="folderPath" type="string" value="=bindings.bPu0H79Xw" />
           </uipath:context>
           <uipath:input name="JobArguments" type="json" target="bodyField"><![CDATA[{"CaseGoal":"Determine if ClearFlow is the breach vector","ReversalNumber":1,"ClearFlowVectorStatus":"unknown","GrandchildCaseCount":0,"SimulatedDay":1}]]></uipath:input>
           <uipath:output name="Process response" type="Orchestrator.RunJob" var="masterCaseId" />

@@ -3,7 +3,7 @@
 > **Who this is for:** someone who has never touched UiPath, Maestro, Orchestrator, or Studio Web.
 > Every step says **who does it**, **exactly what to do**, **what you should see**, and **what to do if it goes wrong**.
 >
-> **Last updated:** 2026-06-04 · **Branch:** `slice-023-reentry-agent-memory` · **Tenant:** `staging.uipath.com/hackathon26_042/DefaultTenant`
+> **Last updated:** 2026-06-04 (v1.0.5 deployed + activated to `Shared/CascadeCare-v105` with the spawn `folderId` fix; current step = **STEP 4**, re-trigger the BPMN to confirm the case spawns) · **Branch:** `slice-023-reentry-agent-memory` · **Tenant:** `staging.uipath.com/hackathon26_042/DefaultTenant`
 >
 > **How to read the owner tags:**
 > - 🟢 **ME** = Claude Code can do this alone, offline, no tenant/browser. Just ask.
@@ -14,14 +14,14 @@
 
 ## 0. The 30-second mental model
 
-Your project is a **bundle of files in this repo**. To make it real, that bundle gets **zipped** (a `.uipx` "solution") and **uploaded + installed** ("deployed") onto a **website** (UiPath Automation Cloud). Then you **press go** ("trigger") and watch it run in the browser.
+Your project is a **bundle of files in this repo**. To make it real, that bundle gets **packed into a `.zip`** (a `.uipx` "solution") and **uploaded + installed** ("deployed") onto a **website** (UiPath Automation Cloud). Then you **press go** ("trigger") and watch it run in the browser.
 
 | Term | Plain English | Where it lives |
 |---|---|---|
 | **Automation Cloud** | The website where everything runs. | `staging.uipath.com/hackathon26_042` |
 | **Tenant** | Your private workspace on that website. | `DefaultTenant` |
 | **Orchestrator** | The part that runs and schedules jobs. | inside the tenant |
-| **Folder** | A labelled box on the tenant that holds one deployment. | e.g. `CascadeCare-Full` |
+| **Folder** | A labelled box on the tenant that holds one deployment. | e.g. `CascadeCare-v104` (current) |
 | **Studio Web** | The browser editor where you draw/fix flowcharts & cases. *(The screenshot you sent was this.)* | browser |
 | **Maestro Case** | The long-running "case file" — your crisis, with stages. You have **3** (master → parent → grandchild). | the runtime brain |
 | **Maestro BPMN** | A flowchart process. The file we just fixed (`ideal-incident-response`) is one. | `maestro_bpmn/` |
@@ -63,9 +63,13 @@ Your project is a **bundle of files in this repo**. To make it real, that bundle
 - **Submission docs**: README (names every component), LICENSE (MIT), `CODING_AGENTS.md`, `CLAUDE_CODE_USAGE.md`.
 - Test suite ~541 passing; IP-safety audit clean.
 
+### ✅ Just completed (2026-06-04, live)
+- **Deployed clean, twice.** v1.0.4 → `CascadeCare-v104` (isCascade fix); first live run proved the cascade gateway works but faulted at the spawn node (`170005 folderId`). **v1.0.5** → **`Shared/CascadeCare-v105`** adds the spawn fix (type `v2` + `name`/`folderPath` bindings). All 9 projects passed the atomic install both times.
+  - v1.0.5: DeploymentKey `cb489f53-c3be-4a26-a888-6fee76fcf0a3` · FolderKey **`bc56e117-70f0-4234-b320-b751df1c4546`** · InstanceId `3bd167a3-…_v6`.
+
 ### ⏸ Pending (mostly live tenant + human capture)
-1. **Re-deploy** `CascadeCare-Full` so the binding fix + today's BPMN fix go live.
-2. **Trigger the BPMN** → confirm a `clearflow-master-crisis` case spawns.
+1. ~~**Re-deploy** so the fixes go live.~~ ✅ **DONE** → `CascadeCare-v105` (v1.0.5).
+2. **Re-trigger the BPMN** in `CascadeCare-v105` → confirm a `clearflow-master-crisis` case spawns. **← YOU ARE HERE (STEP 4)**
 3. **Run the 5 reversals** end-to-end (demo dry-run).
 4. **Seed Data Fabric** live.
 5. **Clean up** stale/failed deployments.
@@ -75,9 +79,11 @@ Your project is a **bundle of files in this repo**. To make it real, that bundle
 9. **Build** the slides deck.
 10. **Tag** `agenthack-2026-submission` (only *after* the live video exists).
 
-### Current tenant deployments (from project memory, 2026-05-31)
-- ✅ **`CascadeCare-Full`** — folder key `73941f02-6602-4585-b9a8-5a391179845d`, `clearflow-solution v1.0.3`, all 9 projects, `DeploymentSucceeded`. **This is your master deployment.** *(But it predates the binding + isCascade fixes → re-deploy needed.)*
-- 🧹 Stale/failed to remove: `CascadeCare-Core`, `CascadeCare-Demo`, `CascadeCare-Smoke`, `CascadeCare-Live`.
+### Current tenant deployments (live query, 2026-06-04)
+- ✅ **`CascadeCare-v105`** — folder key **`bc56e117-70f0-4234-b320-b751df1c4546`**, `clearflow-solution v1.0.5`, all 9 projects, **Active**. **← THIS is now your master deployment** (has isCascade + the spawn folderId fix).
+- ⤵️ **`CascadeCare-v104`** — folder key `82485e42-1f2a-4ec8-8621-2ebfc31b2dbe`, `v1.0.4`, Active but **superseded** (faults on spawn — no folder identity). Uninstall in Step 7.
+- ⤵️ **`CascadeCare-Full`** — folder key `73941f02-6602-4585-b9a8-5a391179845d`, `v1.0.3`, superseded (predates the fixes). Keep as fallback or uninstall.
+- 🧹 Stale/failed to remove: `CascadeCare-Demo` (v1.0.2), `CascadeCare-Live` (**Failed**, v1.0.1), `CascadeCare-Core` (`clearflow-core` v1.0.0).
 
 ---
 
@@ -183,41 +189,45 @@ A browser window opens → sign in as **`puneetsatyawan@gmail.com`**.
 
 ---
 
-### STEP 3 — Re-deploy the full solution (ships the fixes)
-**Owner:** 🟡 YOU-RUN (I'll confirm exact filenames/versions first)
+### STEP 3 — Re-deploy the full solution (ships the fixes) ✅ DONE 2026-06-04
+**Owner:** 🟡 YOU-RUN — **completed.**
 
-**Why:** `CascadeCare-Full` on the tenant predates two fixes: the BPMN→case **binding** (without it, the flow runs but silently spawns *no* case), and today's **isCascade** fix. Re-deploying ships both.
+**Why:** The old folder predated two fixes: the BPMN→case **binding** (without it, the flow runs but silently spawns *no* case), and the **isCascade** fix. Re-deploying shipped both.
 
-**Do:** *(ask me to confirm the exact package path/version before running — they change per pack)*
+**What actually happened — the corrected 4-step recipe** (the first two are *local*, no tenant; the last two hit the tenant). ⚠️ The original draft was wrong: `publish` needs the **`.zip` produced by `pack`**, *not* the solution directory.
 ```bash
-export PATH="$HOME/.dotnet:$PATH"          # from Step 4.2
-bash scripts/pack-solution.sh              # builds the .uipx zip
-uip solution publish maestro_case/clearflow-solution --output json
-uip solution deploy run <package> CascadeCare-Full --output json
+export PATH="$HOME/.dotnet:$PATH"                                              # Step 4.2
+bash scripts/pack-solution.sh                                                  # 1. stage sources (local)
+uip solution pack maestro_case/clearflow-solution dist --version 1.0.4 --output json   # 2. build dist/clearflow-solution_1.0.4.zip (local)
+uip solution publish dist/clearflow-solution_1.0.4.zip --output json          # 3. publish zip to feed (tenant)
+uip solution deploy run \                                                      # 4. install + auto-activate (tenant)
+  --name cascadecare-v104 \
+  --package-name clearflow-solution --package-version 1.0.4 \
+  --folder-name CascadeCare-v104 --parent-folder-path "Shared" --output json
 ```
 
-**Expect:**
-- `pack-solution.sh` ends with a "Next step: uip solution upload …" line and a built `.uipx`.
-- `publish` returns JSON with a package id/version.
-- `deploy run` ends with **`DeploymentSucceeded`** and then **`SuccessfulActivate`**. *(You need **both** — an un-activated deploy exposes nothing runnable.)*
+**Result (recorded):** `DeploymentSucceeded` + `SuccessfulActivate` → folder **`Shared/CascadeCare-v104`** (FolderKey `82485e42-1f2a-4ec8-8621-2ebfc31b2dbe`). The pack log confirmed `ProcessOrchestration BPMN validation completed` (the isCascade fix survived). The `dotnet CLI is not available… package signing` warning is **benign** — unsigned is fine here.
 
-**If it breaks:**
+**To re-deploy again later** (e.g. after another fix): bump `--version` (e.g. `1.0.5`) in steps 2–4 and use a **fresh `--folder-name`** to dodge Error 4004.
+
+**If it breaks (for next time):**
 | Error | Meaning | Fix |
 |---|---|---|
+| `Invalid file type. Expected a .zip` | You ran `publish` on the **directory**, skipping `pack`. | Run `uip solution pack <dir> dist --version X` first, then publish the `.zip`. |
 | **Error 1654** "entry points definition invalid" | A BPMN/case package shape regressed. | Paste it to me — the canonical fix is documented (commit `61a10cd`). |
 | **Error 2005** "Package metadata extraction failed" | An API-workflow is missing its `entry-points.json`/`bindings_v2.json`. | Paste it to me — fix is documented (commit `98b6749`). |
-| **Error 4004** on deploy | You're deploying to a folder name that already holds a **failed** deployment. | Deploy to a fresh `--folder-name`, **or** uninstall the failed one first (Step 6). |
+| **Error 4004** on deploy | The folder name already holds a deployment. | Deploy to a fresh `--folder-name`, **or** uninstall the old one first (Step 7). |
 | Rolls back entirely | Deployment is **atomic** — one bad project fails all 9. | The error names the culprit project; paste it to me. |
 
 ---
 
-### STEP 4 — Trigger the BPMN and confirm a case spawns
+### STEP 4 — Trigger the BPMN and confirm a case spawns  ◀️ **YOU ARE HERE**
 **Owner:** 🔴 HUMAN-ONLY via browser *(recommended)* — 🟡 CLI alternative below.
 
-**Why:** This is the heart of the demo: the incident-response flowchart must **spawn the master crisis case.**
+**Why:** This is the heart of the demo: the incident-response flowchart must **spawn the master crisis case.** It's also the live smoke-test that the v1.0.4 binding fix actually works.
 
 **Do (browser — easiest, and you'll be here for the video anyway):**
-1. In the tenant, switch to the **`CascadeCare-Full`** folder (top-left folder picker).
+1. In the tenant, switch to the **`CascadeCare-v105`** folder (top-left folder picker). *(Shared/CascadeCare-v105 — the current deployment with the spawn fix.)*
 2. Open **Maestro → Processes** → select **`ClearFlowIdealIncidentResponse`**.
 3. Click **Start / Run**, and in the inputs set:
    - **`isCascade` = `true`**  ← *(today's fix: this boolean now drives the cascade branch)*
@@ -227,19 +237,21 @@ uip solution deploy run <package> CascadeCare-Full --output json
 
 **Expect:** A brand-new **`clearflow-master-crisis`** case instance appears in **Maestro → Cases** with status **Open**, goal *"Determine if ClearFlow is the breach vector."*
 
+> **🧪 Run history (2026-06-04):**
+> - **v1.0.4 run:** Intake → Triage → `is_cascade?` green, **correctly took the `cascade` branch** (`isCascade=true` confirmed working). Faulted at the spawn node with `170005 folderId missing`.
+> - **Fix shipped in v1.0.5:** the spawn activity (`Orchestrator.StartCaseMgmtProcessAsync`) now uses type **`v2`** with inline **`name` + `folderPath`** bindings to `clearflow-master-crisis` — the folder identity that was missing. Deployed to **`CascadeCare-v105`**. Re-run there to confirm the case spawns.
+
 **If it breaks:**
-- Flow runs but **no case appears** → the binding fix didn't make it into the deployed package. Re-check Step 3 used the freshly-packed `.uipx`; tell me and I'll verify the registration manifest.
-- The cascade branch is **skipped** → you didn't set `isCascade = true`. The gateway condition is `=vars.isCascade == true`.
+- **`170005` — "Required field 'folderId' missing in the input args to RPA task"** (faults at `Spawn master crisis case`) → ✅ **RESOLVED in v1.0.5.** Root cause: the `StartCaseMgmtProcessAsync` call activity had only a `releaseKey` binding, no folder identity. Fix (committed): type `v1`→`v2`; context inputs `name` (=bindings, propertyAttribute `name`) + `folderPath` (=bindings, propertyAttribute `folderPath`), both `resourceKey="clearflow-master-crisis"`; keep the required `JobArguments` + `Process response`/`Orchestrator.RunJob` output. **How we found the exact contract:** the **`uip solution pack` CLI is the authoritative validator** — stricter than both the Studio Web Health analyzer and the canvas. It printed the precise required/forbidden inputs. Always trust the packer's error over the editor for this activity.
+- Flow runs but **no case appears** → the binding fix didn't make it into the deployed package. Re-check Step 3 used the freshly-packed `.zip`; tell me and I'll verify the registration manifest.
+- The cascade branch is **skipped** → you didn't set `isCascade = true`. The gateway condition is `=vars.isCascade == true`. *(Confirmed working on 2026-06-04.)*
 
-**Do (CLI alternative):**
+**Do (CLI alternative):** *(folder key for `CascadeCare-v105` = `bc56e117-70f0-4234-b320-b751df1c4546`)*
 ```bash
-# Get the release key + dotted process key for the folder
-uip orchestrator processes list --folder-key 73941f02-6602-4585-b9a8-5a391179845d --output json
-#   → Key = release GUID, ProcessKey = dotted name
-
-uip maestro case process run "<dotted-ProcessKey>" 73941f02-6602-4585-b9a8-5a391179845d \
+uip maestro case process run "<dotted-ProcessKey>" bc56e117-70f0-4234-b320-b751df1c4546 \
   --release-key <RELEASE_GUID> --inputs '{"isCascade":true,"affectedCustomerCount":3,"incidentId":"INC-001"}'
 ```
+> Need the `<dotted-ProcessKey>` + `<RELEASE_GUID>`? Paste me `uip maestro case process list bc56e117-70f0-4234-b320-b751df1c4546 --output json` and I'll fill them in. (Browser is genuinely easier here — use it unless you're scripting.)
 > ⚠️ **Do NOT add `--validate`** — it calls a broken schema lookup that throws a *misleading* `1654 "Invalid package key format"`. Without it, the run succeeds. Use the **Orchestrator folder key directly** (there is no separate "Maestro folder"); `case process list` may reject it, but `process run` accepts it.
 
 ---
@@ -287,17 +299,20 @@ UIPATH_LIVE=1 bash scripts/seed_data_fabric.sh --apply
 ### STEP 7 — Clean up stale deployments
 **Owner:** 🟡 YOU-RUN
 
-**Why:** Old failed deployments clutter the tenant and confuse judges. Keep only `CascadeCare-Full`.
+**Why:** Old failed deployments clutter the tenant and confuse judges. Your live folder is now **`CascadeCare-v104`** (and optionally keep `CascadeCare-Full` v1.0.3 as a fallback).
+
+> 🚨 **STOP before running this.** `scripts/cleanup_deployments.sh`'s hard keep-list currently guards **`CascadeCare-Full`**, *not* `CascadeCare-v105` (your current live folder). If you run it as-is, it may **uninstall the wrong thing.** Ask me to update the keep-list to protect `CascadeCare-v105` first — don't run `--confirm` until then. (Stale folders now also include `CascadeCare-v104`.)
 
 **Do:**
 ```bash
-bash scripts/cleanup_deployments.sh --dry-run    # review what WOULD be removed
-bash scripts/cleanup_deployments.sh --confirm    # actually uninstall (keeps CascadeCare-Full)
+bash scripts/cleanup_deployments.sh --dry-run    # review what WOULD be removed — SAFE, changes nothing
+# (after I update the keep-list to include CascadeCare-v104:)
+bash scripts/cleanup_deployments.sh --confirm    # actually uninstall the stale ones
 ```
 
-**Expect:** `--dry-run` lists `CascadeCare-Core/-Demo/-Smoke/-Live` as removal candidates and **explicitly protects** `CascadeCare-Full`. `--confirm` uninstalls them. Afterward, the deployment list shows only `CascadeCare-Full`.
+**Expect:** `--dry-run` lists removal candidates (`CascadeCare-Demo`, `CascadeCare-Live`, `CascadeCare-Core`, etc.). **Verify `CascadeCare-v104` is NOT in the removal list** before you ever run `--confirm`.
 
-**If it breaks:** The script has a hard keep-list guarding `CascadeCare-Full`, so you can't nuke it by accident. If an uninstall errors, paste it here.
+**If it breaks:** If an uninstall errors, paste it here. (Easiest alternative: uninstall one at a time with `uip solution deploy uninstall <name> --output json`.)
 
 ---
 
@@ -364,7 +379,9 @@ bash scripts/cleanup_deployments.sh --confirm    # actually uninstall (keeps Cas
 | `1654` "Invalid package key format" | `case process run` | The **`--validate`** flag's broken lookup | **Remove `--validate`** |
 | `Error 2005` "Package metadata extraction failed" | API-workflow install | missing `entry-points.json`/`bindings_v2.json` | Documented fix (`98b6749`) — paste to me |
 | `Error 4004` | deploy run | Folder already holds a **failed** deployment | Fresh `--folder-name` or uninstall first |
-| Flow runs, **no case spawns** | runtime | binding `clearflow-crisis` was dangling | Ensure re-deploy used the fixed `.uipx` |
+| `170005` "Required field 'folderId' missing in the input args to RPA task" | runtime, at a `StartCaseMgmtProcessAsync` / `StartJob` call activity | The activity has `releaseKey` but **no folder identity** | ✅ Fixed in v1.0.5: type `v2` + inline `name`/`folderPath` bindings (`resourceKey="clearflow-master-crisis"`) + keep `JobArguments` & `Process response`/`Orchestrator.RunJob` output |
+| Pack fails: `... does not support context input "_label"` / `missing required input payload "JobArguments"` / `output name must be "Process response"` | `uip solution pack` | The **CLI packer is the authoritative validator** for activity contracts — stricter than the Health analyzer and the Studio Web canvas | Read the packer error literally; it names every required/forbidden input. Trust it over the editor |
+| Flow runs, **no case spawns** | runtime | binding `clearflow-crisis` was dangling | Ensure re-deploy used the fixed `.zip` |
 | "does not exist" on a `=vars.X` | Studio Web editor | reference uses the wrong form — this editor resolves by **name**, not id; declarations must be `id==name`, process-scoped, `custom="true"` | Tell me; I fix the source + you re-upload |
 | "Process response" row multiplies | Studio Web editor | known canvas delete+save bug | **Never hand-delete**; fix source → re-upload (wholesale replace) |
 | "Unable to load diagram" on a case | runtime | `caseplan.json.bpmn` missing / project was `content/`-nested | Diagrams are generated **only** by the browser canvas; project must be **flat** |
@@ -398,16 +415,22 @@ cd /mnt/c/Users/linki/OneDrive/Desktop/cascade_command
 export PATH="$HOME/.dotnet:$PATH"
 uip login                                   # interactive, as puneetsatyawan@gmail.com
 
-# --- deploy the fixes ---
-bash scripts/pack-solution.sh
-uip solution publish maestro_case/clearflow-solution --output json
-uip solution deploy run <package> CascadeCare-Full --output json   # need DeploymentSucceeded + SuccessfulActivate
+# --- deploy the fixes (4 steps; bump --version + --folder-name each time) ---
+bash scripts/pack-solution.sh                                                          # stage (local)
+uip solution pack maestro_case/clearflow-solution dist --version 1.0.5 --output json   # -> dist/clearflow-solution_1.0.5.zip (local)
+uip solution publish dist/clearflow-solution_1.0.5.zip --output json                   # publish zip (tenant)
+uip solution deploy run --name cascadecare-v105 --package-name clearflow-solution \
+  --package-version 1.0.5 --folder-name CascadeCare-v105 --parent-folder-path "Shared" --output json
+#   need DeploymentSucceeded + SuccessfulActivate
 
-# --- find run keys ---
-uip orchestrator processes list --folder-key 73941f02-6602-4585-b9a8-5a391179845d --output json
+# --- inspect deployments / get folder key ---
+uip solution deploy list --output json     # CascadeCare-v105 FolderKey = bc56e117-70f0-4234-b320-b751df1c4546
+
+# --- find run keys for the v105 folder ---
+uip maestro case process list bc56e117-70f0-4234-b320-b751df1c4546 --output json
 
 # --- trigger the BPMN (CLI; browser is easier) ---
-uip maestro case process run "<dotted-ProcessKey>" 73941f02-6602-4585-b9a8-5a391179845d \
+uip maestro case process run "<dotted-ProcessKey>" bc56e117-70f0-4234-b320-b751df1c4546 \
   --release-key <RELEASE_GUID> \
   --inputs '{"isCascade":true,"affectedCustomerCount":3,"incidentId":"INC-001"}'
 #   (NO --validate)
