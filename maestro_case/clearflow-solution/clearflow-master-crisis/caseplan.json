@@ -1237,9 +1237,9 @@
                             "id": "tMCPCor02",
                             "elementId": "Stage_jsrEfr-tMCPCor02",
                             "displayName": "Multi-Customer Correlation",
-                            "description": "Multi-Customer Pattern Detector correlates anomalous claim drops across providers and emits the cascade signal that confirms the Reversal 1 trigger. DEPLOY-TIME PLACEHOLDER \u2014 agent entityKey + input/output schemas resolve when the multi-customer-pattern-detector is published; bindings carry best-effort resourceKey/name only.",
+                            "description": "Multi-Customer Pattern Detector correlates anomalous claim drops across providers and emits the cascade signal that confirms the Reversal 1 trigger. DEPLOY-TIME PLACEHOLDER \u2014 agent entityKey + input/output schemas resolve when the multi-customer-pattern-detector is published; bindings carry best-effort resourceKey/name only. shouldRunOnlyOnce:false \u2014 this is the SELECTED task that re-runs on the Reversal 5 targeted re-entry (the settled anomaly classification stays run-once).",
                             "type": "agent",
-                            "shouldRunOnlyOnce": true,
+                            "shouldRunOnlyOnce": false,
                             "data": {
                                 "name": "=bindings.bMCPDaNm3",
                                 "folderPath": "=bindings.bMCPDaFp4",
@@ -1278,6 +1278,21 @@
                                 }
                             ]
                         ]
+                    },
+                    {
+                        "id": "Condition_re3ntr",
+                        "displayName": "Reversal 5 co-defendant re-entry",
+                        "isInterrupting": true,
+                        "rules": [
+                            [
+                                {
+                                    "rule": "selected-stage-completed",
+                                    "id": "Rule_re3ntr",
+                                    "selectedStageId": "Stage_JM1SVs",
+                                    "conditionExpression": "=js:vars.var_reversal_number >= 5"
+                                }
+                            ]
+                        ]
                     }
                 ],
                 "exitConditions": [
@@ -1293,6 +1308,20 @@
                             ]
                         ],
                         "marksStageComplete": true
+                    },
+                    {
+                        "id": "Condition_rtorig",
+                        "displayName": "Return after co-defendant re-exam",
+                        "type": "return-to-origin",
+                        "marksStageComplete": true,
+                        "rules": [
+                            [
+                                {
+                                    "rule": "required-tasks-completed",
+                                    "id": "Rule_rtorig"
+                                }
+                            ]
+                        ]
                     }
                 ],
                 "slaRules": [

@@ -284,6 +284,28 @@ log file you can send me, e.g.
 
 ---
 
+## 6.5 Optional polish — enable Agent Memory (S022.B)
+
+**Optional, not required for the demo.** The cross-timeline state the case needs across the
+90-day / 5-reversal arc (`CaseGoal`, `ReversalNumber`, `ClearFlowVectorStatus`,
+`GrandchildCaseCount`, `SimulatedDay`) is already carried by the master case's root variables +
+Data Fabric, so the demo is complete without per-agent memory. See
+`docs/adr/0004-agent-memory-is-deploy-time-not-fabricated-config.md`.
+
+If you want to turn on per-agent memory as polish, it is a **deploy-time / Studio Web** toggle —
+there is no offline file for it (do not hand-edit a solution decl or a binding). For each
+reasoning agent (Vector Hypothesis, BAA Boundary Reasoner, Fiduciary Conflict Detector,
+Negligent Monitoring Risk), in the solution agent declaration set:
+
+```jsonc
+"spec": { "agentMemory": true, "retentionAction": "Delete", "retentionPeriod": 30, "staleRetentionPeriod": 180 }
+```
+
+Easiest path: open the agent in Studio Web after `uip solution project add` and enable Agent
+Memory in its settings, then re-deploy. Skip this entirely if you're short on time.
+
+---
+
 ## 7. Done checklist
 
 - [ ] `uip solution deploy list` shows **only** `CascadeCare-Full`, active
