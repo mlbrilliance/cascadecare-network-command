@@ -69,7 +69,7 @@ Your project is a **bundle of files in this repo**. To make it real, that bundle
 
 ### ⏸ Pending (mostly live tenant + human capture)
 1. ~~**Re-deploy** so the fixes go live.~~ ✅ **DONE** → `CascadeCare-v105` (v1.0.5).
-2. **Re-trigger the BPMN** in `CascadeCare-v105` → confirm a `clearflow-master-crisis` case spawns. **← YOU ARE HERE (STEP 4)**
+2. ~~**Re-trigger the BPMN** in `CascadeCare-v105` → confirm a `clearflow-master-crisis` case spawns.~~ ✅ **DONE & CONFIRMED 2026-06-04** — BPMN completed all-green, spawn node green, master case `clearflow-master-crisis-66114817` spawned + Running in CascadeCare-v105 with all stages/reversals rendered, no incidents.
 3. **Run the 5 reversals** end-to-end (demo dry-run).
 4. **Seed Data Fabric** live.
 5. **Clean up** stale/failed deployments.
@@ -239,7 +239,8 @@ uip solution deploy run \                                                      #
 
 > **🧪 Run history (2026-06-04):**
 > - **v1.0.4 run:** Intake → Triage → `is_cascade?` green, **correctly took the `cascade` branch** (`isCascade=true` confirmed working). Faulted at the spawn node with `170005 folderId missing`.
-> - **Fix shipped in v1.0.5:** the spawn activity (`Orchestrator.StartCaseMgmtProcessAsync`) now uses type **`v2`** with inline **`name` + `folderPath`** bindings to `clearflow-master-crisis` — the folder identity that was missing. Deployed to **`CascadeCare-v105`**. Re-run there to confirm the case spawns.
+> - **Fix shipped in v1.0.5:** the spawn activity (`Orchestrator.StartCaseMgmtProcessAsync`) now uses type **`v2`** with inline **`name` + `folderPath`** bindings to `clearflow-master-crisis` — the folder identity that was missing. Deployed to **`CascadeCare-v105`**.
+> - ✅ **CONFIRMED 2026-06-04:** re-run in v105 completed all-green; the spawn node went green and `clearflow-master-crisis-66114817` spawned + is Running in CascadeCare-v105 (Folder shown in the spawn trace = `CascadeCare-v105`, proving the `folderPath` binding resolved). The async spawn child shows Status `Unset` / `masterCaseId` blank — expected for fire-and-continue `...Async`; the BPMN launches the crisis without waiting.
 
 **If it breaks:**
 - **`170005` — "Required field 'folderId' missing in the input args to RPA task"** (faults at `Spawn master crisis case`) → ✅ **RESOLVED in v1.0.5.** Root cause: the `StartCaseMgmtProcessAsync` call activity had only a `releaseKey` binding, no folder identity. Fix (committed): type `v1`→`v2`; context inputs `name` (=bindings, propertyAttribute `name`) + `folderPath` (=bindings, propertyAttribute `folderPath`), both `resourceKey="clearflow-master-crisis"`; keep the required `JobArguments` + `Process response`/`Orchestrator.RunJob` output. **How we found the exact contract:** the **`uip solution pack` CLI is the authoritative validator** — stricter than both the Studio Web Health analyzer and the canvas. It printed the precise required/forbidden inputs. Always trust the packer's error over the editor for this activity.
