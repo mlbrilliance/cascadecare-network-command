@@ -502,7 +502,13 @@
       ],
       "model": {
         "type": "bpmn:IntermediateCatchEvent",
-        "eventDefinition": "bpmn:TimerEventDefinition"
+        "eventDefinition": "bpmn:TimerEventDefinition",
+        "values": {
+          "timerType": "inputs.timerType",
+          "timerValue": "inputs.timerValue",
+          "timerPreset": "inputs.timerPreset",
+          "timerDate": "inputs.timerDate"
+        }
       },
       "inputDefinition": {
         "type": "object",
