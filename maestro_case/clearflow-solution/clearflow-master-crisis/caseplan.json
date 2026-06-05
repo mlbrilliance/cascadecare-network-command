@@ -1389,9 +1389,13 @@
                             "id": "tBMXe7xGw",
                             "elementId": "Stage_ugoiTN-tBMXe7xGw",
                             "displayName": "Assess Affected Providers",
-                            "description": "Agent reviews claim telemetry from all 6 provider systems. Provider parent cases created.",
-                            "type": "process",
-                            "data": {},
+                            "description": "Initial assessment window: agent reviews claim telemetry from all 6 provider systems while provider parent cases are created. Modeled as a self-completing timer (PT5S) so Initial Response auto-advances on the canvas — no deploy-time process binding required.",
+                            "type": "wait-for-timer",
+                            "shouldRunOnlyOnce": true,
+                            "data": {
+                                "timerType": "timeDuration",
+                                "timeDuration": "PT5S"
+                            },
                             "isRequired": true,
                             "entryConditions": [
                                 {

@@ -97,3 +97,26 @@ Then re-spawn: run `ClearFlowIdealIncidentResponse` (isCascade=true) in the new 
 4. Decide + implement the `process` task fix (§3.2) — unblocks stage 1.
 5. SPEC-gate the caseplan task-wiring change → wire agent I/O → repack v1.0.7 → redeploy → spawn → watch it walk.
 6. Iterate stage-by-stage; the win condition is the case reaching **Closed** on its own, with the **6-parent fan** visible at Regulatory Response.
+
+---
+
+## 10. SESSION UPDATE 2026-06-04 — TRUE root cause found (the handoff's hypothesis was incomplete)
+
+**Done this session (all verified live):**
+- Updated tooling: `uip` CLI 1.1.1 (latest) + tools (solution/orchestrator/maestro) → **1.1.0**; `uipath` SDK **2.10.71 → 2.10.76** (root + all 3 coded-agent locks); UiPath/skills confirmed at `main` HEAD. Tests **580 passed / 7 skipped**.
+- **Caseplan fix (SPEC-approved):** Stage-1 `Assess Affected Providers` `process`/`data:{}` → **`wait-for-timer` PT5S** (self-completing). Canonical `maestro_case/clearflow-master-crisis/caseplan.json`.
+- **Deployed the 3 missing Coded Agents** (`claim-flow-anomaly-detector`, `multi-customer-pattern-detector`, `forensic-self-exam-agent`) — they were already published to the **tenant feed** (`0.1.0`) but never bound as processes in the case folder. Created process bindings in a fresh **`Shared/CascadeCare-v107`** (key `75fbea39-6ddd-4e8c-8f3f-244c9c91db28`). **All 7 agents + 3 cases + BPMN + flow now resolve in v107.** Single entry-point `main`, all inputs optional → agents run with no inputs.
+- Repacked + published **v1.0.7**, deployed+activated to v107, spawned `ClearFlowIdealIncidentResponse` (isCascade). Master case `clearflow-master-crisis-66132847` (instance `dede232c-…`) spawned **Running**.
+
+**THE REAL BLOCKER (why it STILL sits in Initial Response):**
+The runtime executes the **compiled `caseplan.json.bpmn`, NOT `caseplan.json`.** That `.bpmn` is **STALE** — generated **May 31**, 4 days before the current `caseplan.json`. So the deployed case ran the OLD compiled logic (empty `process` task that can't complete) → idle (`elements:[]`, `globals:{}` 404, no incidents/traces, no agent jobs). **Every caseplan edit since May 31 (this timer fix, slice-021 SLA, slice-023 re-entry) has been INERT at runtime.** `instance asset` reads `caseplan.json` (shows the timer) which masks the problem. Stale `.bpmn`: **master-crisis (4d)** and **stakeholder-parent (3d)**; grandchild OK. See memory `caseplan-bpmn-compile-gotcha`.
+
+**`.bpmn` is regenerated ONLY by the Studio Web browser canvas** — empirically verified this session that `uip solution upload` → `download --extract` returns the SAME stale `.bpmn` (no server compile); `pack` just zips on-disk `.bpmn`.
+
+**REMAINING STEPS (needs one browser action, then CLI finishes):**
+1. **[HUMAN/browser]** Open `clearflow-solution` in Studio Web → open the **`clearflow-master-crisis`** case in the canvas (and **`clearflow-stakeholder-parent`**) so the canvas recompiles `caseplan.json.bpmn`. Don't hand-edit; just open/let it render (save if prompted).
+2. `uip solution download 167dda12-98eb-47d9-f741-08debdbdd466 -d /tmp/x -n clearflow-solution --extract` → copy the regenerated `caseplan.json.bpmn` for master-crisis (+ stakeholder-parent) back into `maestro_case/<case>/` (canonical). Verify it now contains `wait-for-timer`/`PT5S` and NO bare `tBMXe7xGw` process task.
+3. `bash scripts/pack-solution.sh` → pack **v1.0.8** → publish → deploy to a fresh **`CascadeCare-v108`**.
+4. Re-create the 3 coded-agent process bindings in v108 (tenant packages already exist — just `uip or processes create --name <kebab> --package-key <kebab> --package-version 0.1.0 --folder-key <v108>`).
+5. Re-spawn `ClearFlowIdealIncidentResponse` (isCascade) in v108 → watch it walk Initial Response → … → Closed, with the **6-parent fan** at Regulatory Response.
+6. Idle instance `dede232c-…` in v107 can be canceled (`uip maestro case instance cancel`).
