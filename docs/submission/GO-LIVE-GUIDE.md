@@ -3,7 +3,7 @@
 > **Who this is for:** someone who has never touched UiPath, Maestro, Orchestrator, or Studio Web.
 > Every step says **who does it**, **exactly what to do**, **what you should see**, and **what to do if it goes wrong**.
 >
-> **Last updated:** 2026-06-04 (v1.0.5 deployed + activated to `Shared/CascadeCare-v105` with the spawn `folderId` fix; current step = **STEP 4**, re-trigger the BPMN to confirm the case spawns) · **Branch:** `slice-023-reentry-agent-memory` · **Tenant:** `staging.uipath.com/hackathon26_042/DefaultTenant`
+> **Last updated:** 2026-06-04 (v1.0.6 → `Shared/CascadeCare-v106`; spawn confirmed live + Data Fabric seeded + Demo Driver timer fixed; current step = **STEP 6**, run the 5 reversals) · **Branch:** `slice-023-reentry-agent-memory` · **Tenant:** `staging.uipath.com/hackathon26_042/DefaultTenant`
 >
 > **How to read the owner tags:**
 > - 🟢 **ME** = Claude Code can do this alone, offline, no tenant/browser. Just ask.
@@ -81,10 +81,11 @@ Your project is a **bundle of files in this repo**. To make it real, that bundle
 11. **Tag** `agenthack-2026-submission` (only *after* the live video exists).
 
 ### Current tenant deployments (live query, 2026-06-04)
-- ✅ **`CascadeCare-v105`** — folder key **`bc56e117-70f0-4234-b320-b751df1c4546`**, `clearflow-solution v1.0.5`, all 9 projects, **Active**. **← THIS is now your master deployment** (has isCascade + the spawn folderId fix).
-- ⤵️ **`CascadeCare-v104`** — folder key `82485e42-1f2a-4ec8-8621-2ebfc31b2dbe`, `v1.0.4`, Active but **superseded** (faults on spawn — no folder identity). Uninstall in Step 7.
-- ⤵️ **`CascadeCare-Full`** — folder key `73941f02-6602-4585-b9a8-5a391179845d`, `v1.0.3`, superseded (predates the fixes). Keep as fallback or uninstall.
-- 🧹 Stale/failed to remove: `CascadeCare-Demo` (v1.0.2), `CascadeCare-Live` (**Failed**, v1.0.1), `CascadeCare-Core` (`clearflow-core` v1.0.0).
+- ✅ **`CascadeCare-v106`** — folder key **`ba9208f7-cf5c-4504-9475-ff4472f8a65e`**, `clearflow-solution v1.0.6`, all 9 projects, **Active**. **← CURRENT master deployment** (isCascade + spawn folderId fix + Demo Driver timer fix). Run the demo here.
+- ⤵️ **`CascadeCare-v105`** — `bc56e117-70f0-4234-b320-b751df1c4546`, `v1.0.5`, superseded (Demo Driver faults on first timer — 190001). Uninstall in Step 7.
+- ⤵️ **`CascadeCare-v104`** — `82485e42-1f2a-4ec8-8621-2ebfc31b2dbe`, `v1.0.4`, superseded (spawn 170005). Uninstall.
+- ⤵️ **`CascadeCare-Full`** — `73941f02-6602-4585-b9a8-5a391179845d`, `v1.0.3`, superseded. Keep as fallback or uninstall.
+- 🧹 Stale/failed: `CascadeCare-Demo` (v1.0.2), `CascadeCare-Live` (**Failed**, v1.0.1), `CascadeCare-Core` (`clearflow-core` v1.0.0).
 
 ---
 
@@ -284,13 +285,15 @@ UIPATH_LIVE=1 bash scripts/seed_data_fabric.sh --apply
 
 ---
 
-### STEP 6 — Run the 5 reversals end-to-end (demo dry-run)
+### STEP 6 — Run the 5 reversals end-to-end (demo dry-run) ◀️ **YOU ARE HERE**
 **Owner:** 🔴 HUMAN-ONLY (browser)
 
 **Why:** This is your rehearsal. You want every transition to render cleanly *before* the camera is on.
 
+> **🧪 Run history (2026-06-04):** first Demo Driver run (v1.0.5) **faulted at the first timer** — incident **190001 "Invalid timer expression"**. Root cause: the flow's `core.logic.delay` definition was missing the `model.values` block that maps `timerValue` → the BPMN timer expression. **Fixed in v1.0.6** (commit `66e9dc1`) → deployed to **`CascadeCare-v106`**. Re-run there.
+
 **Do:**
-1. With the master case open (Step 4), the **Demo Driver Flow** (`maestro_flow/clearflow-demo-driver`) fires the reversal events at compressed intervals. Start it from **Maestro → Flows** in the same folder.
+1. Switch to the **`CascadeCare-v106`** folder. Start the **Demo Driver Flow** (`clearflow-demo-driver`) from **Maestro → Flows / Automations → Jobs → Start**. It fires the reversal events at compressed intervals (PT10S, PT1S, …).
 2. At **Reversal 4**, a **human-approval task** appears in **Action Center** → open it and **Approve** (this is the tri-party HITL gate).
 3. Watch the **case canvas** — stage transitions and the grandchild fan render here. This is your on-camera surface.
 
@@ -393,6 +396,7 @@ bash scripts/cleanup_deployments.sh --confirm    # actually uninstall the stale 
 | `Error 4004` | deploy run | Folder already holds a **failed** deployment | Fresh `--folder-name` or uninstall first |
 | `170005` "Required field 'folderId' missing in the input args to RPA task" | runtime, at a `StartCaseMgmtProcessAsync` / `StartJob` call activity | The activity has `releaseKey` but **no folder identity** | ✅ Fixed in v1.0.5: type `v2` + inline `name`/`folderPath` bindings (`resourceKey="clearflow-master-crisis"`) + keep `JobArguments` & `Process response`/`Orchestrator.RunJob` output |
 | Pack fails: `... does not support context input "_label"` / `missing required input payload "JobArguments"` / `output name must be "Process response"` | `uip solution pack` | The **CLI packer is the authoritative validator** for activity contracts — stricter than the Health analyzer and the Studio Web canvas | Read the packer error literally; it names every required/forbidden input. Trust it over the editor |
+| `190001` "Invalid timer expression — Value cannot be null (Parameter 'expression')" | runtime, Maestro Flow `core.logic.delay` | The flow's delay **definition** in `definitions[]` is missing `model.values` (maps `inputs.timerValue` → the BPMN timer) | ✅ Fixed v1.0.6: add `model.values` from `uip maestro flow registry get core.logic.delay`. The node `inputs` (timerValue) alone is not enough — the **definition** carries the BPMN mapping |
 | Flow runs, **no case spawns** | runtime | binding `clearflow-crisis` was dangling | Ensure re-deploy used the fixed `.zip` |
 | "does not exist" on a `=vars.X` | Studio Web editor | reference uses the wrong form — this editor resolves by **name**, not id; declarations must be `id==name`, process-scoped, `custom="true"` | Tell me; I fix the source + you re-upload |
 | "Process response" row multiplies | Studio Web editor | known canvas delete+save bug | **Never hand-delete**; fix source → re-upload (wholesale replace) |
