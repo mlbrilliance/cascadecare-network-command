@@ -23,6 +23,24 @@ simultaneously** on the Maestro Case canvas.
 > [`docs/demo/run-playbook.md`](docs/demo/run-playbook.md) (open items: API workflow re-add to
 > clear Orchestrator Error 2005, Maestro folder context, BPMN incident 1654).
 
+## Why This Matters — Healthcare Is UiPath's 2026 Vertical
+
+Healthcare is UiPath's **#1 vertical push for 2026**. At **ViVE 2026**, UiPath launched its
+agentic healthcare solutions — **Medical Records Summarization**, **Claim Denial Prevention**,
+and **Prior Authorization**. Those agents do the work; **CascadeCare is the Maestro Case layer
+that orchestrates them under fire.** When a payment-network crisis hits, CascadeCare coordinates
+the medical-records, claim-denial, and prior-auth agents across a multi-stakeholder cascade
+instead of leaving them to run in isolation — the **vertical bridge** built in slice **S024**.
+That makes CascadeCare immediately **adoptable by the health vertical**: it is the crisis
+orchestrator for the agents UiPath already ships.
+
+The scenario is dead-on the threat that vertical exists to survive. CascadeCare's fictional
+**ClearFlow Health Network** cascade is modeled on the real class of U.S. healthcare
+clearinghouse / payment-network cyberattacks of the mid-2020s — incidents that left vast numbers
+of providers unable to get paid and drove billions of dollars in downstream cost, among the most
+consequential healthcare cyber events on record. CascadeCare demonstrates how an AI-driven
+Maestro Case would manage exactly that, end to end.
+
 ## Demo: Five Reversals
 
 | # | Name | Day | Master goal shift |
