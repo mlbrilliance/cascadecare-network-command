@@ -1,0 +1,7 @@
+{
+  "projectVersion": "1.0.0",
+  "ProjectType": "ProcessOrchestration",
+  "Name": "CaseClosedNotification",
+  "description": "Maestro BPMN that sends a case-closure notification (Maestro.NotificationService) when the ClearFlow master crisis case enters the Closed stage. Invoked as the Automation/process task on the master case 'Closed' stage.",
+  "main": "case-closed-notification.bpmn"
+}
