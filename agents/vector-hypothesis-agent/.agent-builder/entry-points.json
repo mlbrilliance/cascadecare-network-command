@@ -1,0 +1,60 @@
+{
+  "$schema": "https://cloud.uipath.com/draft/2024-12/entry-point",
+  "$id": "entry-points.json",
+  "entryPoints": [
+    {
+      "filePath": "/content/agent.json",
+      "uniqueId": "1d36d20f-cf2b-459d-afa6-8db34dfe9620",
+      "type": "agent",
+      "input": {
+        "type": "object",
+        "properties": {
+          "forensic_findings": {
+            "type": "string",
+            "description": "ClearFlow internal forensic self-examination findings."
+          },
+          "vendor_attribution_signal": {
+            "type": "string",
+            "description": "Evidence signal describing attribution to the Nimbus Patient Engagement Platform vendor, including signal strength."
+          },
+          "affected_provider_ids": {
+            "type": "array",
+            "description": "Provider IDs affected by the claim-flow disruption (e.g. northstar, alpha, beta, gamma, delta, epsilon).",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "forensic_findings",
+          "vendor_attribution_signal",
+          "affected_provider_ids"
+        ]
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "vector_determination": {
+            "type": "string",
+            "description": "The determined attack vector.",
+            "enum": [
+              "clearflow",
+              "nimbus",
+              "inconclusive"
+            ]
+          },
+          "confidence": {
+            "type": "number",
+            "description": "Confidence in the determination, 0.0 to 1.0.",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "rationale": {
+            "type": "string",
+            "description": "Decision-support explanation of the vector determination."
+          }
+        }
+      }
+    }
+  ]
+}

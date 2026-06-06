@@ -1,0 +1,22 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "BAA-corpus",
+    "kind": "index",
+    "apiVersion": "ecs.uipath.com/v2",
+    "dependencies": [],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "Shared"
+      }
+    ],
+    "spec": {
+      "name": "BAA-corpus",
+      "indexConfigurationJson": ""
+    },
+    "locks": [],
+    "key": "bc38c04c-08fd-4e0a-922a-95c31401c72f",
+    "files": []
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "$schema": "https://cloud.uipath.com/draft/2024-12/entry-point",
+  "$id": "entry-points.json",
+  "entryPoints": [
+    {
+      "filePath": "/content/agent.json",
+      "uniqueId": "11a764fc-87d4-4e86-bdb8-3e87571ad7c4",
+      "type": "agent",
+      "input": {
+        "type": "object",
+        "properties": {
+          "payer_demand": {
+            "type": "string",
+            "description": "The payer demand asserting a contractual right (primarily from Apex Health Plan)."
+          },
+          "affected_provider_baas": {
+            "type": "array",
+            "description": "The affected providers' BAA terms relevant to the payer demand.",
+            "items": {
+              "type": "string"
+            }
+          },
+          "clearflow_obligations": {
+            "type": "string",
+            "description": "ClearFlow's own stated obligations (including any insurer directives from Aurora Specialty)."
+          }
+        },
+        "required": [
+          "payer_demand",
+          "affected_provider_baas",
+          "clearflow_obligations"
+        ]
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "conflict_detected": {
+            "type": "boolean",
+            "description": "Whether a tri-party obligation conflict exists."
+          },
+          "hitl_form_payload": {
+            "type": "object",
+            "description": "Structured payload that drives the Action Center tri-party approval form.",
+            "properties": {
+              "title": {
+                "type": "string"
+              },
+              "priority": {
+                "type": "string"
+              },
+              "parties": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "payer_demand_summary": {
+                "type": "string"
+              },
+              "conflicting_baa_summary": {
+                "type": "string"
+              },
+              "clearflow_obligation_summary": {
+                "type": "string"
+              },
+              "options": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "recommended_option": {
+                "type": "string"
+              }
+            }
+          },
+          "recommended_action": {
+            "type": "string",
+            "description": "One-line decision-support recommendation for counsel and leadership review."
+          }
+        }
+      }
+    }
+  ]
+}

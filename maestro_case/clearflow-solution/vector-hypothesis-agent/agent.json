@@ -48,8 +48,8 @@
       "confidence": {
         "type": "number",
         "description": "Confidence in the determination, 0.0 to 1.0.",
-        "minimum": 0.0,
-        "maximum": 1.0
+        "minimum": 0,
+        "maximum": 1
       },
       "rationale": {
         "type": "string",
