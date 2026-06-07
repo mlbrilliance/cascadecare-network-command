@@ -1,0 +1,28 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "webfiji",
+    "kind": "connection",
+    "type": "uipath-salesforce-slack",
+    "apiVersion": "integrationservice.uipath.com/v1",
+    "isOverridable": true,
+    "dependencies": [],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "connectorName": "Slack",
+      "name": "webfiji",
+      "authenticationType": "AuthenticateAfterDeployment",
+      "connectorVersion": "2.14.3",
+      "connectorKey": "uipath-salesforce-slack",
+      "pollingInterval": 5
+    },
+    "locks": [],
+    "key": "80566cbd-c70a-4f1e-bc34-2c1b262918f5",
+    "files": []
+  }
+}
