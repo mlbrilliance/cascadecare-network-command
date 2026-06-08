@@ -1,0 +1,5 @@
+{
+  "Name": "register-stakeholder-aw",
+  "ProjectType": "Api",
+  "main": "main.json"
+}

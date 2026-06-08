@@ -1,6 +1,0 @@
-{
-  "ProjectType": "Function",
-  "Name": "generate-audit-record",
-  "Description": "Mock coded process: produces an immutable audit-record reference for a filed obligation response (CascadeCare obligation-grandchild Response).",
-  "MainFile": null
-}

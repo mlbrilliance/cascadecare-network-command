@@ -1,6 +1,0 @@
-{
-  "ProjectType": "Function",
-  "Name": "register-stakeholder",
-  "Description": "Mock coded process: registers an affected provider stakeholder and pulls its BAA reference (CascadeCare stakeholder-parent Onboarding).",
-  "MainFile": null
-}

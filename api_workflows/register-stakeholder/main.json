@@ -1,0 +1,81 @@
+{
+  "document": {
+    "dsl": "1.0.0",
+    "name": "register-stakeholder — Register Stakeholder & Pull BAA",
+    "version": "0.0.1",
+    "namespace": "cascadecare",
+    "metadata": {
+      "description": "Integration Service API Workflow for the Stakeholder-Parent 'Stakeholder Onboarding' stage. Registers an affected provider customer and pulls its Business Associate Agreement reference. DEPLOY-TIME NOTE: the Data Fabric reads (qem:Provider[slug=<provider_slug>], qem:BAA[providerSlug=<provider_slug>]) are resolved at deploy via 'uip api-workflow registry stub'; here the output is shaped deterministically (no random) from the workflow inputs by a JavaScript/Assign activity.",
+      "variables": { "schema": { "format": "json", "document": { "type": "object", "properties": { "registrationPayload": { "type": "object", "default": {} } }, "title": "Variables" } } }
+    }
+  },
+  "input": {
+    "schema": {
+      "format": "json",
+      "document": {
+        "type": "object",
+        "properties": {
+          "stakeholder_id": { "type": "string", "default": "northstar" },
+          "master_case_id": { "type": "string", "default": "clearflow-master-crisis" },
+          "provider_slug": { "type": "string", "default": "northstar" }
+        },
+        "title": "Inputs"
+      }
+    }
+  },
+  "output": {
+    "schema": {
+      "format": "json",
+      "document": {
+        "type": "object",
+        "properties": {
+          "stakeholder_id": { "type": "string" },
+          "baa_id": { "type": "string" },
+          "onboarding_status": { "type": "string" },
+          "registered_scope": { "type": "string" }
+        },
+        "title": "Outputs"
+      }
+    }
+  },
+  "do": [
+    {
+      "Sequence_1": {
+        "do": [
+          {
+            "WorkflowStart": {
+              "set": "${Object.entries($workflow.definition?.document?.metadata?.variables?.schema?.document?.properties || {}).reduce((acc, [name, def]) => ({ ...acc, [name]: def?.default }), {}) }",
+              "output": { "as": "${$input}" },
+              "export": { "as": "{ ...$context, variables: { ...$context.variables, ...$output } }" },
+              "metadata": { "activityType": "Assign", "displayName": "Workflow start", "fullName": "Assign", "isTransparent": true }
+            }
+          },
+          {
+            "Javascript_RegisterStakeholder": {
+              "run": {
+                "script": {
+                  "code": "var slug = String($workflow.input.provider_slug || $workflow.input.stakeholder_id || 'northstar').toLowerCase(); var names = { northstar: 'Northstar Regional Health', alpha: 'Alpha Academic Medical Center', beta: 'Beta Community Hospital', gamma: 'Gamma Health Partners', delta: 'Delta Surgical Institute', epsilon: \"Epsilon Children's Hospital\" }; var scopes = { northstar: '7-hospital system BAA covering pricing-engine and payment-network services', alpha: 'urban academic medical center BAA covering inpatient and research data flows', beta: 'rural community hospital BAA covering outpatient and ED claim flows', gamma: 'multi-state for-profit chain BAA covering cross-jurisdiction claim flows', delta: 'specialty surgical center BAA covering perioperative claim flows', epsilon: \"children's hospital BAA covering pediatric claim flows\" }; var display = names[slug] || 'the affected provider'; var scope = scopes[slug] || 'provider BAA covering claim and remittance flows'; return { stakeholder_id: $workflow.input.stakeholder_id || slug, baa_id: 'BAA-' + slug.toUpperCase(), onboarding_status: 'registered', registered_scope: 'Registered ' + display + '; pulled ' + scope + '.' };",
+                  "language": "javascript",
+                  "arguments": "${{ \"$context\": $context, \"$workflow\": $workflow, \"$input\": $input }}"
+                }
+              },
+              "export": { "as": "{ ...$context, outputs: { ...$context?.outputs, \"Javascript_RegisterStakeholder\": $output } }" },
+              "metadata": { "activityType": "JsInvoke", "displayName": "Register Stakeholder & Pull BAA", "fullName": "JsInvoke" }
+            }
+          },
+          {
+            "Response_1": {
+              "response": "${{ stakeholder_id: $context.outputs.Javascript_RegisterStakeholder.stakeholder_id, baa_id: $context.outputs.Javascript_RegisterStakeholder.baa_id, onboarding_status: $context.outputs.Javascript_RegisterStakeholder.onboarding_status, registered_scope: $context.outputs.Javascript_RegisterStakeholder.registered_scope }}",
+              "markJobAsFailed": false,
+              "then": "end",
+              "export": { "as": "{ ...$context, outputs: { ...$context?.outputs, \"Response_1\": $output } }" },
+              "metadata": { "activityType": "Response", "displayName": "Response", "fullName": "Response" }
+            }
+          }
+        ],
+        "metadata": { "activityType": "Sequence", "displayName": "Sequence", "fullName": "Sequence" }
+      }
+    }
+  ],
+  "evaluate": { "mode": "strict", "language": "javascript" }
+}
