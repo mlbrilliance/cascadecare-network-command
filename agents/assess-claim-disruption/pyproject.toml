@@ -1,0 +1,18 @@
+[project]
+name = "assess-claim-disruption"
+version = "0.1.0"
+description = "Mock coded process: scores claim-flow disruption and liquidity runway for a stakeholder (CascadeCare stakeholder-parent Impact Assessment)."
+authors = [{ name = "CascadeCare Network Command contributors" }]
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic>=2.0",
+    "uipath>=2.10",
+]
+
+[dependency-groups]
+dev = [
+    "uipath-dev",
+]
+
+[tool.uipath]
+type = "agent"

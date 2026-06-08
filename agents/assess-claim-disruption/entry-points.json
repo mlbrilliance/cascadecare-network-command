@@ -1,0 +1,36 @@
+{
+    "$schema": "https://cloud.uipath.com/draft/2024-12/entry-point",
+    "$id": "entry-points.json",
+    "entryPoints": [
+        {
+            "filePath": "main",
+            "uniqueId": "a1b2c3d4-0002-4002-8002-000000000002",
+            "type": "function",
+            "input": {
+                "type": "object",
+                "properties": {
+                    "stakeholder_id": { "default": "", "title": "Stakeholder Id", "type": "string" },
+                    "baseline_claim_volume": { "title": "Baseline Claim Volume", "type": "number" },
+                    "observed_claim_volume": { "title": "Observed Claim Volume", "type": "number" },
+                    "business_continuity_runway_days": { "title": "Business Continuity Runway Days", "type": "integer" }
+                },
+                "required": [],
+                "title": "Input"
+            },
+            "output": {
+                "type": "object",
+                "properties": {
+                    "stakeholder_id": { "default": "", "title": "Stakeholder Id", "type": "string" },
+                    "disruption_score": { "default": 0.0, "title": "Disruption Score", "type": "number" },
+                    "liquidity_runway_days": { "default": 0, "title": "Liquidity Runway Days", "type": "integer" },
+                    "impact_tier": { "default": "none", "title": "Impact Tier", "type": "string" },
+                    "summary": { "default": "", "title": "Summary", "type": "string" },
+                    "error_type": { "default": "", "title": "Error Type", "type": "string" },
+                    "error_message": { "default": "", "title": "Error Message", "type": "string" }
+                },
+                "required": [],
+                "title": "Output"
+            }
+        }
+    ]
+}
