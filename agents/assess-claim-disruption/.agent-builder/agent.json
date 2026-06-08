@@ -108,5 +108,8 @@
       }
     }
   },
-  "type": "lowCode"
+  "type": "lowCode",
+  "projectId": "c0ffee01-1111-4a11-8a11-000000000a11",
+  "resources": [],
+  "features": []
 }

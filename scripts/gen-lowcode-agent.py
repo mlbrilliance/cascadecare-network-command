@@ -105,7 +105,8 @@ def build(spec):
             shutil.rmtree(p)
 
     agent_json = {"version": "1.1.0", "settings": SETTINGS, "inputSchema": in_schema,
-                  "outputSchema": out_schema, "metadata": METADATA, "type": "lowCode", "messages": messages}
+                  "outputSchema": out_schema, "metadata": METADATA, "type": "lowCode", "messages": messages,
+                  "guardrails": [], "projectId": spec["agent_id"]}
     _w(os.path.join(d, "agent.json"), agent_json)
 
     entry = {"$schema": "https://cloud.uipath.com/draft/2024-12/entry-point", "$id": "entry-points.json",
@@ -118,7 +119,8 @@ def build(spec):
     ab = os.path.join(d, ".agent-builder")
     os.makedirs(ab, exist_ok=True)
     ab_agent = {"id": spec["agent_id"], "version": "1.1.0", "name": spec["name"], "metadata": METADATA,
-                "messages": messages, "settings": SETTINGS, "inputSchema": in_schema, "outputSchema": out_schema, "type": "lowCode"}
+                "messages": messages, "settings": SETTINGS, "inputSchema": in_schema, "outputSchema": out_schema,
+                "type": "lowCode", "projectId": spec["agent_id"], "resources": [], "features": []}
     _w(os.path.join(ab, "agent.json"), ab_agent)
     _w(os.path.join(ab, "bindings.json"), {"version": "2.0", "resources": []})
     _w(os.path.join(ab, "entry-points.json"), entry)

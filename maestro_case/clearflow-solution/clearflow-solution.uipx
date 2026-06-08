@@ -1,52 +1,62 @@
 {
-    "DocVersion": "1.0.0",
-    "StudioMinVersion": "2025.10.0",
-    "SolutionId": "0fc02d30-9645-45b6-4ed8-08dec248fc52",
-    "Projects": [
-        {
-            "Type": "CaseManagement",
-            "ProjectRelativePath": "clearflow-master-crisis/project.uiproj",
-            "Id": "7e3bbea2-e5b1-4427-84bc-675e25d9a5a8"
-        },
-        {
-            "Type": "CaseManagement",
-            "ProjectRelativePath": "clearflow-stakeholder-parent/project.uiproj",
-            "Id": "3b9700dd-facf-4fba-be12-122a56c8ecdb"
-        },
-        {
-            "Type": "CaseManagement",
-            "ProjectRelativePath": "clearflow-obligation-grandchild/project.uiproj",
-            "Id": "12ae6713-8ad0-4480-8064-bbba88e909f4"
-        },
-        {
-            "Type": "Agent",
-            "ProjectRelativePath": "baa-boundary-reasoner/project.uiproj",
-            "Id": "91e99654-b12f-4612-b1d6-6353f80740de"
-        },
-        {
-            "Type": "Agent",
-            "ProjectRelativePath": "fiduciary-conflict-detector/project.uiproj",
-            "Id": "74cd0a7a-ce88-4a78-a19e-a1504693a4d1"
-        },
-        {
-            "Type": "Agent",
-            "ProjectRelativePath": "negligent-monitoring-risk-agent/project.uiproj",
-            "Id": "1e3124f0-31e7-4fb7-a3d7-095c85f94be0"
-        },
-        {
-            "Type": "Agent",
-            "ProjectRelativePath": "vector-hypothesis-agent/project.uiproj",
-            "Id": "4ff897b9-6ed4-4395-a531-8401cf97db91"
-        },
-        {
-            "Type": "processOrchestration",
-            "ProjectRelativePath": "clearflow-ideal-incident-response/project.uiproj",
-            "Id": "e4656843-1743-4a8f-88c3-cf6c3205265c"
-        },
-        {
-            "Type": "Flow",
-            "ProjectRelativePath": "clearflow-demo-driver/project.uiproj",
-            "Id": "77a02903-c6ea-4ea6-b5df-42fcaaf0fe71"
-        }
-    ]
+  "DocVersion": "1.0.0",
+  "StudioMinVersion": "2025.10.0",
+  "SolutionId": "0fc02d30-9645-45b6-4ed8-08dec248fc52",
+  "Projects": [
+    {
+      "Type": "CaseManagement",
+      "ProjectRelativePath": "clearflow-master-crisis/project.uiproj",
+      "Id": "7e3bbea2-e5b1-4427-84bc-675e25d9a5a8"
+    },
+    {
+      "Type": "CaseManagement",
+      "ProjectRelativePath": "clearflow-stakeholder-parent/project.uiproj",
+      "Id": "3b9700dd-facf-4fba-be12-122a56c8ecdb"
+    },
+    {
+      "Type": "CaseManagement",
+      "ProjectRelativePath": "clearflow-obligation-grandchild/project.uiproj",
+      "Id": "12ae6713-8ad0-4480-8064-bbba88e909f4"
+    },
+    {
+      "Type": "Agent",
+      "ProjectRelativePath": "baa-boundary-reasoner/project.uiproj",
+      "Id": "91e99654-b12f-4612-b1d6-6353f80740de"
+    },
+    {
+      "Type": "Agent",
+      "ProjectRelativePath": "fiduciary-conflict-detector/project.uiproj",
+      "Id": "74cd0a7a-ce88-4a78-a19e-a1504693a4d1"
+    },
+    {
+      "Type": "Agent",
+      "ProjectRelativePath": "negligent-monitoring-risk-agent/project.uiproj",
+      "Id": "1e3124f0-31e7-4fb7-a3d7-095c85f94be0"
+    },
+    {
+      "Type": "Agent",
+      "ProjectRelativePath": "vector-hypothesis-agent/project.uiproj",
+      "Id": "4ff897b9-6ed4-4395-a531-8401cf97db91"
+    },
+    {
+      "Type": "processOrchestration",
+      "ProjectRelativePath": "clearflow-ideal-incident-response/project.uiproj",
+      "Id": "e4656843-1743-4a8f-88c3-cf6c3205265c"
+    },
+    {
+      "Type": "Flow",
+      "ProjectRelativePath": "clearflow-demo-driver/project.uiproj",
+      "Id": "77a02903-c6ea-4ea6-b5df-42fcaaf0fe71"
+    },
+    {
+      "Type": "Agent",
+      "ProjectRelativePath": "assess-claim-disruption/project.uiproj",
+      "Id": "a55e5500-1111-4a11-8a11-000000000a11"
+    },
+    {
+      "Type": "Agent",
+      "ProjectRelativePath": "classify-obligation/project.uiproj",
+      "Id": "c1a55ee0-2222-4b22-8b22-000000000b22"
+    }
+  ]
 }
