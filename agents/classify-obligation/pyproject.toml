@@ -1,7 +1,7 @@
 [project]
 name = "classify-obligation"
 version = "0.1.0"
-description = "Mock coded process: classifies a per-BAA/per-regulator obligation's type, jurisdiction, and severity (CascadeCare obligation-grandchild Intake)."
+description = "Mock coded process: classifies a per-BAA/per-regulator obligation type, jurisdiction, and severity (CascadeCare obligation-grandchild Intake)."
 authors = [{ name = "CascadeCare Network Command contributors" }]
 requires-python = ">=3.12"
 dependencies = [
