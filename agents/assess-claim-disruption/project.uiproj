@@ -1,6 +1,6 @@
 {
-  "ProjectType": "Function",
-  "Name": "assess-claim-disruption",
-  "Description": "Mock coded process: scores claim-flow disruption and liquidity runway for a stakeholder (CascadeCare stakeholder-parent Impact Assessment).",
+  "ProjectType": "Agent",
+  "Name": "AssessClaimDisruptionAgent",
+  "Description": null,
   "MainFile": null
 }

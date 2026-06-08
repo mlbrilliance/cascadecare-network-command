@@ -1,8 +1,0 @@
-{
-  "runtimeOptions": {
-    "isConversational": false
-  },
-  "functions": {
-    "main": "agent.py:main"
-  }
-}

@@ -1,6 +1,6 @@
 {
-  "ProjectType": "Function",
-  "Name": "classify-obligation",
-  "Description": "Mock coded process: classifies a per-BAA/per-regulator obligation type, jurisdiction, and severity (CascadeCare obligation-grandchild Intake).",
+  "ProjectType": "Agent",
+  "Name": "ClassifyObligationAgent",
+  "Description": null,
   "MainFile": null
 }
