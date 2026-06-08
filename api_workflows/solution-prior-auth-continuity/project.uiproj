@@ -1,0 +1,5 @@
+{
+  "Name": "solution-prior-auth-continuity",
+  "ProjectType": "Api",
+  "main": "main.json"
+}

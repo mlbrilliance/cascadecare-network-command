@@ -1,0 +1,5 @@
+{
+  "Name": "solution-medical-records-summarization",
+  "ProjectType": "Api",
+  "main": "main.json"
+}
