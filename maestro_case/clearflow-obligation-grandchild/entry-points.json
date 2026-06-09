@@ -4,7 +4,7 @@
   "entryPoints": [
     {
       "filePath": "/content/caseplan.json.bpmn#b12c4b51-1b2b-468a-9fc0-8f843b12bbbc",
-      "uniqueId": "468d60f1-0562-4be9-ae1e-2e05e0ac3ac3",
+      "uniqueId": "413f5111-7d00-4ca5-87ab-63e3ceb9217c",
       "type": "CaseManagement",
       "input": {
         "type": "object",
@@ -13,8 +13,7 @@
       "output": {
         "type": "object",
         "properties": {}
-      },
-      "displayName": "Trigger 1"
+      }
     }
   ]
 }

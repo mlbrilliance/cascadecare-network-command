@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:uipath="http://uipath.org/schema/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" exporter="UiPath Studio Web (https://uipath.com)" exporterVersion="b7765727">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:uipath="http://uipath.org/schema/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" exporter="UiPath Studio Web (https://uipath.com)" exporterVersion="e22c34e4">
   <bpmn:message id="mainEventSubprocessMessage" name="MainEventSubprocessMessage" />
   <bpmn:message id="tasksEventSubprocessMessage" name="TasksEventSubprocessMessage" />
   <bpmn:message id="endCaseMessage" name="EndCaseMessage" />
@@ -33,12 +33,20 @@
         <uipath:inputOutput id="stageHasRun_Obligation_Discharged" name="Obligation Discharged has run before" type="boolean" elementId="CaseInitialVariablesSetupNode" />
         <uipath:inputOutput id="caseEndMessageResponse" name="CaseEndMessageResponse" type="json" elementId="caseEndMessageCatchEvent" custom="true"><![CDATA[{}]]></uipath:inputOutput>
       </uipath:variables>
-      <uipath:caseManagement version="1.0"><![CDATA[{"root":{"id":"root","type":"case-management:root","version":"23.0.0","name":"clearflow-obligation-grandchild","caseIdentifier":"CFOG","caseIdentifierType":"constant","caseAppEnabled":true,"publishVersion":2,"caseUnifiedSchemaEnabled":true,"data":{"workflowId":"case-c8zQ2eMNGs","slaRules":[{"expression":"=js:true","count":21,"unit":"d","escalationRule":[]}],"intsvcActivityConfig":"v2","uipath":{"bindings":[],"variables":{"inputs":[],"outputs":[],"inputOutputs":[{"id":"var_obligation_type","name":"ObligationType","type":"string","custom":true,"elementId":"root","default":"baa-compliance"},{"id":"var_subpoena_reference_id","name":"SubpoenaReferenceId","type":"string","custom":true,"elementId":"root","default":""},{"id":"var_parent_case_id","name":"ParentCaseId","type":"string","custom":true,"elementId":"root","default":""},{"id":"var_master_case_id","name":"MasterCaseId","type":"string","custom":true,"elementId":"root","default":""}]}}},"caseExitConditions":[{"id":"Condition_OGexit","displayName":"Obligation discharged","rules":[[{"rule":"required-stages-completed","id":"Rule_OGexit"}]],"marksCaseComplete":true}],"caseDirectlyPassTaskOutputs":true},"nodes":[{"id":"Stage_6x5Dzu","type":"case-management:Stage","data":{"label":"Obligation Intake","parentElement":{"id":"root","type":"case-management:root"},"isInvalidDropTarget":false,"isPendingParent":false,"tasks":[[{"id":"tE0pwsV58","elementId":"Stage_6x5Dzu-tE0pwsV58","displayName":"Classify Obligation","description":"Determines whether this obligation is a BAA-compliance, regulatory-response, or investigation item and sets ObligationType.","type":"process","data":{},"isRequired":true,"entryConditions":[{"id":"Condition_83MVvd","displayName":"Stage entered","rules":[[{"rule":"current-stage-entered","id":"Rule_xsk0IY"}]]}]}]],"description":"Receive and classify the obligation handed down from the stakeholder-parent case.","entryConditions":[{"id":"Condition_2qG09U","displayName":"Grandchild case opened","rules":[[{"rule":"case-entered","id":"Rule_mR26pY"}]]}],"exitConditions":[{"id":"Condition_QrfYAc","displayName":"Stage complete","rules":[[{"rule":"required-tasks-completed","id":"Rule_AIY4vA"}]],"marksStageComplete":true}]},"style":{"width":304},"measured":{"width":304,"height":206},"width":304,"position":{"x":320,"y":224}},{"id":"Stage_F95sBP","type":"case-management:Stage","data":{"label":"Obligation Response","parentElement":{"id":"root","type":"case-management:root"},"isInvalidDropTarget":false,"isPendingParent":false,"tasks":[[{"id":"t9BUmAX8k","elementId":"Stage_F95sBP-t9BUmAX8k","displayName":"Prepare & File Obligation Response","description":"HUMAN ACTION: prepares the obligation response document and files it with the requesting party (regulator, payer, or counsel) within the BAA / subpoena deadline.","type":"action","data":{"taskTitle":"Prepare & File Obligation Response","priority":"High"},"isRequired":true,"entryConditions":[{"id":"Condition_3UWLDS","displayName":"Stage entered","rules":[[{"rule":"current-stage-entered","id":"Rule_iUP6VH"}]]}]}],[{"id":"tIy5SWPeX","elementId":"Stage_F95sBP-tIy5SWPeX","displayName":"Generate Audit Record","description":"Writes the discharge audit record (who, what, when, under which privilege flag) for the master crisis case's compliance ledger.","type":"process","data":{},"isRequired":true,"entryConditions":[{"id":"Condition_3o94Ug","displayName":"After response filed","rules":[[{"rule":"selected-tasks-completed","id":"Rule_sf28C2","selectedTasksIds":["t9BUmAX8k"]}]]}]}]],"slaRules":[{"expression":"=js:true","count":9,"unit":"d","escalationRule":[{"id":"esc_SLAbr1","displayName":"SLA-Breach Notification","triggerInfo":{"type":"sla-breached"},"action":{"type":"notification","recipients":[{"scope":"User","target":"=vars.ParentCaseId","value":"Parent case owner"},{"scope":"User","target":"=metadata.caseOwner","value":"Grandchild case owner"}],"messageTemplate":"=js:`Obligation response SLA breached for ${vars.ObligationType} (case ${metadata.caseId}). Immediate action required.`"}},{"id":"esc_SLAar1","displayName":"SLA At-Risk Notification","triggerInfo":{"type":"at-risk","atRiskPercentage":80},"action":{"type":"notification","recipients":[{"scope":"User","target":"=vars.ParentCaseId","value":"Parent case owner"}],"messageTemplate":"=js:`Obligation response approaching SLA breach for ${vars.ObligationType} (case ${metadata.caseId}).`"}}]}],"description":"Prepare, file, and audit the obligation response. SLA-breach + at-risk targeted notifications fire via the stage escalation rules (Maestro notification action) to the ParentCaseId owner and grandchild case owner.","entryConditions":[{"id":"Condition_M4JaGg","displayName":"Previous stage completed","rules":[[{"rule":"selected-stage-completed","id":"Rule_Kx3yWo","selectedStageId":"Stage_6x5Dzu"}]]}],"exitConditions":[{"id":"Condition_UFtUMD","displayName":"Stage complete","rules":[[{"rule":"required-tasks-completed","id":"Rule_Ce2Jzo"}]],"marksStageComplete":true}]},"style":{"width":304},"measured":{"width":304,"height":254},"width":304,"position":{"x":688,"y":224}},{"id":"Stage_otF4rP","type":"case-management:Stage","data":{"label":"Obligation Discharged","parentElement":{"id":"root","type":"case-management:root"},"isInvalidDropTarget":false,"isPendingParent":false,"tasks":[],"description":"Terminal stage. The obligation has been responded to, filed, and audited.","isRequired":true,"entryConditions":[{"id":"Condition_4Bu4ZR","displayName":"Previous stage completed","rules":[[{"rule":"selected-stage-completed","id":"Rule_IQrSGS","selectedStageId":"Stage_F95sBP"}]]}],"exitConditions":[{"id":"Condition_3TO44A","displayName":"Obligation closed","rules":[[{"rule":"required-tasks-completed","id":"Rule_fzTeil"}]],"marksStageComplete":true}]},"style":{"width":304},"measured":{"width":304,"height":158},"width":304,"position":{"x":1056,"y":224}},{"id":"b12c4b51-1b2b-468a-9fc0-8f843b12bbbc","type":"case-management:Trigger","data":{"displayName":"Trigger 1","triggerType":"manual","isInterrupting":false,"runOnlyOnce":true,"marksStageComplete":false},"style":{"width":96,"height":96},"measured":{"width":96,"height":96},"width":96,"height":96,"position":{"x":160,"y":208}}],"edges":[{"id":"edge_OGtrg1","source":"b12c4b51-1b2b-468a-9fc0-8f843b12bbbc","target":"Stage_6x5Dzu","sourceHandle":"b12c4b51-1b2b-468a-9fc0-8f843b12bbbc____source____right","targetHandle":"Stage_6x5Dzu____target____left","data":{"label":"Grandchild Case Spawned"},"type":"case-management:TriggerEdge","style":{"strokeWidth":3},"zIndex":1001},{"id":"edge_OGe001","source":"Stage_6x5Dzu","target":"Stage_F95sBP","sourceHandle":"Stage_6x5Dzu____source____right","targetHandle":"Stage_F95sBP____target____left","data":{"label":"Obligation classified","isReEntry":false},"type":"case-management:Edge"},{"id":"edge_OGe002","source":"Stage_F95sBP","target":"Stage_otF4rP","sourceHandle":"Stage_F95sBP____source____right","targetHandle":"Stage_otF4rP____target____left","data":{"label":"Response filed & audited","isReEntry":false},"type":"case-management:Edge"}]}]]></uipath:caseManagement>
+      <uipath:bindings version="v1">
+        <uipath:binding id="bLcPAKMGn" name="folderPath" type="string" default="" resource="process" resourceSubType="Api" resourceKey="generate-audit-record" propertyAttribute="folderPath" />
+        <uipath:binding id="bgpbpQQK4" name="name" type="string" default="generate-audit-record" resource="process" resourceSubType="Api" resourceKey="generate-audit-record" propertyAttribute="name" />
+        <uipath:binding id="bXm1df5ZE" name="folderPath" type="string" default="" resource="process" resourceSubType="Agent" resourceKey="classify-obligation" propertyAttribute="folderPath" />
+        <uipath:binding id="bLqfLE3kT" name="name" type="string" default="classify-obligation" resource="process" resourceSubType="Agent" resourceKey="classify-obligation" propertyAttribute="name" />
+        <uipath:binding id="bGCAppNm1" name="name" type="string" default="Regulatory/Contractual Obligation Response" resource="app" resourceKey="Shared/CascadeCare-v110.Regulatory/Contractual Obligation Response" propertyAttribute="name" />
+        <uipath:binding id="bGCAppFp2" name="folderPath" type="string" default="Shared/CascadeCare-v110" resource="app" resourceKey="Shared/CascadeCare-v110.Regulatory/Contractual Obligation Response" propertyAttribute="folderPath" />
+      </uipath:bindings>
+      <uipath:caseManagement version="1.0"><![CDATA[{"root":{"id":"root","type":"case-management:root","version":"23.0.0","name":"clearflow-obligation-grandchild","caseIdentifier":"CFOG","caseIdentifierType":"constant","caseAppEnabled":true,"publishVersion":2,"caseDirectlyPassTaskOutputs":true,"caseUnifiedSchemaEnabled":true,"data":{"workflowId":"case-c8zQ2eMNGs","slaRules":[{"expression":"=js:true","count":21,"unit":"d","escalationRule":[]}],"intsvcActivityConfig":"v2","uipath":{"bindings":[{"id":"bLcPAKMGn","name":"folderPath","type":"string","resource":"process","resourceKey":"generate-audit-record","default":"","propertyAttribute":"folderPath","resourceSubType":"Api"},{"id":"bgpbpQQK4","name":"name","type":"string","resource":"process","resourceKey":"generate-audit-record","default":"generate-audit-record","propertyAttribute":"name","resourceSubType":"Api"},{"id":"bXm1df5ZE","name":"folderPath","type":"string","resource":"process","resourceKey":"classify-obligation","default":"","propertyAttribute":"folderPath","resourceSubType":"Agent"},{"id":"bLqfLE3kT","name":"name","type":"string","resource":"process","resourceKey":"classify-obligation","default":"classify-obligation","propertyAttribute":"name","resourceSubType":"Agent"}],"variables":{"inputs":[],"outputs":[],"inputOutputs":[{"id":"var_obligation_type","name":"ObligationType","type":"string","custom":true,"elementId":"root","default":"baa-compliance"},{"id":"var_subpoena_reference_id","name":"SubpoenaReferenceId","type":"string","custom":true,"elementId":"root","default":""},{"id":"var_parent_case_id","name":"ParentCaseId","type":"string","custom":true,"elementId":"root","default":""},{"id":"var_master_case_id","name":"MasterCaseId","type":"string","custom":true,"elementId":"root","default":""}]}}},"caseExitConditions":[{"id":"Condition_OGexit","displayName":"Obligation discharged","rules":[[{"rule":"required-stages-completed","id":"Rule_OGexit"}]],"marksCaseComplete":true}]},"nodes":[{"style":{"width":304},"measured":{"width":304,"height":206},"width":304,"position":{"x":320,"y":224},"id":"Stage_6x5Dzu","type":"case-management:Stage","data":{"label":"Obligation Intake","parentElement":{"id":"root","type":"case-management:root"},"isInvalidDropTarget":false,"isPendingParent":false,"tasks":[[{"id":"tE0pwsV58","elementId":"Stage_6x5Dzu-tE0pwsV58","displayName":"Classify Obligation","description":"Determines whether this obligation is a BAA-compliance, regulatory-response, or investigation item and sets ObligationType.","type":"agent","data":{"name":"=bindings.bLqfLE3kT","folderPath":"=bindings.bXm1df5ZE","inputs":[{"name":"obligation_type","displayName":"obligation_type","value":"","type":"string","description":"The raised obligation, e.g. subpoena-response | breach-notification | baa-disclosure | audit-cooperation.","default":"subpoena-response","required":false,"id":"vGggmgYmz","var":"vGggmgYmz","elementId":"Stage_6x5Dzu-tE0pwsV58"},{"name":"jurisdiction","displayName":"jurisdiction","value":"","type":"string","description":"The obligation's jurisdiction, e.g. TN-DOI | federal | contractual.","default":"TN-DOI","required":false,"id":"vKZHvjAV8","var":"vKZHvjAV8","elementId":"Stage_6x5Dzu-tE0pwsV58"},{"name":"baa_reference","displayName":"baa_reference","value":"","type":"string","description":"The originating Business Associate Agreement reference.","default":"BAA-NORTHSTAR","required":false,"id":"vvhIYN9lx","var":"vvhIYN9lx","elementId":"Stage_6x5Dzu-tE0pwsV58"}],"outputs":[{"name":"Error","displayName":"Error","value":"error","type":"jsonSchema","source":"=Error","_jsonSchema":{"type":"object","properties":{"code":{"type":"string"},"message":{"type":"string"},"detail":{"type":"string"},"category":{"type":"string"},"status":{"type":"number"},"element":{"type":"string"}}},"id":"error","var":"error","elementId":"Stage_6x5Dzu-tE0pwsV58","body":{"type":"object","properties":{"code":{"type":"string"},"message":{"type":"string"},"detail":{"type":"string"},"category":{"type":"string"},"status":{"type":"number"},"element":{"type":"string"}}}},{"name":"obligation_class","displayName":"obligation_class","value":"obligationClass","type":"string","description":"The classified obligation kind.","source":"=obligation_class","id":"obligationClass","var":"obligationClass","elementId":"Stage_6x5Dzu-tE0pwsV58"},{"name":"severity","displayName":"severity","value":"severity","type":"string","description":"Obligation severity.","enum":["low","medium","high"],"source":"=severity","id":"severity","var":"severity","elementId":"Stage_6x5Dzu-tE0pwsV58"},{"name":"required_response","displayName":"required_response","value":"requiredResponse","type":"string","description":"Response posture the reviewer should prepare.","source":"=required_response","id":"requiredResponse","var":"requiredResponse","elementId":"Stage_6x5Dzu-tE0pwsV58"},{"name":"rationale","displayName":"rationale","value":"rationale","type":"string","description":"Decision-support explanation of the classification.","source":"=rationale","id":"rationale","var":"rationale","elementId":"Stage_6x5Dzu-tE0pwsV58"}]},"isRequired":true,"entryConditions":[{"id":"Condition_83MVvd","displayName":"Stage entered","rules":[[{"rule":"current-stage-entered","id":"Rule_xsk0IY"}]]}]}]],"description":"Receive and classify the obligation handed down from the stakeholder-parent case.","entryConditions":[{"id":"Condition_2qG09U","displayName":"Grandchild case opened","rules":[[{"rule":"case-entered","id":"Rule_mR26pY"}]]}],"exitConditions":[{"id":"Condition_QrfYAc","displayName":"Stage complete","rules":[[{"rule":"required-tasks-completed","id":"Rule_AIY4vA"}]],"marksStageComplete":true}]},"selected":false},{"style":{"width":304},"measured":{"width":304,"height":254},"width":304,"position":{"x":688,"y":224},"id":"Stage_F95sBP","type":"case-management:Stage","data":{"label":"Obligation Response","parentElement":{"id":"root","type":"case-management:root"},"isInvalidDropTarget":false,"isPendingParent":false,"tasks":[[{"id":"t9BUmAX8k","elementId":"Stage_F95sBP-t9BUmAX8k","displayName":"Prepare & File Obligation Response","description":"HUMAN ACTION: prepares the obligation response document and files it with the requesting party (regulator, payer, or counsel) within the BAA / subpoena deadline.","type":"action","data":{"taskTitle":"Prepare & File Obligation Response","priority":"High"},"isRequired":true,"entryConditions":[{"id":"Condition_3UWLDS","displayName":"Stage entered","rules":[[{"rule":"current-stage-entered","id":"Rule_iUP6VH"}]]}]}],[{"id":"tIy5SWPeX","elementId":"Stage_F95sBP-tIy5SWPeX","displayName":"Generate Audit Record","description":"Writes the discharge audit record (who, what, when, under which privilege flag) for the master crisis case's compliance ledger.","type":"api-workflow","data":{"name":"=bindings.bgpbpQQK4","folderPath":"=bindings.bLcPAKMGn","inputs":[{"name":"obligation_id","displayName":"obligation_id","value":"","type":"string","default":"obl-northstar-1","required":false,"id":"vvYdvfD8J","var":"vvYdvfD8J","elementId":"Stage_F95sBP-tIy5SWPeX"},{"name":"disposition","displayName":"disposition","value":"","type":"string","default":"filed","required":false,"id":"vMrtftAkf","var":"vMrtftAkf","elementId":"Stage_F95sBP-tIy5SWPeX"},{"name":"recorded_at","displayName":"recorded_at","value":"","type":"string","default":"","required":false,"id":"vKwNvkLkL","var":"vKwNvkLkL","elementId":"Stage_F95sBP-tIy5SWPeX"},{"name":"jurisdiction","displayName":"jurisdiction","value":"","type":"string","default":"contractual","required":false,"id":"vAozWtT22","var":"vAozWtT22","elementId":"Stage_F95sBP-tIy5SWPeX"}],"outputs":[{"name":"Error","displayName":"Error","value":"error7","type":"jsonSchema","source":"=Error","_jsonSchema":{"type":"object","properties":{"code":{"type":"string"},"message":{"type":"string"},"detail":{"type":"string"},"category":{"type":"string"},"status":{"type":"number"},"element":{"type":"string"}}},"id":"error7","var":"error7","elementId":"Stage_F95sBP-tIy5SWPeX","body":{"type":"object","properties":{"code":{"type":"string"},"message":{"type":"string"},"detail":{"type":"string"},"category":{"type":"string"},"status":{"type":"number"},"element":{"type":"string"}}}},{"name":"audit_record_id","displayName":"audit_record_id","value":"auditRecordId","type":"string","source":"=audit_record_id","id":"auditRecordId","var":"auditRecordId","elementId":"Stage_F95sBP-tIy5SWPeX"},{"name":"recorded_at","displayName":"recorded_at","value":"recordedAt","type":"string","source":"=recorded_at","id":"recordedAt","var":"recordedAt","elementId":"Stage_F95sBP-tIy5SWPeX"},{"name":"disposition","displayName":"disposition","value":"disposition","type":"string","source":"=disposition","id":"disposition","var":"disposition","elementId":"Stage_F95sBP-tIy5SWPeX"},{"name":"audit_summary","displayName":"audit_summary","value":"auditSummary","type":"string","source":"=audit_summary","id":"auditSummary","var":"auditSummary","elementId":"Stage_F95sBP-tIy5SWPeX"}]},"isRequired":true,"entryConditions":[{"id":"Condition_3o94Ug","displayName":"After response filed","rules":[[{"rule":"selected-tasks-completed","id":"Rule_sf28C2","selectedTasksIds":["t9BUmAX8k"]}]]}]}]],"slaRules":[{"expression":"=js:true","count":9,"unit":"d","escalationRule":[{"id":"esc_SLAbr1","displayName":"SLA-Breach Notification","triggerInfo":{"type":"sla-breached"},"action":{"type":"notification","recipients":[{"scope":"User","target":"=vars.ParentCaseId","value":"Parent case owner"},{"scope":"User","target":"=metadata.caseOwner","value":"Grandchild case owner"}],"messageTemplate":"=js:`Obligation response SLA breached for ${vars.ObligationType} (case ${metadata.caseId}). Immediate action required.`"}},{"id":"esc_SLAar1","displayName":"SLA At-Risk Notification","triggerInfo":{"type":"at-risk","atRiskPercentage":80},"action":{"type":"notification","recipients":[{"scope":"User","target":"=vars.ParentCaseId","value":"Parent case owner"}],"messageTemplate":"=js:`Obligation response approaching SLA breach for ${vars.ObligationType} (case ${metadata.caseId}).`"}}]}],"description":"Prepare, file, and audit the obligation response. SLA-breach + at-risk targeted notifications fire via the stage escalation rules (Maestro notification action) to the ParentCaseId owner and grandchild case owner.","entryConditions":[{"id":"Condition_M4JaGg","displayName":"Previous stage completed","rules":[[{"rule":"selected-stage-completed","id":"Rule_Kx3yWo","selectedStageId":"Stage_6x5Dzu"}]]}],"exitConditions":[{"id":"Condition_UFtUMD","displayName":"Stage complete","rules":[[{"rule":"required-tasks-completed","id":"Rule_Ce2Jzo"}]],"marksStageComplete":true}]},"selected":true},{"style":{"width":304},"measured":{"width":304,"height":158},"width":304,"position":{"x":1056,"y":224},"id":"Stage_otF4rP","type":"case-management:Stage","data":{"label":"Obligation Discharged","parentElement":{"id":"root","type":"case-management:root"},"isInvalidDropTarget":false,"isPendingParent":false,"tasks":[],"description":"Terminal stage. The obligation has been responded to, filed, and audited.","isRequired":true,"entryConditions":[{"id":"Condition_4Bu4ZR","displayName":"Previous stage completed","rules":[[{"rule":"selected-stage-completed","id":"Rule_IQrSGS","selectedStageId":"Stage_F95sBP"}]]}],"exitConditions":[{"id":"Condition_3TO44A","displayName":"Obligation closed","rules":[[{"rule":"required-tasks-completed","id":"Rule_fzTeil"}]],"marksStageComplete":true}]},"selected":false},{"style":{"width":96,"height":96},"measured":{"width":96,"height":96},"width":96,"height":96,"position":{"x":160,"y":208},"id":"b12c4b51-1b2b-468a-9fc0-8f843b12bbbc","type":"case-management:Trigger","data":{"displayName":"Trigger 1","triggerType":"manual","isInterrupting":false,"runOnlyOnce":true,"marksStageComplete":false,"isInvalidDropTarget":false,"isPendingParent":false},"selected":false}],"edges":[{"style":{"strokeWidth":3},"zIndex":1001,"id":"edge_OGtrg1","source":"b12c4b51-1b2b-468a-9fc0-8f843b12bbbc","target":"Stage_6x5Dzu","sourceHandle":"b12c4b51-1b2b-468a-9fc0-8f843b12bbbc____source____right","targetHandle":"Stage_6x5Dzu____target____left","data":{"label":"Grandchild Case Spawned","isIntersecting":false},"type":"case-management:TriggerEdge"},{"id":"edge_OGe001","source":"Stage_6x5Dzu","target":"Stage_F95sBP","sourceHandle":"Stage_6x5Dzu____source____right","targetHandle":"Stage_F95sBP____target____left","data":{"label":"Obligation classified","isReEntry":false,"isIntersecting":false},"type":"case-management:Edge"},{"id":"edge_OGe002","source":"Stage_F95sBP","target":"Stage_otF4rP","sourceHandle":"Stage_F95sBP____source____right","targetHandle":"Stage_otF4rP____target____left","data":{"label":"Response filed & audited","isReEntry":false,"isIntersecting":false},"type":"case-management:Edge"}]}]]></uipath:caseManagement>
       <uipath:migrationVersion version="15" />
     </bpmn:extensionElements>
     <bpmn:startEvent id="b12c4b51-1b2b-468a-9fc0-8f843b12bbbc">
       <bpmn:extensionElements>
-        <uipath:entryPointId value="413f5111-7d00-4ca5-87ab-63e3ceb9217c" />
+        <uipath:entryPointId value="1bad6585-5925-4e25-a1b5-de6655d2a54a" />
         <uipath:activity version="v1" caseManagement="[object Object]">
           <uipath:type value="uipath:EntryPointId" version="v1" />
         </uipath:activity>
@@ -256,7 +264,17 @@
         <bpmn:extensionElements>
           <uipath:mapping version="v1">
             <uipath:type value="BPMN.Variables" version="v1" />
+            <uipath:output name="Error" type="jsonSchema" var="error" custom="true"><![CDATA[=js:vars.mainEventSubprocessResponse.taskCompletedOutputs?.["Classify Obligation"]?.["Error"] ?? vars.error]]></uipath:output>
+            <uipath:output name="obligation_class" type="string" var="obligationClass" custom="true"><![CDATA[=js:vars.mainEventSubprocessResponse.taskCompletedOutputs?.["Classify Obligation"]?.["obligation_class"] ?? vars.obligationClass]]></uipath:output>
+            <uipath:output name="severity" type="string" var="severity" custom="true"><![CDATA[=js:vars.mainEventSubprocessResponse.taskCompletedOutputs?.["Classify Obligation"]?.["severity"] ?? vars.severity]]></uipath:output>
+            <uipath:output name="required_response" type="string" var="requiredResponse" custom="true"><![CDATA[=js:vars.mainEventSubprocessResponse.taskCompletedOutputs?.["Classify Obligation"]?.["required_response"] ?? vars.requiredResponse]]></uipath:output>
+            <uipath:output name="rationale" type="string" var="rationale" custom="true"><![CDATA[=js:vars.mainEventSubprocessResponse.taskCompletedOutputs?.["Classify Obligation"]?.["rationale"] ?? vars.rationale]]></uipath:output>
             <uipath:output name="selectedStage" type="json" var="UserSelectStageMessageResponse" custom="true"><![CDATA[=js:vars.mainEventSubprocessResponse.taskCompletedOutputs?.["Wait for User to Select Next Stage for Obligation Intake"]?.["selectedStage"] ?? vars.UserSelectStageMessageResponse]]></uipath:output>
+            <uipath:output name="Error" type="jsonSchema" var="error7" custom="true"><![CDATA[=js:vars.mainEventSubprocessResponse.taskCompletedOutputs?.["Generate Audit Record"]?.["Error"] ?? vars.error7]]></uipath:output>
+            <uipath:output name="audit_record_id" type="string" var="auditRecordId" custom="true"><![CDATA[=js:vars.mainEventSubprocessResponse.taskCompletedOutputs?.["Generate Audit Record"]?.["audit_record_id"] ?? vars.auditRecordId]]></uipath:output>
+            <uipath:output name="recorded_at" type="string" var="recordedAt" custom="true"><![CDATA[=js:vars.mainEventSubprocessResponse.taskCompletedOutputs?.["Generate Audit Record"]?.["recorded_at"] ?? vars.recordedAt]]></uipath:output>
+            <uipath:output name="disposition" type="string" var="disposition" custom="true"><![CDATA[=js:vars.mainEventSubprocessResponse.taskCompletedOutputs?.["Generate Audit Record"]?.["disposition"] ?? vars.disposition]]></uipath:output>
+            <uipath:output name="audit_summary" type="string" var="auditSummary" custom="true"><![CDATA[=js:vars.mainEventSubprocessResponse.taskCompletedOutputs?.["Generate Audit Record"]?.["audit_summary"] ?? vars.auditSummary]]></uipath:output>
             <uipath:output name="selectedStage" type="json" var="UserSelectStageMessageResponse" custom="true"><![CDATA[=js:vars.mainEventSubprocessResponse.taskCompletedOutputs?.["Wait for User to Select Next Stage for Obligation Response"]?.["selectedStage"] ?? vars.UserSelectStageMessageResponse]]></uipath:output>
             <uipath:output name="selectedStage" type="json" var="UserSelectStageMessageResponse" custom="true"><![CDATA[=js:vars.mainEventSubprocessResponse.taskCompletedOutputs?.["Wait for User to Select Next Stage for Obligation Discharged"]?.["selectedStage"] ?? vars.UserSelectStageMessageResponse]]></uipath:output>
           </uipath:mapping>
@@ -271,7 +289,7 @@
             <uipath:context>
               <uipath:inputSchema type="jsonSchema"><![CDATA[{"$schema":"http://json-schema.org/draft-07/schema#","type":"object","properties":{"caseDeterministicRules":{"type":"object"},"caseCurrentExecutionState":{"type":"object"}},"required":[]}]]></uipath:inputSchema>
             </uipath:context>
-            <uipath:input name="caseManagerInput" type="json" target="body"><![CDATA[{"caseDeterministicRules":{"case":{"completionConditions":[{"completionConditionType":"StagesCompleted","parameters":{"stageNames":["Obligation Discharged"]},"ruleName":"Obligation discharged"}]},"stages":[{"name":"Obligation Intake","entryConditions":[{"entryConditionType":"CaseEntered","parameters":{},"ruleName":"Grandchild case opened"}],"exitConditions":[],"completionConditions":[{"completionConditionType":"TasksCompleted","parameters":{"taskNames":["Classify Obligation"]},"ruleName":"Stage complete"}],"tasks":[{"name":"Classify Obligation","runOnlyOnce":false,"entryConditions":[{"entryConditionType":"StageEntered","parameters":{"stageNames":["Obligation Intake"]},"ruleName":"Stage entered"}]}]},{"name":"Obligation Response","entryConditions":[{"entryConditionType":"StagesCompleted","parameters":{"stageNames":["Obligation Intake"]},"ruleName":"Previous stage completed"}],"exitConditions":[],"completionConditions":[{"completionConditionType":"TasksCompleted","parameters":{"taskNames":["Prepare & File Obligation Response","Generate Audit Record"]},"ruleName":"Stage complete"}],"tasks":[{"name":"Prepare & File Obligation Response","runOnlyOnce":false,"entryConditions":[{"entryConditionType":"StageEntered","parameters":{"stageNames":["Obligation Response"]},"ruleName":"Stage entered"}]},{"name":"Generate Audit Record","runOnlyOnce":false,"entryConditions":[{"entryConditionType":"TasksCompleted","parameters":{"taskNames":["Prepare & File Obligation Response"]},"ruleName":"After response filed"}]}]},{"name":"Obligation Discharged","entryConditions":[{"entryConditionType":"StagesCompleted","parameters":{"stageNames":["Obligation Response"]},"ruleName":"Previous stage completed"}],"exitConditions":[],"completionConditions":[],"tasks":[]}],"version":1},"caseCurrentExecutionState":"=js:({ \"version\": 1, \"eventIdentifier\": vars.EventSubProcessEventIdentifier, \"event\": { \"type\": vars.EventSubProcessLatestEventType, \"parameters\": vars.EventSubProcessLatestEventParams, \"isExternal\": (vars.EventSubProcessLatestEventType == \"CaseEntered\" || vars.EventSubProcessLatestEventType == \"TaskCompleted\") ? false : true }, \"state\": { ...vars.caseState, \"vars\": { \"Classify Obligation\": {  }, \"Wait for User to Select Next Stage for Obligation Intake\": { \"selectedStage\": (vars.UserSelectStageMessageResponse) }, \"Prepare & File Obligation Response\": {  }, \"Generate Audit Record\": {  }, \"Wait for User to Select Next Stage for Obligation Response\": { \"selectedStage\": (vars.UserSelectStageMessageResponse) }, \"Wait for User to Select Next Stage for Obligation Discharged\": { \"selectedStage\": (vars.UserSelectStageMessageResponse) }, \"Received event params\": { \"response\": (vars.mainEventSubprocessResponse.connectorResponse) } } } })"}]]></uipath:input>
+            <uipath:input name="caseManagerInput" type="json" target="body"><![CDATA[{"caseDeterministicRules":{"case":{"completionConditions":[{"completionConditionType":"StagesCompleted","parameters":{"stageNames":["Obligation Discharged"]},"ruleName":"Obligation discharged"}]},"stages":[{"name":"Obligation Intake","entryConditions":[{"entryConditionType":"CaseEntered","parameters":{},"ruleName":"Grandchild case opened"}],"exitConditions":[],"completionConditions":[{"completionConditionType":"TasksCompleted","parameters":{"taskNames":["Classify Obligation"]},"ruleName":"Stage complete"}],"tasks":[{"name":"Classify Obligation","runOnlyOnce":false,"entryConditions":[{"entryConditionType":"StageEntered","parameters":{"stageNames":["Obligation Intake"]},"ruleName":"Stage entered"}]}]},{"name":"Obligation Response","entryConditions":[{"entryConditionType":"StagesCompleted","parameters":{"stageNames":["Obligation Intake"]},"ruleName":"Previous stage completed"}],"exitConditions":[],"completionConditions":[{"completionConditionType":"TasksCompleted","parameters":{"taskNames":["Prepare & File Obligation Response","Generate Audit Record"]},"ruleName":"Stage complete"}],"tasks":[{"name":"Prepare & File Obligation Response","runOnlyOnce":false,"entryConditions":[{"entryConditionType":"StageEntered","parameters":{"stageNames":["Obligation Response"]},"ruleName":"Stage entered"}]},{"name":"Generate Audit Record","runOnlyOnce":false,"entryConditions":[{"entryConditionType":"TasksCompleted","parameters":{"taskNames":["Prepare & File Obligation Response"]},"ruleName":"After response filed"}]}]},{"name":"Obligation Discharged","entryConditions":[{"entryConditionType":"StagesCompleted","parameters":{"stageNames":["Obligation Response"]},"ruleName":"Previous stage completed"}],"exitConditions":[],"completionConditions":[],"tasks":[]}],"version":1},"caseCurrentExecutionState":"=js:({ \"version\": 1, \"eventIdentifier\": vars.EventSubProcessEventIdentifier, \"event\": { \"type\": vars.EventSubProcessLatestEventType, \"parameters\": vars.EventSubProcessLatestEventParams, \"isExternal\": (vars.EventSubProcessLatestEventType == \"CaseEntered\" || vars.EventSubProcessLatestEventType == \"TaskCompleted\") ? false : true }, \"state\": { ...vars.caseState, \"vars\": { \"Classify Obligation\": { \"Error\": (vars.error), \"obligation_class\": (vars.obligationClass), \"severity\": (vars.severity), \"required_response\": (vars.requiredResponse), \"rationale\": (vars.rationale) }, \"Wait for User to Select Next Stage for Obligation Intake\": { \"selectedStage\": (vars.UserSelectStageMessageResponse) }, \"Prepare & File Obligation Response\": {  }, \"Generate Audit Record\": { \"Error\": (vars.error7), \"audit_record_id\": (vars.auditRecordId), \"recorded_at\": (vars.recordedAt), \"disposition\": (vars.disposition), \"audit_summary\": (vars.auditSummary) }, \"Wait for User to Select Next Stage for Obligation Response\": { \"selectedStage\": (vars.UserSelectStageMessageResponse) }, \"Wait for User to Select Next Stage for Obligation Discharged\": { \"selectedStage\": (vars.UserSelectStageMessageResponse) }, \"Received event params\": { \"response\": (vars.mainEventSubprocessResponse.connectorResponse) } } } })"}]]></uipath:input>
             <uipath:output name="caseRulesDecisions" type="json" source="=result" var="caseRulesDecisions" custom="true" />
           </uipath:activity>
         </bpmn:extensionElements>
@@ -285,7 +303,7 @@
             <uipath:context>
               <uipath:inputSchema type="jsonSchema"><![CDATA[{"$schema":"http://json-schema.org/draft-07/schema#","type":"object","properties":{"caseRulesDecisions":{"type":"object"},"caseCurrentExecutionState":{"type":"object"}},"required":[]}]]></uipath:inputSchema>
             </uipath:context>
-            <uipath:input name="caseManagerInput" type="json" target="body"><![CDATA[{"caseRulesDecisions":"=js:(vars.caseRulesDecisions)","caseCurrentExecutionState":"=js:({ \"version\": 1, \"eventIdentifier\": vars.EventSubProcessEventIdentifier, \"event\": { \"type\": vars.EventSubProcessLatestEventType, \"parameters\": vars.EventSubProcessLatestEventParams, \"isExternal\": (vars.EventSubProcessLatestEventType == \"CaseEntered\" || vars.EventSubProcessLatestEventType == \"TaskCompleted\") ? false : true }, \"state\": { ...vars.caseState, \"vars\": { \"Classify Obligation\": {  }, \"Wait for User to Select Next Stage for Obligation Intake\": { \"selectedStage\": (vars.UserSelectStageMessageResponse) }, \"Prepare & File Obligation Response\": {  }, \"Generate Audit Record\": {  }, \"Wait for User to Select Next Stage for Obligation Response\": { \"selectedStage\": (vars.UserSelectStageMessageResponse) }, \"Wait for User to Select Next Stage for Obligation Discharged\": { \"selectedStage\": (vars.UserSelectStageMessageResponse) }, \"Received event params\": { \"response\": (vars.mainEventSubprocessResponse.connectorResponse) } } } })"}]]></uipath:input>
+            <uipath:input name="caseManagerInput" type="json" target="body"><![CDATA[{"caseRulesDecisions":"=js:(vars.caseRulesDecisions)","caseCurrentExecutionState":"=js:({ \"version\": 1, \"eventIdentifier\": vars.EventSubProcessEventIdentifier, \"event\": { \"type\": vars.EventSubProcessLatestEventType, \"parameters\": vars.EventSubProcessLatestEventParams, \"isExternal\": (vars.EventSubProcessLatestEventType == \"CaseEntered\" || vars.EventSubProcessLatestEventType == \"TaskCompleted\") ? false : true }, \"state\": { ...vars.caseState, \"vars\": { \"Classify Obligation\": { \"Error\": (vars.error), \"obligation_class\": (vars.obligationClass), \"severity\": (vars.severity), \"required_response\": (vars.requiredResponse), \"rationale\": (vars.rationale) }, \"Wait for User to Select Next Stage for Obligation Intake\": { \"selectedStage\": (vars.UserSelectStageMessageResponse) }, \"Prepare & File Obligation Response\": {  }, \"Generate Audit Record\": { \"Error\": (vars.error7), \"audit_record_id\": (vars.auditRecordId), \"recorded_at\": (vars.recordedAt), \"disposition\": (vars.disposition), \"audit_summary\": (vars.auditSummary) }, \"Wait for User to Select Next Stage for Obligation Response\": { \"selectedStage\": (vars.UserSelectStageMessageResponse) }, \"Wait for User to Select Next Stage for Obligation Discharged\": { \"selectedStage\": (vars.UserSelectStageMessageResponse) }, \"Received event params\": { \"response\": (vars.mainEventSubprocessResponse.connectorResponse) } } } })"}]]></uipath:input>
             <uipath:output name="caseManagerDecisions" type="json" source="=js:(vars.caseRulesDecisions)" var="caseManagerDecisions" custom="true" />
           </uipath:activity>
         </bpmn:extensionElements>
@@ -769,9 +787,19 @@ return { upsertKeys: allEventsUpdatedKeys, deleteKeys: [...exitedStageKeysToDele
           <uipath:inputOutput id="Stage6x5DzuReEntryCount" name="Stage_6x5Dzu_ReEntryCount" type="integer" elementId="Activity_InitialVariablesNode" />
           <uipath:inputOutput id="Stage6x5DzuReExitToStage" name="Stage_6x5Dzu_ReExit_To_Stage" type="string" elementId="Activity_InitialVariablesNode" />
           <uipath:inputOutput id="Stage6x5DzuSubProcessTasksComplete" name="Stage_6x5Dzu_SubProcess_Tasks_Complete" type="boolean" elementId="Activity_InitialVariablesNode" />
+          <uipath:inputOutput id="error" name="Error" type="jsonSchema" elementId="Stage_6x5Dzu-tE0pwsV58"><![CDATA[{"type":"object","properties":{"code":{"type":"string"},"message":{"type":"string"},"detail":{"type":"string"},"category":{"type":"string"},"status":{"type":"number"},"element":{"type":"string"}}}]]></uipath:inputOutput>
+          <uipath:inputOutput id="obligationClass" name="obligation_class" type="string" elementId="Stage_6x5Dzu-tE0pwsV58" />
+          <uipath:inputOutput id="severity" name="severity" type="string" elementId="Stage_6x5Dzu-tE0pwsV58" />
+          <uipath:inputOutput id="requiredResponse" name="required_response" type="string" elementId="Stage_6x5Dzu-tE0pwsV58" />
+          <uipath:inputOutput id="rationale" name="rationale" type="string" elementId="Stage_6x5Dzu-tE0pwsV58" />
           <uipath:inputOutput id="StageF95sBPReEntryCount" name="Stage_F95sBP_ReEntryCount" type="integer" elementId="Activity_InitialVariablesNode" />
           <uipath:inputOutput id="StageF95sBPReExitToStage" name="Stage_F95sBP_ReExit_To_Stage" type="string" elementId="Activity_InitialVariablesNode" />
           <uipath:inputOutput id="StageF95sBPSubProcessTasksComplete" name="Stage_F95sBP_SubProcess_Tasks_Complete" type="boolean" elementId="Activity_InitialVariablesNode" />
+          <uipath:inputOutput id="error7" name="Error" type="jsonSchema" elementId="Stage_F95sBP-tIy5SWPeX"><![CDATA[{"type":"object","properties":{"code":{"type":"string"},"message":{"type":"string"},"detail":{"type":"string"},"category":{"type":"string"},"status":{"type":"number"},"element":{"type":"string"}}}]]></uipath:inputOutput>
+          <uipath:inputOutput id="auditRecordId" name="audit_record_id" type="string" elementId="Stage_F95sBP-tIy5SWPeX" />
+          <uipath:inputOutput id="recordedAt" name="recorded_at" type="string" elementId="Stage_F95sBP-tIy5SWPeX" />
+          <uipath:inputOutput id="disposition" name="disposition" type="string" elementId="Stage_F95sBP-tIy5SWPeX" />
+          <uipath:inputOutput id="auditSummary" name="audit_summary" type="string" elementId="Stage_F95sBP-tIy5SWPeX" />
           <uipath:inputOutput id="StageotF4rPReEntryCount" name="Stage_otF4rP_ReEntryCount" type="integer" elementId="Activity_InitialVariablesNode" />
           <uipath:inputOutput id="StageotF4rPReExitToStage" name="Stage_otF4rP_ReExit_To_Stage" type="string" elementId="Activity_InitialVariablesNode" />
           <uipath:inputOutput id="StageotF4rPSubProcessTasksComplete" name="Stage_otF4rP_SubProcess_Tasks_Complete" type="boolean" elementId="Activity_InitialVariablesNode" />
@@ -814,10 +842,29 @@ return { upsertKeys: allEventsUpdatedKeys, deleteKeys: [...exitedStageKeysToDele
           </uipath:mapping>
         </bpmn:extensionElements>
         <bpmn:incoming>edge_TasksEventSubProcessStartEventNode-TasksEventSubProcessVariablesSetupNode</bpmn:incoming>
-        <bpmn:outgoing>edge_TasksEventSubProcessVariablesSetupNode-tasksEventSubprocessInclusiveGateway</bpmn:outgoing>
+        <bpmn:outgoing>edge_TasksEventSubProcessVariablesSetupNode-TasksEventSubProcessOverlayMessageVarsNode</bpmn:outgoing>
+      </bpmn:task>
+      <bpmn:task id="TasksEventSubProcessOverlayMessageVarsNode" name="Overlay message-borne task outputs onto local vars">
+        <bpmn:extensionElements>
+          <uipath:mapping version="v1">
+            <uipath:type value="BPMN.Variables" version="v1" />
+            <uipath:output name="Error" type="jsonSchema" var="error" custom="true"><![CDATA[=js:vars.tasksEventSubprocessResponse.taskCompletedOutputs?.["Classify Obligation"]?.["Error"] ?? vars.error]]></uipath:output>
+            <uipath:output name="obligation_class" type="string" var="obligationClass" custom="true"><![CDATA[=js:vars.tasksEventSubprocessResponse.taskCompletedOutputs?.["Classify Obligation"]?.["obligation_class"] ?? vars.obligationClass]]></uipath:output>
+            <uipath:output name="severity" type="string" var="severity" custom="true"><![CDATA[=js:vars.tasksEventSubprocessResponse.taskCompletedOutputs?.["Classify Obligation"]?.["severity"] ?? vars.severity]]></uipath:output>
+            <uipath:output name="required_response" type="string" var="requiredResponse" custom="true"><![CDATA[=js:vars.tasksEventSubprocessResponse.taskCompletedOutputs?.["Classify Obligation"]?.["required_response"] ?? vars.requiredResponse]]></uipath:output>
+            <uipath:output name="rationale" type="string" var="rationale" custom="true"><![CDATA[=js:vars.tasksEventSubprocessResponse.taskCompletedOutputs?.["Classify Obligation"]?.["rationale"] ?? vars.rationale]]></uipath:output>
+            <uipath:output name="Error" type="jsonSchema" var="error7" custom="true"><![CDATA[=js:vars.tasksEventSubprocessResponse.taskCompletedOutputs?.["Generate Audit Record"]?.["Error"] ?? vars.error7]]></uipath:output>
+            <uipath:output name="audit_record_id" type="string" var="auditRecordId" custom="true"><![CDATA[=js:vars.tasksEventSubprocessResponse.taskCompletedOutputs?.["Generate Audit Record"]?.["audit_record_id"] ?? vars.auditRecordId]]></uipath:output>
+            <uipath:output name="recorded_at" type="string" var="recordedAt" custom="true"><![CDATA[=js:vars.tasksEventSubprocessResponse.taskCompletedOutputs?.["Generate Audit Record"]?.["recorded_at"] ?? vars.recordedAt]]></uipath:output>
+            <uipath:output name="disposition" type="string" var="disposition" custom="true"><![CDATA[=js:vars.tasksEventSubprocessResponse.taskCompletedOutputs?.["Generate Audit Record"]?.["disposition"] ?? vars.disposition]]></uipath:output>
+            <uipath:output name="audit_summary" type="string" var="auditSummary" custom="true"><![CDATA[=js:vars.tasksEventSubprocessResponse.taskCompletedOutputs?.["Generate Audit Record"]?.["audit_summary"] ?? vars.auditSummary]]></uipath:output>
+          </uipath:mapping>
+        </bpmn:extensionElements>
+        <bpmn:incoming>edge_TasksEventSubProcessVariablesSetupNode-TasksEventSubProcessOverlayMessageVarsNode</bpmn:incoming>
+        <bpmn:outgoing>edge_TasksEventSubProcessOverlayMessageVarsNode-tasksEventSubprocessInclusiveGateway</bpmn:outgoing>
       </bpmn:task>
       <bpmn:exclusiveGateway id="tasksEventSubprocessInclusiveGateway" default="noTasksToRunEdge">
-        <bpmn:incoming>edge_TasksEventSubProcessVariablesSetupNode-tasksEventSubprocessInclusiveGateway</bpmn:incoming>
+        <bpmn:incoming>edge_TasksEventSubProcessOverlayMessageVarsNode-tasksEventSubprocessInclusiveGateway</bpmn:incoming>
         <bpmn:outgoing>noTasksToRunEdge</bpmn:outgoing>
         <bpmn:outgoing>edge_tasksEventSubprocessInclusiveGateway-tE0pwsV58_UpdateRunningTasksNewGlobal</bpmn:outgoing>
         <bpmn:outgoing>edge_tasksEventSubprocessInclusiveGateway-t9BUmAX8k_UpdateRunningTasksNewGlobal</bpmn:outgoing>
@@ -848,7 +895,19 @@ return { upsertKeys: allEventsUpdatedKeys, deleteKeys: [...exitedStageKeysToDele
             <uipath:tag key="triggeringDecision">=js:vars.tasksEventSubprocessResponse.triggeringDecision</uipath:tag>
           </uipath:tags>
           <uipath:activity version="v1" skipCondition="=js:parseInt(vars.Stage6x5DzuReEntryCount, 10) &#62; 0">
-            <uipath:type value="uipath:Activity" version="v1" />
+            <uipath:type value="Orchestrator.StartAgentJob" version="v2" />
+            <uipath:context>
+              <uipath:input name="name" type="string" value="=bindings.bLqfLE3kT" />
+              <uipath:input name="folderPath" type="string" value="=bindings.bXm1df5ZE" />
+              <uipath:input name="_label" type="string" value="Classify Obligation" />
+              <uipath:inputSchema type="jsonSchema"><![CDATA[{"$schema":"http://json-schema.org/draft-07/schema#","type":"object","properties":{"obligation_type":{"type":"string"},"jurisdiction":{"type":"string"},"baa_reference":{"type":"string"}},"required":[]}]]></uipath:inputSchema>
+            </uipath:context>
+            <uipath:input name="JobArguments" type="json" target="bodyField"><![CDATA[{"obligation_type":null,"jurisdiction":null,"baa_reference":null}]]></uipath:input>
+            <uipath:output name="Error" type="jsonSchema" source="=Error" var="error" />
+            <uipath:output name="obligation_class" type="string" source="=obligation_class" var="obligationClass" />
+            <uipath:output name="severity" type="string" source="=severity" var="severity" />
+            <uipath:output name="required_response" type="string" source="=required_response" var="requiredResponse" />
+            <uipath:output name="rationale" type="string" source="=rationale" var="rationale" />
           </uipath:activity>
         </bpmn:extensionElements>
         <bpmn:incoming>edge_tE0pwsV58_UpdateRunningTasksNewGlobal-tE0pwsV58</bpmn:incoming>
@@ -873,7 +932,7 @@ return { upsertKeys: allEventsUpdatedKeys, deleteKeys: [...exitedStageKeysToDele
         <bpmn:extensionElements>
           <uipath:mapping version="v1">
             <uipath:type value="BPMN.Variables" version="v1" />
-            <uipath:output name="taskCompletedOutputs" type="json" var="taskCompletedOutputsVariable" custom="true" internal="true"><![CDATA[=js:Object.assign({}, vars.taskCompletedOutputsVariable, {"Classify Obligation": {}})]]></uipath:output>
+            <uipath:output name="taskCompletedOutputs" type="json" var="taskCompletedOutputsVariable" custom="true" internal="true"><![CDATA[=js:Object.assign({}, vars.taskCompletedOutputsVariable, {"Classify Obligation": {"Error": vars.error, "obligation_class": vars.obligationClass, "severity": vars.severity, "required_response": vars.requiredResponse, "rationale": vars.rationale}})]]></uipath:output>
           </uipath:mapping>
         </bpmn:extensionElements>
         <bpmn:incoming>edge_tE0pwsV58-tE0pwsV58_UpdateTaskCompletedOutputsNode</bpmn:incoming>
@@ -929,8 +988,8 @@ return { upsertKeys: allEventsUpdatedKeys, deleteKeys: [...exitedStageKeysToDele
           <uipath:activity version="v1" skipCondition="=js:parseInt(vars.StageF95sBPReEntryCount, 10) &#62; 0">
             <uipath:type value="Actions.HITL" version="v2" />
             <uipath:context>
-              <uipath:input name="name" type="string" value="=bindings." />
-              <uipath:input name="folderPath" type="string" value="=bindings." />
+              <uipath:input name="name" type="string" value="=bindings.bGCAppNm1" />
+              <uipath:input name="folderPath" type="string" value="=bindings.bGCAppFp2" />
               <uipath:input name="_label" type="string" value="Prepare &#38; File Obligation Response" />
               <uipath:input name="taskTitle" type="string" value="Prepare &#38; File Obligation Response" />
               <uipath:input name="priority" type="string" value="High" />
@@ -938,6 +997,10 @@ return { upsertKeys: allEventsUpdatedKeys, deleteKeys: [...exitedStageKeysToDele
               <uipath:input name="actionCatalogName" type="string" />
               <uipath:input name="recipient" type="json" />
             </uipath:context>
+            <uipath:output name="ReviewerId" type="string" source="=ReviewerId" var="reviewerId" target="=reviewerId" />
+            <uipath:output name="ResponseDisposition" type="string" source="=ResponseDisposition" var="responseDisposition" target="=responseDisposition" />
+            <uipath:output name="ResponseNarrative" type="string" source="=ResponseNarrative" var="responseNarrative" target="=responseNarrative" />
+            <uipath:output name="FiledTimestamp" type="string" source="=FiledTimestamp" var="filedTimestamp" target="=filedTimestamp" />
           </uipath:activity>
         </bpmn:extensionElements>
         <bpmn:incoming>edge_t9BUmAX8k_UpdateRunningTasksNewGlobal-t9BUmAX8k</bpmn:incoming>
@@ -1033,7 +1096,19 @@ return { upsertKeys: allEventsUpdatedKeys, deleteKeys: [...exitedStageKeysToDele
             <uipath:tag key="triggeringDecision">=js:vars.tasksEventSubprocessResponse.triggeringDecision</uipath:tag>
           </uipath:tags>
           <uipath:activity version="v1" skipCondition="=js:parseInt(vars.StageF95sBPReEntryCount, 10) &#62; 0">
-            <uipath:type value="uipath:Activity" version="v1" />
+            <uipath:type value="Orchestrator.ExecuteApiWorkflowAsync" version="v2" />
+            <uipath:context>
+              <uipath:input name="name" type="string" value="=bindings.bgpbpQQK4" />
+              <uipath:input name="folderPath" type="string" value="=bindings.bLcPAKMGn" />
+              <uipath:input name="_label" type="string" value="Generate Audit Record" />
+              <uipath:inputSchema type="jsonSchema"><![CDATA[{"$schema":"http://json-schema.org/draft-07/schema#","type":"object","properties":{"obligation_id":{"type":"string"},"disposition":{"type":"string"},"recorded_at":{"type":"string"},"jurisdiction":{"type":"string"}},"required":[]}]]></uipath:inputSchema>
+            </uipath:context>
+            <uipath:input name="JobArguments" type="json" target="bodyField"><![CDATA[{"obligation_id":null,"disposition":null,"recorded_at":null,"jurisdiction":null}]]></uipath:input>
+            <uipath:output name="Error" type="jsonSchema" source="=Error" var="error7" />
+            <uipath:output name="audit_record_id" type="string" source="=audit_record_id" var="auditRecordId" />
+            <uipath:output name="recorded_at" type="string" source="=recorded_at" var="recordedAt" />
+            <uipath:output name="disposition" type="string" source="=disposition" var="disposition" />
+            <uipath:output name="audit_summary" type="string" source="=audit_summary" var="auditSummary" />
           </uipath:activity>
         </bpmn:extensionElements>
         <bpmn:incoming>edge_tIy5SWPeX_UpdateRunningTasksNewGlobal-tIy5SWPeX</bpmn:incoming>
@@ -1058,7 +1133,7 @@ return { upsertKeys: allEventsUpdatedKeys, deleteKeys: [...exitedStageKeysToDele
         <bpmn:extensionElements>
           <uipath:mapping version="v1">
             <uipath:type value="BPMN.Variables" version="v1" />
-            <uipath:output name="taskCompletedOutputs" type="json" var="taskCompletedOutputsVariable" custom="true" internal="true"><![CDATA[=js:Object.assign({}, vars.taskCompletedOutputsVariable, {"Generate Audit Record": {}})]]></uipath:output>
+            <uipath:output name="taskCompletedOutputs" type="json" var="taskCompletedOutputsVariable" custom="true" internal="true"><![CDATA[=js:Object.assign({}, vars.taskCompletedOutputsVariable, {"Generate Audit Record": {"Error": vars.error7, "audit_record_id": vars.auditRecordId, "recorded_at": vars.recordedAt, "disposition": vars.disposition, "audit_summary": vars.auditSummary}})]]></uipath:output>
           </uipath:mapping>
         </bpmn:extensionElements>
         <bpmn:incoming>edge_tIy5SWPeX-tIy5SWPeX_UpdateTaskCompletedOutputsNode</bpmn:incoming>
@@ -1245,7 +1320,8 @@ return { upsertKeys: allEventsUpdatedKeys, deleteKeys: [...exitedStageKeysToDele
         <bpmn:terminateEventDefinition />
       </bpmn:endEvent>
       <bpmn:sequenceFlow id="edge_TasksEventSubProcessStartEventNode-TasksEventSubProcessVariablesSetupNode" sourceRef="TasksEventSubProcessStartEventNode" targetRef="TasksEventSubProcessVariablesSetupNode" />
-      <bpmn:sequenceFlow id="edge_TasksEventSubProcessVariablesSetupNode-tasksEventSubprocessInclusiveGateway" sourceRef="TasksEventSubProcessVariablesSetupNode" targetRef="tasksEventSubprocessInclusiveGateway" />
+      <bpmn:sequenceFlow id="edge_TasksEventSubProcessVariablesSetupNode-TasksEventSubProcessOverlayMessageVarsNode" sourceRef="TasksEventSubProcessVariablesSetupNode" targetRef="TasksEventSubProcessOverlayMessageVarsNode" />
+      <bpmn:sequenceFlow id="edge_TasksEventSubProcessOverlayMessageVarsNode-tasksEventSubprocessInclusiveGateway" sourceRef="TasksEventSubProcessOverlayMessageVarsNode" targetRef="tasksEventSubprocessInclusiveGateway" />
       <bpmn:sequenceFlow id="noTasksToRunEdge" sourceRef="tasksEventSubprocessInclusiveGateway" targetRef="noTasksEndEvent" />
       <bpmn:sequenceFlow id="edge_tasksEventSubprocessInclusiveGateway-tE0pwsV58_UpdateRunningTasksNewGlobal" sourceRef="tasksEventSubprocessInclusiveGateway" targetRef="tE0pwsV58_UpdateRunningTasksNewGlobal">
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=js:vars.tasksEventSubprocessResponse.taskName == "Classify Obligation"</bpmn:conditionExpression>
@@ -2209,356 +2285,366 @@ return { upsertKeys: allEventsUpdatedKeys, deleteKeys: [...exitedStageKeysToDele
           <dc:Bounds x="175" y="115" width="100" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="S_tasksEventSubprocessInclusiveGateway" bpmnElement="tasksEventSubprocessInclusiveGateway">
-        <dc:Bounds x="350" y="45" width="50" height="50" />
+      <bpmndi:BPMNShape id="S_TasksEventSubProcessOverlayMessageVarsNode" bpmnElement="TasksEventSubProcessOverlayMessageVarsNode">
+        <dc:Bounds x="325" y="30" width="100" height="80" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="350" y="100" width="50" height="14" />
+          <dc:Bounds x="325" y="115" width="100" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="S_tasksEventSubprocessInclusiveGateway" bpmnElement="tasksEventSubprocessInclusiveGateway">
+        <dc:Bounds x="500" y="45" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="500" y="100" width="50" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="S_noTasksEndEvent" bpmnElement="noTasksEndEvent">
-        <dc:Bounds x="507" y="52" width="36" height="36" />
+        <dc:Bounds x="657" y="52" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="507" y="93" width="36" height="14" />
+          <dc:Bounds x="657" y="93" width="36" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="S_tE0pwsV58_UpdateRunningTasksNewGlobal" bpmnElement="tE0pwsV58_UpdateRunningTasksNewGlobal">
-        <dc:Bounds x="475" y="170" width="100" height="80" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="475" y="255" width="100" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="S_tE0pwsV58" bpmnElement="tE0pwsV58">
         <dc:Bounds x="625" y="170" width="100" height="80" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="625" y="255" width="100" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="S_tE0pwsV58_CancelTaskBoundaryEvent" bpmnElement="tE0pwsV58_CancelTaskBoundaryEvent">
-        <dc:Bounds x="657" y="232" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="657" y="273" width="36" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="S_tE0pwsV58_UpdateTaskCompletedOutputsNode" bpmnElement="tE0pwsV58_UpdateTaskCompletedOutputsNode">
+      <bpmndi:BPMNShape id="S_tE0pwsV58" bpmnElement="tE0pwsV58">
         <dc:Bounds x="775" y="170" width="100" height="80" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="775" y="255" width="100" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="S_tE0pwsV58_UpdateCompletedTaskNewGlobal" bpmnElement="tE0pwsV58_UpdateCompletedTaskNewGlobal">
+      <bpmndi:BPMNShape id="S_tE0pwsV58_CancelTaskBoundaryEvent" bpmnElement="tE0pwsV58_CancelTaskBoundaryEvent">
+        <dc:Bounds x="807" y="232" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="807" y="273" width="36" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="S_tE0pwsV58_UpdateTaskCompletedOutputsNode" bpmnElement="tE0pwsV58_UpdateTaskCompletedOutputsNode">
         <dc:Bounds x="925" y="170" width="100" height="80" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="925" y="255" width="100" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="S_tE0pwsV58_Completed_SendMessageEndEvent" bpmnElement="tE0pwsV58_Completed_SendMessageEndEvent">
-        <dc:Bounds x="1107" y="192" width="36" height="36" />
+      <bpmndi:BPMNShape id="S_tE0pwsV58_UpdateCompletedTaskNewGlobal" bpmnElement="tE0pwsV58_UpdateCompletedTaskNewGlobal">
+        <dc:Bounds x="1075" y="170" width="100" height="80" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1107" y="233" width="36" height="14" />
+          <dc:Bounds x="1075" y="255" width="100" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="S_tE0pwsV58_Completed_SendMessageEndEvent" bpmnElement="tE0pwsV58_Completed_SendMessageEndEvent">
+        <dc:Bounds x="1257" y="192" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1257" y="233" width="36" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="S_t9BUmAX8k_UpdateRunningTasksNewGlobal" bpmnElement="t9BUmAX8k_UpdateRunningTasksNewGlobal">
-        <dc:Bounds x="475" y="310" width="100" height="80" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="475" y="395" width="100" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="S_t9BUmAX8k" bpmnElement="t9BUmAX8k">
         <dc:Bounds x="625" y="310" width="100" height="80" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="625" y="395" width="100" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="S_t9BUmAX8k_CancelTaskBoundaryEvent" bpmnElement="t9BUmAX8k_CancelTaskBoundaryEvent">
-        <dc:Bounds x="657" y="372" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="657" y="413" width="36" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="S_t9BUmAX8k_UpdateTaskCompletedOutputsNode" bpmnElement="t9BUmAX8k_UpdateTaskCompletedOutputsNode">
+      <bpmndi:BPMNShape id="S_t9BUmAX8k" bpmnElement="t9BUmAX8k">
         <dc:Bounds x="775" y="310" width="100" height="80" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="775" y="395" width="100" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="S_t9BUmAX8k_UpdateCompletedTaskNewGlobal" bpmnElement="t9BUmAX8k_UpdateCompletedTaskNewGlobal">
+      <bpmndi:BPMNShape id="S_t9BUmAX8k_CancelTaskBoundaryEvent" bpmnElement="t9BUmAX8k_CancelTaskBoundaryEvent">
+        <dc:Bounds x="807" y="372" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="807" y="413" width="36" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="S_t9BUmAX8k_UpdateTaskCompletedOutputsNode" bpmnElement="t9BUmAX8k_UpdateTaskCompletedOutputsNode">
         <dc:Bounds x="925" y="310" width="100" height="80" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="925" y="395" width="100" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="S_t9BUmAX8k_Completed_SendMessageEndEvent" bpmnElement="t9BUmAX8k_Completed_SendMessageEndEvent">
-        <dc:Bounds x="1107" y="332" width="36" height="36" />
+      <bpmndi:BPMNShape id="S_t9BUmAX8k_UpdateCompletedTaskNewGlobal" bpmnElement="t9BUmAX8k_UpdateCompletedTaskNewGlobal">
+        <dc:Bounds x="1075" y="310" width="100" height="80" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1107" y="373" width="36" height="14" />
+          <dc:Bounds x="1075" y="395" width="100" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="S_t9BUmAX8k_Completed_SendMessageEndEvent" bpmnElement="t9BUmAX8k_Completed_SendMessageEndEvent">
+        <dc:Bounds x="1257" y="332" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1257" y="373" width="36" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="S_tE0pwsV58_UpdateGlobalsAfterTaskCancel" bpmnElement="tE0pwsV58_UpdateGlobalsAfterTaskCancel">
-        <dc:Bounds x="1375" y="310" width="100" height="80" />
+        <dc:Bounds x="1525" y="310" width="100" height="80" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1375" y="395" width="100" height="14" />
+          <dc:Bounds x="1525" y="395" width="100" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="S_tE0pwsV58_CancelTaskTerminalEndEvent" bpmnElement="tE0pwsV58_CancelTaskTerminalEndEvent">
-        <dc:Bounds x="1557" y="332" width="36" height="36" />
+        <dc:Bounds x="1707" y="332" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1557" y="373" width="36" height="14" />
+          <dc:Bounds x="1707" y="373" width="36" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="S_tIy5SWPeX_UpdateRunningTasksNewGlobal" bpmnElement="tIy5SWPeX_UpdateRunningTasksNewGlobal">
-        <dc:Bounds x="475" y="450" width="100" height="80" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="475" y="535" width="100" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="S_tIy5SWPeX" bpmnElement="tIy5SWPeX">
         <dc:Bounds x="625" y="450" width="100" height="80" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="625" y="535" width="100" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="S_tIy5SWPeX_CancelTaskBoundaryEvent" bpmnElement="tIy5SWPeX_CancelTaskBoundaryEvent">
-        <dc:Bounds x="657" y="512" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="657" y="553" width="36" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="S_tIy5SWPeX_UpdateTaskCompletedOutputsNode" bpmnElement="tIy5SWPeX_UpdateTaskCompletedOutputsNode">
+      <bpmndi:BPMNShape id="S_tIy5SWPeX" bpmnElement="tIy5SWPeX">
         <dc:Bounds x="775" y="450" width="100" height="80" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="775" y="535" width="100" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="S_tIy5SWPeX_UpdateCompletedTaskNewGlobal" bpmnElement="tIy5SWPeX_UpdateCompletedTaskNewGlobal">
+      <bpmndi:BPMNShape id="S_tIy5SWPeX_CancelTaskBoundaryEvent" bpmnElement="tIy5SWPeX_CancelTaskBoundaryEvent">
+        <dc:Bounds x="807" y="512" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="807" y="553" width="36" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="S_tIy5SWPeX_UpdateTaskCompletedOutputsNode" bpmnElement="tIy5SWPeX_UpdateTaskCompletedOutputsNode">
         <dc:Bounds x="925" y="450" width="100" height="80" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="925" y="535" width="100" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="S_tIy5SWPeX_Completed_SendMessageEndEvent" bpmnElement="tIy5SWPeX_Completed_SendMessageEndEvent">
-        <dc:Bounds x="1107" y="472" width="36" height="36" />
+      <bpmndi:BPMNShape id="S_tIy5SWPeX_UpdateCompletedTaskNewGlobal" bpmnElement="tIy5SWPeX_UpdateCompletedTaskNewGlobal">
+        <dc:Bounds x="1075" y="450" width="100" height="80" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1107" y="513" width="36" height="14" />
+          <dc:Bounds x="1075" y="535" width="100" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="S_tIy5SWPeX_Completed_SendMessageEndEvent" bpmnElement="tIy5SWPeX_Completed_SendMessageEndEvent">
+        <dc:Bounds x="1257" y="472" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1257" y="513" width="36" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="S_t9BUmAX8k_UpdateGlobalsAfterTaskCancel" bpmnElement="t9BUmAX8k_UpdateGlobalsAfterTaskCancel">
-        <dc:Bounds x="1375" y="450" width="100" height="80" />
+        <dc:Bounds x="1525" y="450" width="100" height="80" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1375" y="535" width="100" height="14" />
+          <dc:Bounds x="1525" y="535" width="100" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="S_t9BUmAX8k_CancelTaskTerminalEndEvent" bpmnElement="t9BUmAX8k_CancelTaskTerminalEndEvent">
-        <dc:Bounds x="1557" y="472" width="36" height="36" />
+        <dc:Bounds x="1707" y="472" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1557" y="513" width="36" height="14" />
+          <dc:Bounds x="1707" y="513" width="36" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="S_WaitForStageSelection_UpdateRunningTasksNewGlobal" bpmnElement="WaitForStageSelection_UpdateRunningTasksNewGlobal">
-        <dc:Bounds x="475" y="590" width="100" height="80" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="475" y="675" width="100" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="S_WaitForStageSelection_TaskSubprocess" bpmnElement="WaitForStageSelection_TaskSubprocess" isExpanded="false">
         <dc:Bounds x="625" y="590" width="100" height="80" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="625" y="675" width="100" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="S_WaitForStageSelection_CancelTaskBoundaryEvent" bpmnElement="WaitForStageSelection_CancelTaskBoundaryEvent">
-        <dc:Bounds x="657" y="652" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="657" y="693" width="36" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="S_WaitForStageSelection_CaptureStageSelection" bpmnElement="WaitForStageSelection_CaptureStageSelection">
+      <bpmndi:BPMNShape id="S_WaitForStageSelection_TaskSubprocess" bpmnElement="WaitForStageSelection_TaskSubprocess" isExpanded="false">
         <dc:Bounds x="775" y="590" width="100" height="80" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="775" y="675" width="100" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="S_WaitForStageSelection_UpdateCompletedTaskNewGlobal" bpmnElement="WaitForStageSelection_UpdateCompletedTaskNewGlobal">
+      <bpmndi:BPMNShape id="S_WaitForStageSelection_CancelTaskBoundaryEvent" bpmnElement="WaitForStageSelection_CancelTaskBoundaryEvent">
+        <dc:Bounds x="807" y="652" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="807" y="693" width="36" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="S_WaitForStageSelection_CaptureStageSelection" bpmnElement="WaitForStageSelection_CaptureStageSelection">
         <dc:Bounds x="925" y="590" width="100" height="80" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="925" y="675" width="100" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="S_WaitForStageSelection_Completed_SendMessageEndEvent" bpmnElement="WaitForStageSelection_Completed_SendMessageEndEvent">
-        <dc:Bounds x="1107" y="612" width="36" height="36" />
+      <bpmndi:BPMNShape id="S_WaitForStageSelection_UpdateCompletedTaskNewGlobal" bpmnElement="WaitForStageSelection_UpdateCompletedTaskNewGlobal">
+        <dc:Bounds x="1075" y="590" width="100" height="80" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1107" y="653" width="36" height="14" />
+          <dc:Bounds x="1075" y="675" width="100" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="S_WaitForStageSelection_Completed_SendMessageEndEvent" bpmnElement="WaitForStageSelection_Completed_SendMessageEndEvent">
+        <dc:Bounds x="1257" y="612" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1257" y="653" width="36" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="S_tIy5SWPeX_UpdateGlobalsAfterTaskCancel" bpmnElement="tIy5SWPeX_UpdateGlobalsAfterTaskCancel">
-        <dc:Bounds x="1375" y="590" width="100" height="80" />
+        <dc:Bounds x="1525" y="590" width="100" height="80" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1375" y="675" width="100" height="14" />
+          <dc:Bounds x="1525" y="675" width="100" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="S_tIy5SWPeX_CancelTaskTerminalEndEvent" bpmnElement="tIy5SWPeX_CancelTaskTerminalEndEvent">
-        <dc:Bounds x="1557" y="612" width="36" height="36" />
+        <dc:Bounds x="1707" y="612" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1557" y="653" width="36" height="14" />
+          <dc:Bounds x="1707" y="653" width="36" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="S_WaitForStageSelection_UpdateGlobalsAfterTaskCancel" bpmnElement="WaitForStageSelection_UpdateGlobalsAfterTaskCancel">
-        <dc:Bounds x="775" y="730" width="100" height="80" />
+        <dc:Bounds x="925" y="730" width="100" height="80" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="775" y="815" width="100" height="14" />
+          <dc:Bounds x="925" y="815" width="100" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="S_WaitForStageSelection_CancelTaskTerminalEndEvent" bpmnElement="WaitForStageSelection_CancelTaskTerminalEndEvent">
-        <dc:Bounds x="957" y="752" width="36" height="36" />
+        <dc:Bounds x="1107" y="752" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="957" y="793" width="36" height="14" />
+          <dc:Bounds x="1107" y="793" width="36" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_edge_TasksEventSubProcessStartEventNode-TasksEventSubProcessVariablesSetupNode" bpmnElement="edge_TasksEventSubProcessStartEventNode-TasksEventSubProcessVariablesSetupNode">
         <di:waypoint x="93" y="70" />
         <di:waypoint x="175" y="70" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_edge_TasksEventSubProcessVariablesSetupNode-tasksEventSubprocessInclusiveGateway" bpmnElement="edge_TasksEventSubProcessVariablesSetupNode-tasksEventSubprocessInclusiveGateway">
+      <bpmndi:BPMNEdge id="BPMNEdge_edge_TasksEventSubProcessVariablesSetupNode-TasksEventSubProcessOverlayMessageVarsNode" bpmnElement="edge_TasksEventSubProcessVariablesSetupNode-TasksEventSubProcessOverlayMessageVarsNode">
         <di:waypoint x="275" y="70" />
-        <di:waypoint x="350" y="70" />
+        <di:waypoint x="325" y="70" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_edge_TasksEventSubProcessOverlayMessageVarsNode-tasksEventSubprocessInclusiveGateway" bpmnElement="edge_TasksEventSubProcessOverlayMessageVarsNode-tasksEventSubprocessInclusiveGateway">
+        <di:waypoint x="425" y="70" />
+        <di:waypoint x="500" y="70" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_noTasksToRunEdge" bpmnElement="noTasksToRunEdge">
-        <di:waypoint x="400" y="70" />
-        <di:waypoint x="507" y="70" />
+        <di:waypoint x="550" y="70" />
+        <di:waypoint x="657" y="70" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_edge_tasksEventSubprocessInclusiveGateway-tE0pwsV58_UpdateRunningTasksNewGlobal" bpmnElement="edge_tasksEventSubprocessInclusiveGateway-tE0pwsV58_UpdateRunningTasksNewGlobal">
-        <di:waypoint x="375" y="95" />
-        <di:waypoint x="375" y="210" />
-        <di:waypoint x="475" y="210" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_edge_tasksEventSubprocessInclusiveGateway-t9BUmAX8k_UpdateRunningTasksNewGlobal" bpmnElement="edge_tasksEventSubprocessInclusiveGateway-t9BUmAX8k_UpdateRunningTasksNewGlobal">
-        <di:waypoint x="375" y="95" />
-        <di:waypoint x="375" y="350" />
-        <di:waypoint x="475" y="350" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_edge_tasksEventSubprocessInclusiveGateway-tIy5SWPeX_UpdateRunningTasksNewGlobal" bpmnElement="edge_tasksEventSubprocessInclusiveGateway-tIy5SWPeX_UpdateRunningTasksNewGlobal">
-        <di:waypoint x="375" y="95" />
-        <di:waypoint x="375" y="490" />
-        <di:waypoint x="475" y="490" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_edge_tasksEventSubprocessInclusiveGateway-WaitForStageSelection_UpdateRunningTasksNewGlobal" bpmnElement="edge_tasksEventSubprocessInclusiveGateway-WaitForStageSelection_UpdateRunningTasksNewGlobal">
-        <di:waypoint x="375" y="95" />
-        <di:waypoint x="375" y="630" />
-        <di:waypoint x="475" y="630" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_edge_tE0pwsV58_UpdateRunningTasksNewGlobal-tE0pwsV58" bpmnElement="edge_tE0pwsV58_UpdateRunningTasksNewGlobal-tE0pwsV58">
-        <di:waypoint x="575" y="210" />
+        <di:waypoint x="525" y="95" />
+        <di:waypoint x="525" y="210" />
         <di:waypoint x="625" y="210" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_edge_tE0pwsV58-tE0pwsV58_UpdateTaskCompletedOutputsNode" bpmnElement="edge_tE0pwsV58-tE0pwsV58_UpdateTaskCompletedOutputsNode">
+      <bpmndi:BPMNEdge id="BPMNEdge_edge_tasksEventSubprocessInclusiveGateway-t9BUmAX8k_UpdateRunningTasksNewGlobal" bpmnElement="edge_tasksEventSubprocessInclusiveGateway-t9BUmAX8k_UpdateRunningTasksNewGlobal">
+        <di:waypoint x="525" y="95" />
+        <di:waypoint x="525" y="350" />
+        <di:waypoint x="625" y="350" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_edge_tasksEventSubprocessInclusiveGateway-tIy5SWPeX_UpdateRunningTasksNewGlobal" bpmnElement="edge_tasksEventSubprocessInclusiveGateway-tIy5SWPeX_UpdateRunningTasksNewGlobal">
+        <di:waypoint x="525" y="95" />
+        <di:waypoint x="525" y="490" />
+        <di:waypoint x="625" y="490" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_edge_tasksEventSubprocessInclusiveGateway-WaitForStageSelection_UpdateRunningTasksNewGlobal" bpmnElement="edge_tasksEventSubprocessInclusiveGateway-WaitForStageSelection_UpdateRunningTasksNewGlobal">
+        <di:waypoint x="525" y="95" />
+        <di:waypoint x="525" y="630" />
+        <di:waypoint x="625" y="630" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_edge_tE0pwsV58_UpdateRunningTasksNewGlobal-tE0pwsV58" bpmnElement="edge_tE0pwsV58_UpdateRunningTasksNewGlobal-tE0pwsV58">
         <di:waypoint x="725" y="210" />
         <di:waypoint x="775" y="210" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_edge_tE0pwsV58_CancelTaskBoundaryEvent-tE0pwsV58_UpdateGlobalsAfterTaskCancel" bpmnElement="edge_tE0pwsV58_CancelTaskBoundaryEvent-tE0pwsV58_UpdateGlobalsAfterTaskCancel">
-        <di:waypoint x="675" y="268" />
-        <di:waypoint x="675" y="280" />
-        <di:waypoint x="750" y="280" />
-        <di:waypoint x="750" y="250" />
-        <di:waypoint x="750" y="280" />
-        <di:waypoint x="1350" y="280" />
-        <di:waypoint x="1350" y="350" />
-        <di:waypoint x="1375" y="350" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_edge_tE0pwsV58_UpdateTaskCompletedOutputsNode-tE0pwsV58_UpdateCompletedTaskNewGlobal" bpmnElement="edge_tE0pwsV58_UpdateTaskCompletedOutputsNode-tE0pwsV58_UpdateCompletedTaskNewGlobal">
+      <bpmndi:BPMNEdge id="BPMNEdge_edge_tE0pwsV58-tE0pwsV58_UpdateTaskCompletedOutputsNode" bpmnElement="edge_tE0pwsV58-tE0pwsV58_UpdateTaskCompletedOutputsNode">
         <di:waypoint x="875" y="210" />
         <di:waypoint x="925" y="210" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_edge_tE0pwsV58_UpdateCompletedTaskNewGlobal-tE0pwsV58_Completed_SendMessageEndEvent" bpmnElement="edge_tE0pwsV58_UpdateCompletedTaskNewGlobal-tE0pwsV58_Completed_SendMessageEndEvent">
+      <bpmndi:BPMNEdge id="BPMNEdge_edge_tE0pwsV58_CancelTaskBoundaryEvent-tE0pwsV58_UpdateGlobalsAfterTaskCancel" bpmnElement="edge_tE0pwsV58_CancelTaskBoundaryEvent-tE0pwsV58_UpdateGlobalsAfterTaskCancel">
+        <di:waypoint x="825" y="268" />
+        <di:waypoint x="825" y="280" />
+        <di:waypoint x="900" y="280" />
+        <di:waypoint x="900" y="250" />
+        <di:waypoint x="900" y="280" />
+        <di:waypoint x="1500" y="280" />
+        <di:waypoint x="1500" y="350" />
+        <di:waypoint x="1525" y="350" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_edge_tE0pwsV58_UpdateTaskCompletedOutputsNode-tE0pwsV58_UpdateCompletedTaskNewGlobal" bpmnElement="edge_tE0pwsV58_UpdateTaskCompletedOutputsNode-tE0pwsV58_UpdateCompletedTaskNewGlobal">
         <di:waypoint x="1025" y="210" />
-        <di:waypoint x="1107" y="210" />
+        <di:waypoint x="1075" y="210" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_edge_tE0pwsV58_UpdateCompletedTaskNewGlobal-tE0pwsV58_Completed_SendMessageEndEvent" bpmnElement="edge_tE0pwsV58_UpdateCompletedTaskNewGlobal-tE0pwsV58_Completed_SendMessageEndEvent">
+        <di:waypoint x="1175" y="210" />
+        <di:waypoint x="1257" y="210" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_edge_t9BUmAX8k_UpdateRunningTasksNewGlobal-t9BUmAX8k" bpmnElement="edge_t9BUmAX8k_UpdateRunningTasksNewGlobal-t9BUmAX8k">
-        <di:waypoint x="575" y="350" />
-        <di:waypoint x="625" y="350" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_edge_t9BUmAX8k-t9BUmAX8k_UpdateTaskCompletedOutputsNode" bpmnElement="edge_t9BUmAX8k-t9BUmAX8k_UpdateTaskCompletedOutputsNode">
         <di:waypoint x="725" y="350" />
         <di:waypoint x="775" y="350" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_edge_t9BUmAX8k_CancelTaskBoundaryEvent-t9BUmAX8k_UpdateGlobalsAfterTaskCancel" bpmnElement="edge_t9BUmAX8k_CancelTaskBoundaryEvent-t9BUmAX8k_UpdateGlobalsAfterTaskCancel">
-        <di:waypoint x="675" y="408" />
-        <di:waypoint x="675" y="420" />
-        <di:waypoint x="750" y="420" />
-        <di:waypoint x="750" y="390" />
-        <di:waypoint x="750" y="420" />
-        <di:waypoint x="1350" y="420" />
-        <di:waypoint x="1350" y="490" />
-        <di:waypoint x="1375" y="490" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_edge_t9BUmAX8k_UpdateTaskCompletedOutputsNode-t9BUmAX8k_UpdateCompletedTaskNewGlobal" bpmnElement="edge_t9BUmAX8k_UpdateTaskCompletedOutputsNode-t9BUmAX8k_UpdateCompletedTaskNewGlobal">
+      <bpmndi:BPMNEdge id="BPMNEdge_edge_t9BUmAX8k-t9BUmAX8k_UpdateTaskCompletedOutputsNode" bpmnElement="edge_t9BUmAX8k-t9BUmAX8k_UpdateTaskCompletedOutputsNode">
         <di:waypoint x="875" y="350" />
         <di:waypoint x="925" y="350" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_edge_t9BUmAX8k_UpdateCompletedTaskNewGlobal-t9BUmAX8k_Completed_SendMessageEndEvent" bpmnElement="edge_t9BUmAX8k_UpdateCompletedTaskNewGlobal-t9BUmAX8k_Completed_SendMessageEndEvent">
+      <bpmndi:BPMNEdge id="BPMNEdge_edge_t9BUmAX8k_CancelTaskBoundaryEvent-t9BUmAX8k_UpdateGlobalsAfterTaskCancel" bpmnElement="edge_t9BUmAX8k_CancelTaskBoundaryEvent-t9BUmAX8k_UpdateGlobalsAfterTaskCancel">
+        <di:waypoint x="825" y="408" />
+        <di:waypoint x="825" y="420" />
+        <di:waypoint x="900" y="420" />
+        <di:waypoint x="900" y="390" />
+        <di:waypoint x="900" y="420" />
+        <di:waypoint x="1500" y="420" />
+        <di:waypoint x="1500" y="490" />
+        <di:waypoint x="1525" y="490" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_edge_t9BUmAX8k_UpdateTaskCompletedOutputsNode-t9BUmAX8k_UpdateCompletedTaskNewGlobal" bpmnElement="edge_t9BUmAX8k_UpdateTaskCompletedOutputsNode-t9BUmAX8k_UpdateCompletedTaskNewGlobal">
         <di:waypoint x="1025" y="350" />
-        <di:waypoint x="1107" y="350" />
+        <di:waypoint x="1075" y="350" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_edge_t9BUmAX8k_UpdateCompletedTaskNewGlobal-t9BUmAX8k_Completed_SendMessageEndEvent" bpmnElement="edge_t9BUmAX8k_UpdateCompletedTaskNewGlobal-t9BUmAX8k_Completed_SendMessageEndEvent">
+        <di:waypoint x="1175" y="350" />
+        <di:waypoint x="1257" y="350" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_edge_tE0pwsV58_UpdateGlobalsAfterTaskCancel-tE0pwsV58_CancelTaskTerminalEndEvent" bpmnElement="edge_tE0pwsV58_UpdateGlobalsAfterTaskCancel-tE0pwsV58_CancelTaskTerminalEndEvent">
-        <di:waypoint x="1475" y="350" />
-        <di:waypoint x="1557" y="350" />
+        <di:waypoint x="1625" y="350" />
+        <di:waypoint x="1707" y="350" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_edge_tIy5SWPeX_UpdateRunningTasksNewGlobal-tIy5SWPeX" bpmnElement="edge_tIy5SWPeX_UpdateRunningTasksNewGlobal-tIy5SWPeX">
-        <di:waypoint x="575" y="490" />
-        <di:waypoint x="625" y="490" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_edge_tIy5SWPeX-tIy5SWPeX_UpdateTaskCompletedOutputsNode" bpmnElement="edge_tIy5SWPeX-tIy5SWPeX_UpdateTaskCompletedOutputsNode">
         <di:waypoint x="725" y="490" />
         <di:waypoint x="775" y="490" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_edge_tIy5SWPeX_CancelTaskBoundaryEvent-tIy5SWPeX_UpdateGlobalsAfterTaskCancel" bpmnElement="edge_tIy5SWPeX_CancelTaskBoundaryEvent-tIy5SWPeX_UpdateGlobalsAfterTaskCancel">
-        <di:waypoint x="675" y="548" />
-        <di:waypoint x="675" y="560" />
-        <di:waypoint x="750" y="560" />
-        <di:waypoint x="750" y="530" />
-        <di:waypoint x="750" y="560" />
-        <di:waypoint x="1350" y="560" />
-        <di:waypoint x="1350" y="630" />
-        <di:waypoint x="1375" y="630" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_edge_tIy5SWPeX_UpdateTaskCompletedOutputsNode-tIy5SWPeX_UpdateCompletedTaskNewGlobal" bpmnElement="edge_tIy5SWPeX_UpdateTaskCompletedOutputsNode-tIy5SWPeX_UpdateCompletedTaskNewGlobal">
+      <bpmndi:BPMNEdge id="BPMNEdge_edge_tIy5SWPeX-tIy5SWPeX_UpdateTaskCompletedOutputsNode" bpmnElement="edge_tIy5SWPeX-tIy5SWPeX_UpdateTaskCompletedOutputsNode">
         <di:waypoint x="875" y="490" />
         <di:waypoint x="925" y="490" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_edge_tIy5SWPeX_UpdateCompletedTaskNewGlobal-tIy5SWPeX_Completed_SendMessageEndEvent" bpmnElement="edge_tIy5SWPeX_UpdateCompletedTaskNewGlobal-tIy5SWPeX_Completed_SendMessageEndEvent">
+      <bpmndi:BPMNEdge id="BPMNEdge_edge_tIy5SWPeX_CancelTaskBoundaryEvent-tIy5SWPeX_UpdateGlobalsAfterTaskCancel" bpmnElement="edge_tIy5SWPeX_CancelTaskBoundaryEvent-tIy5SWPeX_UpdateGlobalsAfterTaskCancel">
+        <di:waypoint x="825" y="548" />
+        <di:waypoint x="825" y="560" />
+        <di:waypoint x="900" y="560" />
+        <di:waypoint x="900" y="530" />
+        <di:waypoint x="900" y="560" />
+        <di:waypoint x="1500" y="560" />
+        <di:waypoint x="1500" y="630" />
+        <di:waypoint x="1525" y="630" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_edge_tIy5SWPeX_UpdateTaskCompletedOutputsNode-tIy5SWPeX_UpdateCompletedTaskNewGlobal" bpmnElement="edge_tIy5SWPeX_UpdateTaskCompletedOutputsNode-tIy5SWPeX_UpdateCompletedTaskNewGlobal">
         <di:waypoint x="1025" y="490" />
-        <di:waypoint x="1107" y="490" />
+        <di:waypoint x="1075" y="490" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_edge_tIy5SWPeX_UpdateCompletedTaskNewGlobal-tIy5SWPeX_Completed_SendMessageEndEvent" bpmnElement="edge_tIy5SWPeX_UpdateCompletedTaskNewGlobal-tIy5SWPeX_Completed_SendMessageEndEvent">
+        <di:waypoint x="1175" y="490" />
+        <di:waypoint x="1257" y="490" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_edge_t9BUmAX8k_UpdateGlobalsAfterTaskCancel-t9BUmAX8k_CancelTaskTerminalEndEvent" bpmnElement="edge_t9BUmAX8k_UpdateGlobalsAfterTaskCancel-t9BUmAX8k_CancelTaskTerminalEndEvent">
-        <di:waypoint x="1475" y="490" />
-        <di:waypoint x="1557" y="490" />
+        <di:waypoint x="1625" y="490" />
+        <di:waypoint x="1707" y="490" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_edge_WaitForStageSelection_UpdateRunningTasksNewGlobal-WaitForStageSelection_TaskSubprocess" bpmnElement="edge_WaitForStageSelection_UpdateRunningTasksNewGlobal-WaitForStageSelection_TaskSubprocess">
-        <di:waypoint x="575" y="630" />
-        <di:waypoint x="625" y="630" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_edge_WaitForStageSelection_TaskSubprocess-WaitForStageSelection_CaptureStageSelection" bpmnElement="edge_WaitForStageSelection_TaskSubprocess-WaitForStageSelection_CaptureStageSelection">
         <di:waypoint x="725" y="630" />
         <di:waypoint x="775" y="630" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_edge_WaitForStageSelection_CancelTaskBoundaryEvent-WaitForStageSelection_UpdateGlobalsAfterTaskCancel" bpmnElement="edge_WaitForStageSelection_CancelTaskBoundaryEvent-WaitForStageSelection_UpdateGlobalsAfterTaskCancel">
-        <di:waypoint x="675" y="688" />
-        <di:waypoint x="675" y="770" />
-        <di:waypoint x="775" y="770" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_edge_WaitForStageSelection_CaptureStageSelection-WaitForStageSelection_UpdateCompletedTaskNewGlobal" bpmnElement="edge_WaitForStageSelection_CaptureStageSelection-WaitForStageSelection_UpdateCompletedTaskNewGlobal">
+      <bpmndi:BPMNEdge id="BPMNEdge_edge_WaitForStageSelection_TaskSubprocess-WaitForStageSelection_CaptureStageSelection" bpmnElement="edge_WaitForStageSelection_TaskSubprocess-WaitForStageSelection_CaptureStageSelection">
         <di:waypoint x="875" y="630" />
         <di:waypoint x="925" y="630" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_edge_WaitForStageSelection_UpdateCompletedTaskNewGlobal-WaitForStageSelection_Completed_SendMessageEndEvent" bpmnElement="edge_WaitForStageSelection_UpdateCompletedTaskNewGlobal-WaitForStageSelection_Completed_SendMessageEndEvent">
+      <bpmndi:BPMNEdge id="BPMNEdge_edge_WaitForStageSelection_CancelTaskBoundaryEvent-WaitForStageSelection_UpdateGlobalsAfterTaskCancel" bpmnElement="edge_WaitForStageSelection_CancelTaskBoundaryEvent-WaitForStageSelection_UpdateGlobalsAfterTaskCancel">
+        <di:waypoint x="825" y="688" />
+        <di:waypoint x="825" y="770" />
+        <di:waypoint x="925" y="770" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_edge_WaitForStageSelection_CaptureStageSelection-WaitForStageSelection_UpdateCompletedTaskNewGlobal" bpmnElement="edge_WaitForStageSelection_CaptureStageSelection-WaitForStageSelection_UpdateCompletedTaskNewGlobal">
         <di:waypoint x="1025" y="630" />
-        <di:waypoint x="1107" y="630" />
+        <di:waypoint x="1075" y="630" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_edge_WaitForStageSelection_UpdateCompletedTaskNewGlobal-WaitForStageSelection_Completed_SendMessageEndEvent" bpmnElement="edge_WaitForStageSelection_UpdateCompletedTaskNewGlobal-WaitForStageSelection_Completed_SendMessageEndEvent">
+        <di:waypoint x="1175" y="630" />
+        <di:waypoint x="1257" y="630" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_edge_tIy5SWPeX_UpdateGlobalsAfterTaskCancel-tIy5SWPeX_CancelTaskTerminalEndEvent" bpmnElement="edge_tIy5SWPeX_UpdateGlobalsAfterTaskCancel-tIy5SWPeX_CancelTaskTerminalEndEvent">
-        <di:waypoint x="1475" y="630" />
-        <di:waypoint x="1557" y="630" />
+        <di:waypoint x="1625" y="630" />
+        <di:waypoint x="1707" y="630" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_edge_WaitForStageSelection_UpdateGlobalsAfterTaskCancel-WaitForStageSelection_CancelTaskTerminalEndEvent" bpmnElement="edge_WaitForStageSelection_UpdateGlobalsAfterTaskCancel-WaitForStageSelection_CancelTaskTerminalEndEvent">
-        <di:waypoint x="875" y="770" />
-        <di:waypoint x="957" y="770" />
+        <di:waypoint x="1025" y="770" />
+        <di:waypoint x="1107" y="770" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

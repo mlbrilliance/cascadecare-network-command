@@ -1,0 +1,23 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "AssessClaimDisruptionAgent",
+    "kind": "package",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "projectKey": "a55e5500-1111-4a11-8a11-000000000a11",
+    "isOverridable": true,
+    "dependencies": [],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "name": "AssessClaimDisruptionAgent"
+    },
+    "locks": [],
+    "key": "30b5fce9-79ac-463d-a135-e9e3db7370a5",
+    "files": []
+  }
+}
