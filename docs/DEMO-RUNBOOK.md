@@ -61,6 +61,29 @@ uip or jobs start AC365BA5-C807-4DFC-A009-00F3EA61E497 --folder-key $FK --output
 
 This returns a job key in `Pending`. The master begins auto-walking immediately.
 
+> **⭐ This is the only process you kick off manually.** Starting `clearflow-master-crisis`
+> cascades to *everything else automatically* — you never start children, grandchildren,
+> agents, or workflows by hand (they expect to be spawned with parent context):
+>
+> | Started automatically by the master | Mechanism |
+> |---|---|
+> | The 7 agents (coded + low-code) | `type:"agent"` tasks inside the master's stages |
+> | ~6 **child** cases (`clearflow-stakeholder-parent`) | the master's `case-management` spawn tasks (Regulatory Response stage) |
+> | **grandchild** cases (`clearflow-obligation-grandchild`) | each child's `Spawn Obligation Grandchild` `case-management` task |
+> | `register-stakeholder`, `generate-audit-record`, 3× ViVE API workflows | tasks inside the child/grandchild stages |
+>
+> **Optional — the scripted reversal timeline.** `clearflow-demo-driver` (a Maestro Flow) does
+> **not** start the master; it just fires the 5 reversals / scenario events on a timeline into
+> a running case. The master walks fine without it. For the full narrative, start it
+> *alongside* the master:
+>
+> ```bash
+> # find its process key, then start it (same pattern as the master)
+> uip or processes list --folder-key $FK --output json \
+>   | python3 -c "import sys,json;print([ (p['Key'],p['Name']) for p in json.load(sys.stdin)['Data'] if p['Name']=='clearflow-demo-driver'])"
+> uip or jobs start <demo-driver-key> --folder-key $FK --output json
+> ```
+
 ### A3. Watch the cascade
 
 The master walks 5 agent stages (~1–4 min depending on LLM Gateway latency), then the
