@@ -61,6 +61,14 @@ CHILD_INCOMING_REPL = (
 # (canvas toggle wrote isRequired:true into the embedded case-definition JSON, which
 # the CaseRulesEvaluator reads — there is no executable required-set gateway).
 CHILD_REQUIRED_TASKS = ["tfmtATbvb", "tMRS001", "tCDP001", "tPAC001"]
+# The grandchild-spawn (tfmtATbvb) entry was "after BAA boundary analysis"
+# (selected-tasks-completed[ta1Ou8jah]). Live-proven that this races with the stage's
+# required-tasks-completed exit (BAA completes -> stage exits before the spawn activates,
+# even though both are Required -- identical defn to the master's working spawns, yet the
+# child's single after-BAA spawn loses the race). Re-point it to current-stage-entered so it
+# activates in parallel with BAA (no data dependency -- the grandchild takes no BAA output).
+SPAWN_ENTRY_OLD = '"rule":"selected-tasks-completed","id":"Rule_MWQvdm","selectedTasksIds":["ta1Ou8jah"]'
+SPAWN_ENTRY_NEW = '"rule":"current-stage-entered","id":"Rule_MWQvdm"'
 CHILD_ENTRY_POINTS = {
     "$schema": "https://cloud.uipath.com/draft/2024-12/entry-point",
     "$id": "entry-points.json",
@@ -102,12 +110,17 @@ GC_OUTPUT_XML = "".join(
 
 
 def _flip_required(s, tid):
-    """Flip the embedded-JSON isRequired of leaf task <tid> false->true (one occurrence)."""
+    """Ensure the embedded-JSON isRequired of leaf task <tid> is true (idempotent).
+    No-op if the canvas already saved it as true."""
     i = s.find('{"id":"' + tid + '"')
     assert i >= 0, f"{tid} not in embedded JSON"
-    j = s.find('"isRequired":false', i)
-    assert j >= 0 and (j - i) < 2000, f"{tid} isRequired:false not found near task"
-    return s[:j] + '"isRequired":true' + s[j + len('"isRequired":false'):]
+    j_false = s.find('"isRequired":false', i)
+    j_true = s.find('"isRequired":true', i)
+    already = j_true >= 0 and (j_false < 0 or j_true < j_false) and (j_true - i) < 2000
+    if already:
+        return s  # canvas already saved Required=true
+    assert j_false >= 0 and (j_false - i) < 2000, f"{tid} isRequired not found near task"
+    return s[:j_false] + '"isRequired":true' + s[j_false + len('"isRequired":false'):]
 
 
 def patch_child_bpmn(path):
@@ -119,6 +132,8 @@ def patch_child_bpmn(path):
         s = s.replace(CHILD_INCOMING_ANCHOR, CHILD_INCOMING_REPL, 1)
     for tid in CHILD_REQUIRED_TASKS:
         s = _flip_required(s, tid)
+    s = s.replace(SPAWN_ENTRY_OLD, SPAWN_ENTRY_NEW)
+    s = s.replace('"displayName":"After BAA boundary analysis"', '"displayName":"Stage entered"')
     open(path, "w").write(s)
 
 
@@ -131,6 +146,16 @@ def patch_child_caseplan(path):
                 if t.get("id") in CHILD_REQUIRED_TASKS:
                     t["isRequired"] = True
                     flipped.add(t["id"])
+                if t.get("id") == "tfmtATbvb":
+                    for ec in t.get("entryConditions", []):
+                        for rules in ec.get("rules", []):
+                            for r in rules:
+                                if r.get("rule") == "selected-tasks-completed":
+                                    r.clear()
+                                    r["rule"] = "current-stage-entered"
+                                    r["id"] = "Rule_MWQvdm"
+                        if ec.get("displayName") == "After BAA boundary analysis":
+                            ec["displayName"] = "Stage entered"
     assert flipped == set(CHILD_REQUIRED_TASKS), f"missing tasks: {set(CHILD_REQUIRED_TASKS)-flipped}"
     json.dump(d, open(path, "w"), separators=(",", ":"))
 
