@@ -152,6 +152,12 @@ print([(j['State'],j.get('CreationTime','')[-12:]) for j in d if 'master-crisis'
 Do this when you changed a case in Studio Web, edited a caseplan locally, or are deploying
 to a fresh folder. Run from the repo root.
 
+> ⚠️ **Heads-up (see `docs/DEFERRED-FIXES.md`):** the live deployment currently has the
+> grandchild HITL gate bound to `CascadeCare` (a stopgap so it pauses). The repo binds it to
+> its own app `de1f291b`, which auto-completes until that app gets a blocking outcome. A clean
+> redeploy from canonical will therefore make the grandchild gate stop pausing — fix the app
+> (DEFERRED-FIXES P1) before relying on a Path B redeploy for that gate.
+
 ### B1. (Only if you edited cases in the Studio Web canvas) Download + re-merge
 
 The canvas regenerates the compiled `caseplan.json.bpmn` and **drops** the hand-applied
