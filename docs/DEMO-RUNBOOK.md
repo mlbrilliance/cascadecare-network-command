@@ -44,14 +44,35 @@ export FK=de7b7c18-d743-4c8c-b555-9bd3b96fe524
 
 ```bash
 uip --version                      # expect 1.1.x
+uip login status --output json     # check current org/tenant
 uip or processes list --folder-key $FK --output json | grep -c clearflow
 ```
 
-If the second command errors with auth, re-login in the terminal:
+The CLI access token expires (~58 h refresh window). When it lapses, every read returns
+empty/`null` and `processes list` fails with *"Not logged in … refresh token is invalid or
+expired."* **Re-authenticate against the staging tenant** (the demo is NOT on the default
+`cloud.uipath.com` — you must pass `--authority`):
 
+```bash
+uip login --authority https://staging.uipath.com --organization hackathon26_042 --interactive
 ```
-! uipath auth        # or your normal uip login flow
+
+A browser opens against **staging.uipath.com**; log in and approve. When prompted by
+`--interactive`, pick **DefaultTenant**. Success looks like:
+
+```json
+{ "Result": "Success", "Code": "Authenticated",
+  "Data": { "UIPATH_URL": "https://staging.uipath.com",
+            "UIPATH_ORGANIZATION_NAME": "hackathon26_042",
+            "UIPATH_TENANT_NAME": "DefaultTenant" } }
 ```
+
+> **Gotchas:**
+> - Plain `uip login` defaults to `cloud.uipath.com` (the *wrong* cloud) — always include
+>   `--authority https://staging.uipath.com`.
+> - If you don't want the tenant picker, swap `--interactive` for `--tenant DefaultTenant`.
+> - Running this from the IDE: prefix with `!` so the browser-login output returns in-session
+>   (`! uip login --authority … --organization hackathon26_042 --interactive`).
 
 ### A2. Start the master crisis case
 
