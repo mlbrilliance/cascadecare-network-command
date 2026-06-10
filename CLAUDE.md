@@ -207,11 +207,11 @@ Pure-UiPath at runtime. Python only as build-time tooling.
 - UiPath Orchestrator (Robot/jobs runtime)
 
 **Python (build-time / Coded Agents only)**:
-- Python 3.12+, managed by `uv`
-- `uipath` SDK (CLI + Python wrappers)
-- `httpx` (HTTP client used by dev-time wrappers)
-- Ruff + mypy (linting and type checking)
-- pytest + pytest-asyncio + pytest-cov (testing dev-time wrappers + Coded Agents)
+- Python 3.12+ (LTS), managed by `uv` 0.7.12+
+- `uipath` SDK 2.10.79+ (CLI + Python wrappers)
+- `httpx` 0.28.1+ (HTTP client used by dev-time wrappers)
+- Ruff 0.15.16+ + mypy 1.12.0+ (linting and type checking)
+- pytest 8.3.0+ + pytest-asyncio 0.24.0+ + pytest-cov 7.1.0+ (testing dev-time wrappers + Coded Agents)
 
 **Removed in Slice 004** (no longer in pyproject.toml): LangGraph, LangChain, Anthropic SDK (direct calls go through LLM Gateway), Pydantic Settings, SQLAlchemy, psycopg, LanceDB, Polars, Faker, FastAPI, Uvicorn, Pydantic (no models), Alembic.
 
@@ -406,6 +406,7 @@ npx @claude-flow/cli@latest performance benchmark    # Benchmarks
 ## Setup
 
 ```bash
+# Claude Flow CLI — v3.10.40+ (uses @latest for auto-updates)
 claude mcp add claude-flow -- npx -y @claude-flow/cli@latest
 npx @claude-flow/cli@latest daemon start
 npx @claude-flow/cli@latest doctor --fix

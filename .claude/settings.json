@@ -196,7 +196,7 @@
       "Bash(npx @claude-flow*)",
       "Bash(npx claude-flow*)",
       "Bash(node .claude/*)",
-      "mcp__claude-flow__:*"
+      "mcp__claude-flow__*"
     ],
     "deny": [
       "Read(./.env)",
@@ -209,7 +209,7 @@
     "CLAUDE_FLOW_HOOKS_ENABLED": "true"
   },
   "claudeFlow": {
-    "version": "3.0.0",
+    "version": "3.10.40",
     "enabled": true,
     "platform": {
       "os": "linux",
