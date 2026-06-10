@@ -120,10 +120,10 @@ ALL_ARTIFACT_GROUPS = {
     "group, expected",
     [
         ("Maestro Case", 3),
-        ("Agent Builder agent", 4),
+        ("Agent Builder agent", 6),
         ("Coded Agent", 3),
-        ("API Workflow", 17),
-        ("Maestro BPMN", 1),
+        ("API Workflow", 19),
+        ("Maestro BPMN", 2),
         ("Maestro Flow", 1),
         ("UiPath App", 1),
     ],

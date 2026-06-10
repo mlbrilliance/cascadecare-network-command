@@ -47,9 +47,9 @@ def _props(schema_doc: dict) -> dict:
 SLUGS = _workflow_slugs()
 
 
-def test_seventeen_workflows_discovered() -> None:
-    # 14 Integration-Service source-system mocks + 3 Healthcare-solution (S024) workflows.
-    assert len(SLUGS) == 17, f"expected 17 API workflows (14 source + 3 solution), found {len(SLUGS)}: {SLUGS}"
+def test_nineteen_workflows_discovered() -> None:
+    # 14 Integration-Service source-system mocks + 3 Healthcare-solution (S024) workflows + 2 audit/registration workflows.
+    assert len(SLUGS) == 19, f"expected 19 API workflows (14 source + 3 solution + 2 audit), found {len(SLUGS)}: {SLUGS}"
 
 
 @pytest.mark.parametrize("slug", SLUGS)

@@ -22,6 +22,8 @@ MAESTRO_ROOT = REPO_ROOT / "maestro_case"
 CASEPLANS = sorted(MAESTRO_ROOT.glob("**/caseplan.json"))
 
 # Required V20 metadata markers (uipath-maestro-case skill, case-schema.md).
+# Studio Web canvas regens (v1.0.14+) stopped emitting `displayName` — the
+# canvas-emitted shape is live-proven ground truth, so it is no longer required.
 REQUIRED_METADATA = {
     "caseUnifiedSchemaEnabled",
     "publishVersion",
@@ -29,7 +31,6 @@ REQUIRED_METADATA = {
     "caseAppEnabled",
     "caseIdentifierType",
     "caseIdentifier",
-    "displayName",
 }
 REQUIRED_TOP_LEVEL = {"id", "version", "name", "metadata", "variables", "nodes", "edges"}
 VARIABLE_BUCKETS = ("inputs", "outputs", "inputOutputs")
@@ -68,9 +69,12 @@ def test_at_least_one_caseplan_exists() -> None:
 @pytest.mark.parametrize("path", PARAMS)
 class TestCaseplanV20:
     def test_version_is_v20(self, path: Path) -> None:
+        # Canvas round-trips bump the schema version (20.0.0 -> 23.0.0 as of
+        # 2026-06); anything >= 20 is the V20-family schema this suite encodes.
         caseplan = _load(path)
-        assert str(caseplan.get("version", "")).startswith("20"), (
-            f"{path} version must be V20 (got {caseplan.get('version')!r})"
+        major = str(caseplan.get("version", "")).split(".")[0]
+        assert major.isdigit() and int(major) >= 20, (
+            f"{path} version must be V20-family (got {caseplan.get('version')!r})"
         )
 
     def test_required_top_level_keys(self, path: Path) -> None:

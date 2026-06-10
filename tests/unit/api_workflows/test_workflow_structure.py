@@ -38,6 +38,8 @@ EXPECTED_EVENTS: dict[str, tuple[str, ...]] = {
     "regulator-tn-doi": ("regulatory-subpoena", "litigation-event"),
     "insurer-aurora-specialty": ("insurer-directive",),
     "counsel-hawthorne": (),  # utility workflow — no Maestro event
+    "generate-audit-record": (),  # utility workflow — audit logging
+    "register-stakeholder": (),  # utility workflow — stakeholder registration
     # Healthcare Agentic Solutions (S024) — case-invoked api-workflow tasks (referenced by the
     # stakeholder-parent caseplan's ApiWorkflow binding), NOT event-emitting source-system mocks.
     "solution-medical-records-summarization": (),
@@ -45,11 +47,14 @@ EXPECTED_EVENTS: dict[str, tuple[str, ...]] = {
     "solution-prior-auth-continuity": (),
 }
 
-# Case-invoked Healthcare-solution workflows — exempt from the source-system/event contract.
+# Case-invoked Healthcare-solution workflows + utility workflows — exempt from the source-system/event contract.
 SOLUTION_SLUGS = {
     "solution-medical-records-summarization",
     "solution-claim-denial-prevention",
     "solution-prior-auth-continuity",
+    "counsel-hawthorne",
+    "generate-audit-record",
+    "register-stakeholder",
 }
 
 WORKFLOWS = sorted(API_ROOT.glob("*/main.json"))

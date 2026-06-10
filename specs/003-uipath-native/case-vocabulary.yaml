@@ -212,6 +212,11 @@ tasks:
       display_name: "Spawn Stakeholder Parent — Provider Epsilon"
       type: case-management
       stage_id: Stage_JM1SVs
+    - id: tx7Dlw9cf
+      display_name: "Crisis Close-Out Slack Notification"
+      type: execute-connector-activity
+      stage_id: Stage_JW7OlW
+      notes: "Slack send_message_to_channel_v2 connector task; posts the master close-out message. Live-proven (1.0.13+)."
 
   stakeholder_parent:
     - id: tO1Iycl5a

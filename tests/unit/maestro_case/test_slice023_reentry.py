@@ -48,7 +48,7 @@ def _all_rules(condition: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def test_master_caseplan_parses(master: dict[str, Any]) -> None:
-    assert master["version"] == "20.0.0"
+    assert int(str(master["version"]).split(".")[0]) >= 20
     assert isinstance(master["nodes"], list)
     assert isinstance(master["edges"], list)
 
