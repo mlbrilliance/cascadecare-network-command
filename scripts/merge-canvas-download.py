@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Re-apply CascadeCare master-case fixes onto a fresh Studio Web canvas download.
 
-Canvas regeneration of clearflow-master-crisis reliably drops/changes 4 things that
+Canvas regeneration of clearflow-master-crisis reliably drops/changes 5 things that
 this script restores deterministically, so a canvas round-trip (e.g. to add/modify a
 task) doesn't regress the working deploy:
 
@@ -9,6 +9,8 @@ task) doesn't regress the working deploy:
   2. HITL action->app binding (tvlKcFYnW name/folderPath + 2 app bindings) -> 170015
   3. entry-points.json (canvas emits empty) -> restored from canonical
   4. canvas auto-adds dup 'error' outputs on the 6 spawn tasks -> V20 dup-var error
+  5. qem: Data Fabric spawn inputs (StakeholderId/MasterCaseId on the 6 spawns) ->
+     children spawn without provider identity (lost in the v1.0.14 canvas regen)
 
 It writes the merged master case into BOTH the canonical standalone dir and the
 canonical solution copy, and copies the Slack Connection resource into the solution.
@@ -50,7 +52,31 @@ START_EVENT_XML = (
     '    <bpmn:sequenceFlow id="edge_33a46298-878c-4076-ace9-7dcd36c4635d-CaseInitialVariablesSetupNode" sourceRef="33a46298-878c-4076-ace9-7dcd36c4635d" targetRef="CaseInitialVariablesSetupNode" />\n'
     '    <bpmn:task id="CaseInitialVariablesSetupNode"')
 SPAWN_ERROR_ELEM = '<uipath:output name="Error" type="jsonSchema" source="=Error" var="error" />'
-SPAWN_IDS = {"tFONj34ck", "tP26wJSn9", "tP1qlCyT5", "tXX9Tu80x", "tf3qEuV5z", "tz8z6TUHT"}
+# Reversal-3 fan: spawn task id -> Provider entity slug (drives the qem: input restore)
+SPAWN_SLUGS = {
+    "tFONj34ck": "northstar", "tP26wJSn9": "alpha", "tP1qlCyT5": "beta",
+    "tXX9Tu80x": "gamma", "tf3qEuV5z": "delta", "tz8z6TUHT": "epsilon",
+}
+SPAWN_IDS = set(SPAWN_SLUGS)
+SPAWN_INPUT_SCHEMA_XML = (
+    '<uipath:inputSchema type="jsonSchema"><![CDATA[{"$schema":"http://json-schema.org/draft-07/schema#",'
+    '"type":"object","properties":{"StakeholderId":{"type":"string"},"MasterCaseId":{"type":"string"}},'
+    '"required":[]}]]></uipath:inputSchema>')
+
+
+def spawn_inputs(slug):
+    return [
+        {"id": f"inp_sid_{slug}", "name": "StakeholderId", "type": "string",
+         "value": f"=datafabric.qem:Provider[slug='{slug}'].id"},
+        {"id": f"inp_mid_{slug}", "name": "MasterCaseId", "type": "string",
+         "value": "=metadata.caseId"},
+    ]
+
+
+def spawn_job_arguments_xml(slug):
+    return ('<uipath:input name="JobArguments" type="json" target="bodyField"><![CDATA[{'
+            f'"StakeholderId":"=datafabric.qem:Provider[slug=\'{slug}\'].id",'
+            '"MasterCaseId":"=metadata.caseId"}]]></uipath:input>')
 
 
 def patch_caseplan(path):
@@ -71,8 +97,10 @@ def patch_caseplan(path):
         if n.get("id") == "Stage_JM1SVs":
             for lane in n["data"]["tasks"]:
                 for t in lane:
-                    if t["id"] in SPAWN_IDS and t["data"].get("outputs"):
-                        t["data"]["outputs"] = []
+                    if t["id"] in SPAWN_IDS:
+                        if t["data"].get("outputs"):
+                            t["data"]["outputs"] = []
+                        t["data"]["inputs"] = spawn_inputs(SPAWN_SLUGS[t["id"]])
     assert hit, "tvlKcFYnW not found in caseplan"
     json.dump(d, open(path, "w"), separators=(",", ":"))
 
@@ -96,7 +124,28 @@ def patch_bpmn(path):
                       '</bpmn:extensionElements>\n      <bpmn:incoming>edge_33a46298-878c-4076-ace9-7dcd36c4635d-CaseInitialVariablesSetupNode</bpmn:incoming>\n      <bpmn:outgoing>edge_CaseInitialVariablesSetupNode-CaseGlobalsVariablesSetupNode</bpmn:outgoing>', 1)
     s = re.sub(r'[ \t]*' + re.escape(SPAWN_ERROR_ELEM) + r'\n', '', s)
     s = s.replace(SPAWN_ERROR_ELEM, '')
+    s = patch_spawn_inputs(s)
     open(path, "w").write(s)
+
+
+def patch_spawn_inputs(s):
+    """Restore qem: StakeholderId/MasterCaseId inputs on the 6 spawn callActivities
+    (executable nodes only — the embedded CDATA caseplan copy is runtime-inert)."""
+    for tid, slug in SPAWN_SLUGS.items():
+        start = s.find(f'<bpmn:callActivity id="{tid}"')
+        assert start != -1, f"callActivity {tid} not found in bpmn"
+        end = s.find("</bpmn:callActivity>", start)
+        block = s[start:end]
+        if "JobArguments" in block:
+            continue
+        assert block.count("</uipath:context>") == 1, f"unexpected context shape in {tid}"
+        block = block.replace(
+            "            </uipath:context>",
+            f"              {SPAWN_INPUT_SCHEMA_XML}\n"
+            "            </uipath:context>\n"
+            f"            {spawn_job_arguments_xml(slug)}", 1)
+        s = s[:start] + block + s[end:]
+    return s
 
 
 def main():
