@@ -9,8 +9,11 @@ task) doesn't regress the working deploy:
   2. HITL action->app binding (tvlKcFYnW name/folderPath + 2 app bindings) -> 170015
   3. entry-points.json (canvas emits empty) -> restored from canonical
   4. canvas auto-adds dup 'error' outputs on the 6 spawn tasks -> V20 dup-var error
-  5. qem: Data Fabric spawn inputs (StakeholderId/MasterCaseId on the 6 spawns) ->
-     children spawn without provider identity (lost in the v1.0.14 canvas regen)
+  5. provider-identity spawn inputs (StakeholderId/MasterCaseId on the 6 spawns) ->
+     children spawn without provider identity (lost in the v1.0.14 canvas regen).
+     StakeholderId is the LITERAL provider slug: the `=datafabric.qem:Provider[...]`
+     expression fails runtime evaluation (incident 400300 "Syntax error at index 4",
+     proven live 2026-06-10 on 1.0.21) — qem: refs are not valid in JobArguments.
 
 It writes the merged master case into BOTH the canonical standalone dir and the
 canonical solution copy, and copies the Slack Connection resource into the solution.
@@ -67,7 +70,7 @@ SPAWN_INPUT_SCHEMA_XML = (
 def spawn_inputs(slug):
     return [
         {"id": f"inp_sid_{slug}", "name": "StakeholderId", "type": "string",
-         "value": f"=datafabric.qem:Provider[slug='{slug}'].id"},
+         "value": slug},
         {"id": f"inp_mid_{slug}", "name": "MasterCaseId", "type": "string",
          "value": "=metadata.caseId"},
     ]
@@ -75,7 +78,7 @@ def spawn_inputs(slug):
 
 def spawn_job_arguments_xml(slug):
     return ('<uipath:input name="JobArguments" type="json" target="bodyField"><![CDATA[{'
-            f'"StakeholderId":"=datafabric.qem:Provider[slug=\'{slug}\'].id",'
+            f'"StakeholderId":"{slug}",'
             '"MasterCaseId":"=metadata.caseId"}]]></uipath:input>')
 
 

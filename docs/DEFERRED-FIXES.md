@@ -6,40 +6,22 @@ Ordered by priority. None of these block the core demo (full 3-level walk + mast
 
 ---
 
-## P1 — Grandchild HITL app auto-submits (no human pause)
+## ~~P1 — Grandchild HITL app auto-submits~~ — RESOLVED 2026-06-10
 
-**Symptom:** the grandchild "Prepare & File Obligation Response" gate completes immediately
-instead of pausing for a reviewer.
+**Was:** the grandchild "Prepare & File Obligation Response" gate completed immediately
+because the Autopilot-generated app `Regulatory/Contractual Obligation Response`
+(id `de1f291b-ff90-47b7-87b3-d7a08db1792b`) had no human-required outcome.
 
-**Root cause (A/B-proven, 2026-06-09):** the case wiring is correct — the gate `t9BUmAX8k`
-(`clearflow-obligation-grandchild`, stage `Stage_F95sBP`) is a proper `Actions.HITL v2` task,
-identical to the working master gate `tvlKcFYnW`, and its app binding resolves with no
-`170015`. The problem is the **app itself**: `Regulatory/Contractual Obligation Response`
-(id `de1f291b-ff90-47b7-87b3-d7a08db1792b`, Autopilot-generated) has **no human-required
-outcome**, so the action returns at once. Proof: re-binding the same gate to the master's
-`CascadeCare` app made it **pause** (`t9BUmAX8k` → InProgress, Action Center task created).
+**Fix shipped:** the app's Action Schema now has blocking **File / Withdraw** outcomes
+(SubmitAction rules on each button), republished into `Shared/CascadeCare-v110`; deployment
+**1.0.21** (from canonical) re-bound the gate to `de1f291b`. Verified live: grandchild
+instance `bc4cbace`, gate `t9BUmAX8k` → **InProgress** (element-executions show the
+paused-on-AppTask pattern: task + CancelTaskBoundaryEvent both InProgress). The reviewer's
+clicked outcome lands in the auto `Action` output; the 4 mapped outputs (ReviewerId,
+ResponseDisposition, ResponseNarrative, FiledTimestamp) carry the case data.
 
-**Fix:**
-1. In **Studio Web → Apps**, open `Regulatory/Contractual Obligation Response` and add a
-   blocking action outcome — a submit/approve button the reviewer must click to complete the
-   task (mirror how `CascadeCare` has Approve/Deny). Republish into `Shared/CascadeCare-v110`.
-2. The canonical case already binds this gate to `de1f291b` (the CascadeCare re-bind was a
-   test, reverted in the repo). So after the app is fixed: redeploy from canonical
-   (runbook Path B) → spawn a child → verify the grandchild gate goes **InProgress** and
-   renders an Action Center task.
-
----
-
-## TRACKING — Deployed vs repo drift on the grandchild gate
-
-**Right now:** live deployment **1.0.20** has the grandchild gate bound to **`CascadeCare`**
-(a manual test binding — it pauses, but shows the master's fiduciary-review content, which is
-the wrong narrative for an obligation gate). The **repo/committed** canonical binds it to the
-correct app **`de1f291b`**.
-
-**Implication:** a clean redeploy from canonical (runbook Path B) will revert the gate to
-`de1f291b` — which auto-completes until **P1** is done. So do **P1 first**, then redeploy.
-Until then, the live pause relies on the 1.0.20 CascadeCare binding that is *not* in git.
+**TRACKING note also closed:** 1.0.21 eliminated the deployed-vs-repo drift — live and
+canonical both bind `de1f291b`, and it pauses.
 
 ---
 

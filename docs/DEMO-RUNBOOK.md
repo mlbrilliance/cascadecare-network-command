@@ -43,7 +43,7 @@ export FK=de7b7c18-d743-4c8c-b555-9bd3b96fe524
 ### A1. Confirm you're authenticated
 
 ```bash
-uip --version                      # expect 1.1.x
+uip --version                      # expect 1.195+ (UiPath switched versioning Jun 2026)
 uip login status --output json     # check current org/tenant
 uip or processes list --folder-key $FK --output json | grep -c clearflow
 ```
@@ -152,11 +152,10 @@ print([(j['State'],j.get('CreationTime','')[-12:]) for j in d if 'master-crisis'
 Do this when you changed a case in Studio Web, edited a caseplan locally, or are deploying
 to a fresh folder. Run from the repo root.
 
-> ⚠️ **Heads-up (see `docs/DEFERRED-FIXES.md`):** the live deployment currently has the
-> grandchild HITL gate bound to `CascadeCare` (a stopgap so it pauses). The repo binds it to
-> its own app `de1f291b`, which auto-completes until that app gets a blocking outcome. A clean
-> redeploy from canonical will therefore make the grandchild gate stop pausing — fix the app
-> (DEFERRED-FIXES P1) before relying on a Path B redeploy for that gate.
+> ✅ **Resolved 2026-06-10 (was DEFERRED-FIXES P1):** the grandchild app `de1f291b` now has
+> blocking **File / Withdraw** outcomes, and deployment **1.0.21** binds the gate to it from
+> canonical — live and repo agree, and the gate pauses. Path B redeploys are safe for the
+> grandchild gate again.
 
 ### B1. (Only if you edited cases in the Studio Web canvas) Download + re-merge
 

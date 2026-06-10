@@ -58,7 +58,7 @@ If /audit-ip-safety finds a match, the commit is blocked. No exceptions.
 
 | Feature | Slice | Why |
 |---|---|---|
-| `qem:` Data Fabric fan-out (April 30) | 014 | Powers Reversal 3's 6-grandchild simultaneous spawn; brand-new |
+| Per-provider spawn fan-out | 014 | Reversal 3's 6-child simultaneous spawn, each child seeded with its provider slug. ⚠️ `=datafabric.qem:` expressions FAIL runtime evaluation in spawn inputs (400300, proven 2026-06-10) — StakeholderId is a literal slug; do not claim runtime qem: fan-out |
 | `hitlTask` output variable (May 25) | 014 | Wire into Reversal 4 post-HITL stage — reads full reviewer context |
 | `Maestro.NotificationService` task (May 28) | 014/015 | Send targeted notifications at grandchild SLA-breach; 2-day-old feature |
 | Three-level nesting via `case-management` task | done | Judges built this; no other visible entry uses it |

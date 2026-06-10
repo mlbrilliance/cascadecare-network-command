@@ -175,6 +175,8 @@ This is the executable slice plan for the pure-UiPath build. Each slice ends wit
 
 **Tasks**:
 - [x] Wire `qem:` Data Fabric fan-out into Reversal-3 stakeholder spawns (master caseplan)
+  > Corrected 2026-06-10: `=datafabric.qem:Provider[...]` fails runtime evaluation in spawn
+  > inputs (400300) — replaced with literal provider slugs. Do not claim runtime qem: fan-out.
 - [x] Wire `hitlTask` output variable capturing reviewer context into Reversal-4 HITL gate
 - [x] Add `Maestro.NotificationService` task to grandchild caseplan at SLA-breach
 - [x] Wire live Data Fabric + Maestro Case reads in `apps/clearflow-network-command/backend/dashboard.py`

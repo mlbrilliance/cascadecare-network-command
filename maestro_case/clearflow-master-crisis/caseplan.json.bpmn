@@ -1739,7 +1739,7 @@ return { upsertKeys: allEventsUpdatedKeys, deleteKeys: [...exitedStageKeysToDele
               <uipath:input name="_label" type="string" value="Spawn Stakeholder Parent — Northstar Regional Health" />
               <uipath:inputSchema type="jsonSchema"><![CDATA[{"$schema":"http://json-schema.org/draft-07/schema#","type":"object","properties":{"StakeholderId":{"type":"string"},"MasterCaseId":{"type":"string"}},"required":[]}]]></uipath:inputSchema>
             </uipath:context>
-            <uipath:input name="JobArguments" type="json" target="bodyField"><![CDATA[{"StakeholderId":"=datafabric.qem:Provider[slug='northstar'].id","MasterCaseId":"=metadata.caseId"}]]></uipath:input>
+            <uipath:input name="JobArguments" type="json" target="bodyField"><![CDATA[{"StakeholderId":"northstar","MasterCaseId":"=metadata.caseId"}]]></uipath:input>
           </uipath:activity>
         </bpmn:extensionElements>
         <bpmn:incoming>edge_tFONj34ck_UpdateRunningTasksNewGlobal-tFONj34ck</bpmn:incoming>
@@ -1842,7 +1842,7 @@ return { upsertKeys: allEventsUpdatedKeys, deleteKeys: [...exitedStageKeysToDele
               <uipath:input name="_label" type="string" value="Spawn Stakeholder Parent — Provider Alpha" />
               <uipath:inputSchema type="jsonSchema"><![CDATA[{"$schema":"http://json-schema.org/draft-07/schema#","type":"object","properties":{"StakeholderId":{"type":"string"},"MasterCaseId":{"type":"string"}},"required":[]}]]></uipath:inputSchema>
             </uipath:context>
-            <uipath:input name="JobArguments" type="json" target="bodyField"><![CDATA[{"StakeholderId":"=datafabric.qem:Provider[slug='alpha'].id","MasterCaseId":"=metadata.caseId"}]]></uipath:input>
+            <uipath:input name="JobArguments" type="json" target="bodyField"><![CDATA[{"StakeholderId":"alpha","MasterCaseId":"=metadata.caseId"}]]></uipath:input>
           </uipath:activity>
         </bpmn:extensionElements>
         <bpmn:incoming>edge_tP26wJSn9_UpdateRunningTasksNewGlobal-tP26wJSn9</bpmn:incoming>
@@ -1945,7 +1945,7 @@ return { upsertKeys: allEventsUpdatedKeys, deleteKeys: [...exitedStageKeysToDele
               <uipath:input name="_label" type="string" value="Spawn Stakeholder Parent — Provider Beta" />
               <uipath:inputSchema type="jsonSchema"><![CDATA[{"$schema":"http://json-schema.org/draft-07/schema#","type":"object","properties":{"StakeholderId":{"type":"string"},"MasterCaseId":{"type":"string"}},"required":[]}]]></uipath:inputSchema>
             </uipath:context>
-            <uipath:input name="JobArguments" type="json" target="bodyField"><![CDATA[{"StakeholderId":"=datafabric.qem:Provider[slug='beta'].id","MasterCaseId":"=metadata.caseId"}]]></uipath:input>
+            <uipath:input name="JobArguments" type="json" target="bodyField"><![CDATA[{"StakeholderId":"beta","MasterCaseId":"=metadata.caseId"}]]></uipath:input>
           </uipath:activity>
         </bpmn:extensionElements>
         <bpmn:incoming>edge_tP1qlCyT5_UpdateRunningTasksNewGlobal-tP1qlCyT5</bpmn:incoming>
@@ -2048,7 +2048,7 @@ return { upsertKeys: allEventsUpdatedKeys, deleteKeys: [...exitedStageKeysToDele
               <uipath:input name="_label" type="string" value="Spawn Stakeholder Parent — Provider Gamma" />
               <uipath:inputSchema type="jsonSchema"><![CDATA[{"$schema":"http://json-schema.org/draft-07/schema#","type":"object","properties":{"StakeholderId":{"type":"string"},"MasterCaseId":{"type":"string"}},"required":[]}]]></uipath:inputSchema>
             </uipath:context>
-            <uipath:input name="JobArguments" type="json" target="bodyField"><![CDATA[{"StakeholderId":"=datafabric.qem:Provider[slug='gamma'].id","MasterCaseId":"=metadata.caseId"}]]></uipath:input>
+            <uipath:input name="JobArguments" type="json" target="bodyField"><![CDATA[{"StakeholderId":"gamma","MasterCaseId":"=metadata.caseId"}]]></uipath:input>
           </uipath:activity>
         </bpmn:extensionElements>
         <bpmn:incoming>edge_tXX9Tu80x_UpdateRunningTasksNewGlobal-tXX9Tu80x</bpmn:incoming>
@@ -2151,7 +2151,7 @@ return { upsertKeys: allEventsUpdatedKeys, deleteKeys: [...exitedStageKeysToDele
               <uipath:input name="_label" type="string" value="Spawn Stakeholder Parent — Provider Delta" />
               <uipath:inputSchema type="jsonSchema"><![CDATA[{"$schema":"http://json-schema.org/draft-07/schema#","type":"object","properties":{"StakeholderId":{"type":"string"},"MasterCaseId":{"type":"string"}},"required":[]}]]></uipath:inputSchema>
             </uipath:context>
-            <uipath:input name="JobArguments" type="json" target="bodyField"><![CDATA[{"StakeholderId":"=datafabric.qem:Provider[slug='delta'].id","MasterCaseId":"=metadata.caseId"}]]></uipath:input>
+            <uipath:input name="JobArguments" type="json" target="bodyField"><![CDATA[{"StakeholderId":"delta","MasterCaseId":"=metadata.caseId"}]]></uipath:input>
           </uipath:activity>
         </bpmn:extensionElements>
         <bpmn:incoming>edge_tf3qEuV5z_UpdateRunningTasksNewGlobal-tf3qEuV5z</bpmn:incoming>
@@ -2254,7 +2254,7 @@ return { upsertKeys: allEventsUpdatedKeys, deleteKeys: [...exitedStageKeysToDele
               <uipath:input name="_label" type="string" value="Spawn Stakeholder Parent — Provider Epsilon" />
               <uipath:inputSchema type="jsonSchema"><![CDATA[{"$schema":"http://json-schema.org/draft-07/schema#","type":"object","properties":{"StakeholderId":{"type":"string"},"MasterCaseId":{"type":"string"}},"required":[]}]]></uipath:inputSchema>
             </uipath:context>
-            <uipath:input name="JobArguments" type="json" target="bodyField"><![CDATA[{"StakeholderId":"=datafabric.qem:Provider[slug='epsilon'].id","MasterCaseId":"=metadata.caseId"}]]></uipath:input>
+            <uipath:input name="JobArguments" type="json" target="bodyField"><![CDATA[{"StakeholderId":"epsilon","MasterCaseId":"=metadata.caseId"}]]></uipath:input>
           </uipath:activity>
         </bpmn:extensionElements>
         <bpmn:incoming>edge_tz8z6TUHT_UpdateRunningTasksNewGlobal-tz8z6TUHT</bpmn:incoming>
