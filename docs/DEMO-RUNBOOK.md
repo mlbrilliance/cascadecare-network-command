@@ -288,6 +288,42 @@ uip or processes list --folder-key $FK --output json \
   | python3 -c "import sys,json;print([j['Name'] for j in json.load(sys.stdin)['Data'] if any(c.isupper() for c in j['Name']) and j['Name']!='ClearFlowIdealIncidentResponse'] or 'all kebab ✓')"
 ```
 
+### B6.5 Context Grounding corpora (live since 2026-06-12)
+
+Both indexes live in `Shared/CascadeCare-v110` and are populated from committed,
+seed-derived docs:
+
+| Index | Bucket | Docs |
+|---|---|---|
+| `BAA-corpus` (key `bc3b9560…`) | `baa-corpus-docs` | `data/context-grounding/baa-corpus/*.txt` (6 BAAs) |
+| `ClaimTelemetry-corpus` | `claimtelemetry-corpus-docs` | `data/context-grounding/claimtelemetry-corpus/*.txt` (6 providers) |
+
+Regenerate + re-upload after any seed-table change (`python3 scripts/gen_cg_corpus.py`,
+gate test `tests/unit/scripts/test_gen_cg_corpus.py`):
+
+```bash
+# the context-grounding tool uses the PYTHON SDK's auth — bridge the uip session token:
+TOKEN=$(uip login refresh --output json | python3 -c "import sys,json;raw=sys.stdin.read();print(json.loads(raw[raw.find('{'):])['Data']['AccessToken'])")
+export UIPATH_URL="https://staging.uipath.com/hackathon26_042/DefaultTenant" UIPATH_ACCESS_TOKEN="$TOKEN"
+uv run python - <<'PY'
+from pathlib import Path
+from uipath.platform import UiPath
+sdk = UiPath(); FP = 'Shared/CascadeCare-v110'
+for bucket, src, index in (("baa-corpus-docs", "data/context-grounding/baa-corpus", "BAA-corpus"),
+        ("claimtelemetry-corpus-docs", "data/context-grounding/claimtelemetry-corpus", "ClaimTelemetry-corpus")):
+    for p in sorted(Path(src).glob("*.txt")):
+        sdk.buckets.upload(name=bucket, blob_file_path=p.name, content=p.read_text(),
+                           content_type="text/plain", folder_path=FP)
+    sdk.context_grounding.ingest_data(sdk.context_grounding.retrieve(index, folder_path=FP), folder_path=FP)
+PY
+# poll retrieve() until lastIngestionStatus == Successful, then smoke-search
+```
+
+> **Gotchas (live-proven 2026-06-12):** docs must be **.txt** — CG extraction silently skips
+> `.md` (ingestion says Successful, search returns 0). The bucket previously held 6
+> contradictory legacy `baa_txt_*.txt` drafts (e.g. 5-business-day notification vs the seeded
+> 24h) — deleted; never let bucket docs disagree with the seeded Data Fabric terms.
+
 ### B7. (Fresh folder only) Re-publish the two Action Center apps + Slack connection
 
 The HITL apps and the Slack connection are **folder-scoped**. If you deployed to a *new*
