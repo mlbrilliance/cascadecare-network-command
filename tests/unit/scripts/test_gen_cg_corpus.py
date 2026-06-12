@@ -34,10 +34,10 @@ class TestBaaDocs:
         gen = _load_script("gen_cg_corpus.py")
         seed = _load_script("seed_data_fabric.py")
         docs = gen.build_baa_docs()
-        assert set(docs) == {f"{bid}.md" for (bid, *_rest) in seed.BAAS}
+        assert set(docs) == {f"{bid}.txt" for (bid, *_rest) in seed.BAAS}
         providers = {pid: name for (pid, name, *_r) in seed.PROVIDERS}
         for (bid, prov, ver, notif, consult, permitted, forbidden, indem, law) in seed.BAAS:
-            text = docs[f"{bid}.md"]
+            text = docs[f"{bid}.txt"]
             assert providers[prov] in text, f"{bid}: provider display name missing"
             assert f"{notif} hours" in text, f"{bid}: notification window missing"
             for term in permitted:
@@ -54,7 +54,7 @@ class TestBaaDocs:
 
     def test_epsilon_is_strictest(self) -> None:
         gen = _load_script("gen_cg_corpus.py")
-        text = gen.build_baa_docs()["baa-epsilon.md"]
+        text = gen.build_baa_docs()["baa-epsilon.txt"]
         assert "pediatric" in text.lower()
         assert "federal_regulator" in text  # epsilon forbids federal disclosure
 
@@ -64,9 +64,9 @@ class TestTelemetryDocs:
         gen = _load_script("gen_cg_corpus.py")
         seed = _load_script("seed_data_fabric.py")
         docs = gen.build_telemetry_docs()
-        assert set(docs) == {f"telemetry-{pid}.md" for (pid, *_r) in seed.PROVIDERS}
+        assert set(docs) == {f"telemetry-{pid}.txt" for (pid, *_r) in seed.PROVIDERS}
         for (pid, name, _v, _h, _npi, monthly_vol, *_r) in seed.PROVIDERS:
-            text = docs[f"telemetry-{pid}.md"]
+            text = docs[f"telemetry-{pid}.txt"]
             hourly_base = max(1, monthly_vol // (30 * 24))
             assert name in text, f"{pid}: provider display name missing"
             assert str(hourly_base) in text, f"{pid}: baseline hourly volume missing"

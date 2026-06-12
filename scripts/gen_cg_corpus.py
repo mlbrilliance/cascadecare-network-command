@@ -4,14 +4,16 @@
 Two corpora, both derived from scripts/seed_data_fabric.py so retrieval answers
 always agree with the structured Data Fabric records:
 
-  data/context-grounding/baa-corpus/<baa-id>.md
+  data/context-grounding/baa-corpus/<baa-id>.txt
       Synthetic full-text Business Associate Agreement per provider, embedding
       the exact seeded terms (notification window, permitted/forbidden
       disclosures, pre-disclosure consultation, indemnification, governing
       law). Ingested into the BAA-corpus index read by the BAA Boundary
       Reasoner. All entities are fictional (synthetic-baa-author constraints).
 
-  data/context-grounding/claimtelemetry-corpus/telemetry-<provider>.md
+  data/context-grounding/claimtelemetry-corpus/telemetry-<provider>.txt
+      (.txt because Context Grounding extraction silently skips .md — proven
+      live 2026-06-12: ingestion reports Successful but search returns 0)
       Narrative rollup of the deterministic 30-day hourly telemetry (baseline,
       Day-1 cascade suppression, anomaly profile) per provider. Ingested into
       the ClaimTelemetry-corpus index.
@@ -79,7 +81,7 @@ def build_baa_docs() -> dict[str, str]:
             if prov == "epsilon"
             else ""
         )
-        docs[f"{bid}.md"] = f"""# Business Associate Agreement — {display}
+        docs[f"{bid}.txt"] = f"""# Business Associate Agreement — {display}
 
 **Agreement ID:** {bid} · **Version:** version {ver} · **Governing law:** State of {law}
 
@@ -155,7 +157,7 @@ def build_telemetry_docs() -> dict[str, str]:
         after_daily = sum(r["claim_count"] for r in after) // 29
         peak_score = max(r["anomaly_score"] for r in after)
         first_anom = min(r["period_start"] for r in after)
-        docs[f"telemetry-{pid}.md"] = f"""# Claim-Flow Telemetry Summary — {display}
+        docs[f"telemetry-{pid}.txt"] = f"""# Claim-Flow Telemetry Summary — {display}
 
 Synthetic 30-day hourly claim telemetry (window starting 2026-01-01T00:00:00Z, 720 hourly
 buckets) for provider `{pid}` on the ClearFlow Payment Network.
