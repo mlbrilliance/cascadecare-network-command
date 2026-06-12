@@ -138,11 +138,18 @@ The case pauses at two human-approval gates. Open **Action Center → Tasks** in
 
 ### A5. Confirm closure
 
+> ⚠️ **Do NOT use the Orchestrator Jobs view/API to confirm completion.** On this tenant a
+> completed Maestro case instance **never flips its Orchestrator job to Successful** — the
+> job row says "Running" forever (proven 2026-06-12: masters whose instances completed 1 and
+> 3 days earlier still showed Running jobs). Cancelled instances DO flip to Stopped. The
+> source of truth is the **case instance** (Maestro Monitoring UI, or the CLI below).
+
 ```bash
-# master should reach Completed after the Reversal-4 approval + Slack task
-uip or jobs list --folder-key $FK --output json \
-  | python3 -c "import sys,json;d=json.load(sys.stdin)['Data'];\
-print([(j['State'],j.get('CreationTime','')[-12:]) for j in d if 'master-crisis' in (j.get('ProcessName') or '')][:5])"
+# every instance of this run should reach Completed after the gate approvals
+# (master after Reversal-4 Approve; grandchildren after their File clicks)
+uip maestro case instance list --folder-key $FK \
+  | python3 -c "import sys,json;raw=sys.stdin.read();d=json.loads(raw[raw.find('{'):])['Data'];\
+print([(x['packageId'].split('.')[-1], x['latestRunStatus'], x['createdTimeUtc'][11:19]) for x in d])"
 ```
 
 ---
