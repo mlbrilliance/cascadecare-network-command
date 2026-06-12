@@ -121,6 +121,42 @@ GC_OUTPUT_XML = "".join(
     for n, v in GC_OUTPUTS)
 
 
+# S025 (ADR-0002): OOTB Case App surface. caseAppEnabled:true requires a caseAppConfig
+# (V20 / skills PR #216: absent config breaks the Case App UI). Restored if the canvas
+# strips it; a canvas-authored config wins (setdefault).
+CASE_APP_CONFIGS = {
+    "clearflow-stakeholder-parent": {
+        "caseSummary": ('=string.Format("Stakeholder {0} - BAA position: {1}", '
+                        'vars.var_stakeholder_id, vars.var_baa_disclosure_position)'),
+        "sections": [
+            {"id": "section-ba3b1c76-bab8-4ad1-acf6-76da3166ccaf", "title": "Stakeholder",
+             "details": '{"Stakeholder":"=vars.var_stakeholder_id",'
+                        '"Master case":"=vars.var_master_case_id"}'},
+            {"id": "section-b93648bd-cece-4de5-be3e-d3cb1f8fd6c7", "title": "Obligation posture",
+             "details": '{"BAA disclosure position":"=vars.var_baa_disclosure_position",'
+                        '"Privilege flag":"=vars.var_privilege_flag"}'},
+        ],
+    },
+    "clearflow-obligation-grandchild": {
+        "caseSummary": ('=string.Format("{0} obligation - ref {1}", '
+                        'vars.var_obligation_type, vars.var_subpoena_reference_id)'),
+        "sections": [
+            {"id": "section-da977890-3420-4c94-8c1d-9f91f1185bb7", "title": "Obligation",
+             "details": '{"Type":"=vars.var_obligation_type",'
+                        '"Subpoena reference":"=vars.var_subpoena_reference_id"}'},
+            {"id": "section-4f3e9d54-c65e-4d46-9846-890de5e48f50", "title": "Case lineage",
+             "details": '{"Parent case":"=vars.var_parent_case_id",'
+                        '"Master case":"=vars.var_master_case_id"}'},
+        ],
+    },
+}
+
+
+def ensure_case_app_config(d, case_name):
+    if d["metadata"].get("caseAppEnabled"):
+        d["metadata"].setdefault("caseAppConfig", CASE_APP_CONFIGS[case_name])
+
+
 def _flip_required(s, tid):
     """Ensure the embedded-JSON isRequired of leaf task <tid> is true (idempotent).
     No-op if the canvas already saved it as true."""
@@ -195,6 +231,7 @@ def patch_child_bpmn(path):
 
 def patch_child_caseplan(path):
     d = json.load(open(path))
+    ensure_case_app_config(d, "clearflow-stakeholder-parent")
     flipped = set()
     for n in d["nodes"]:
         for lane in (n.get("data", {}).get("tasks") or []):
@@ -218,6 +255,7 @@ def patch_child_caseplan(path):
 
 def patch_gc_caseplan(path):
     d = json.load(open(path))
+    ensure_case_app_config(d, "clearflow-obligation-grandchild")
     ids = {b["id"] for b in d["bindings"]}
     for b in GC_APP_BINDINGS:
         if b["id"] not in ids:

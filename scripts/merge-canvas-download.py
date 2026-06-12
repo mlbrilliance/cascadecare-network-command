@@ -65,6 +65,27 @@ SPAWN_INPUT_SCHEMA_XML = (
     '<uipath:inputSchema type="jsonSchema"><![CDATA[{"$schema":"http://json-schema.org/draft-07/schema#",'
     '"type":"object","properties":{"StakeholderId":{"type":"string"},"MasterCaseId":{"type":"string"}},'
     '"required":[]}]]></uipath:inputSchema>')
+# S025 (ADR-0002): OOTB Case App surface. caseAppEnabled:true requires a caseAppConfig
+# (V20 / skills PR #216: absent config breaks the Case App UI). Restored if the canvas
+# strips it; a canvas-authored config wins (setdefault).
+CASE_APP_CONFIG = {
+    "caseSummary": ('=string.Format("Day {0} - Reversal {1}: {2}", vars.var_simulated_day, '
+                    'vars.var_reversal_number, vars.var_case_goal)'),
+    "sections": [
+        {"id": "section-e834771b-2cf9-4c24-873a-7b9745de3116", "title": "Crisis posture",
+         "details": '{"Current goal":"=vars.var_case_goal",'
+                    '"ClearFlow vector status":"=vars.var_clearflow_vector_status"}'},
+        {"id": "section-2d2709c9-72fb-41aa-9c97-3ff4450ffeee", "title": "Cascade state",
+         "details": '{"Reversal":"=vars.var_reversal_number",'
+                    '"Simulated day":"=vars.var_simulated_day",'
+                    '"Grandchild cases":"=vars.var_grandchild_case_count"}'},
+    ],
+}
+
+
+def ensure_case_app_config(d):
+    if d["metadata"].get("caseAppEnabled"):
+        d["metadata"].setdefault("caseAppConfig", CASE_APP_CONFIG)
 
 
 def spawn_inputs(slug):
@@ -84,6 +105,7 @@ def spawn_job_arguments_xml(slug):
 
 def patch_caseplan(path):
     d = json.load(open(path))
+    ensure_case_app_config(d)
     ids = {b["id"] for b in d["bindings"]}
     for b in APP_BINDINGS:
         if b["id"] not in ids:
