@@ -152,6 +152,28 @@ uip maestro case instance list --folder-key $FK \
 print([(x['packageId'].split('.')[-1], x['latestRunStatus'], x['createdTimeUtc'][11:19]) for x in d])"
 ```
 
+### A6. Pre-judging sweep — clear zombie "Running" job rows
+
+Because of the sync gap above, every completed demo run leaves its case jobs showing
+**Running** in the Orchestrator Jobs view forever. Before judges look at the tenant, sweep
+them to Stopped. **Rules (proven 2026-06-12):**
+
+- Killing the job shell does NOT touch the case instance — Monitoring keeps showing
+  **Completed** (verified on 27 jobs).
+- Use the **bulk** form (2+ keys) — it force-stops to **Stopped instantly**. A single-key
+  `--strategy Kill` lands in `Terminating` (cleared only by the ~daily platform sweeper);
+  `SoftStop` hangs in `Stopping`. To stop ONE job instantly, pass its key twice.
+- Only sweep jobs whose instances are terminal (`Completed`/`Cancelled`). NEVER cancel a
+  Completed *instance* to clean a job — that flips Monitoring to Cancelled.
+
+```bash
+# enumerate zombie Running case jobs, then bulk-stop them
+KEYS=$(uip or jobs list --folder-key $FK --state Running --output json \
+  | python3 -c "import sys,json;raw=sys.stdin.read();d=json.loads(raw[raw.find('{'):])['Data'];\
+print(' '.join(j['Key'] for j in d if 'clearflow' in (j.get('ProcessName') or '')))")
+[ -n "$KEYS" ] && uip or jobs stop $KEYS   # bulk = instant Stopped
+```
+
 ---
 
 ## Path B — Rebuild & redeploy from source
