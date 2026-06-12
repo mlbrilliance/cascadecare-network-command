@@ -17,7 +17,6 @@
     "spec": {
       "connectorName": "Slack",
       "name": "webfiji",
-      "description": null,
       "authenticationType": "AuthenticateAfterDeployment",
       "connectorVersion": "2.14.3",
       "connectorKey": "uipath-salesforce-slack",

@@ -72,10 +72,10 @@ CASE_APP_CONFIG = {
     "caseSummary": ('=string.Format("Day {0} - Reversal {1}: {2}", vars.var_simulated_day, '
                     'vars.var_reversal_number, vars.var_case_goal)'),
     "sections": [
-        {"id": "section-e834771b-2cf9-4c24-873a-7b9745de3116", "title": "Crisis posture",
+        {"id": "section-d3b08386-8e82-4bf8-8cb9-e8c05c6f1d06", "title": "Crisis posture",
          "details": '{"Current goal":"=vars.var_case_goal",'
-                    '"ClearFlow vector status":"=vars.var_clearflow_vector_status"}'},
-        {"id": "section-2d2709c9-72fb-41aa-9c97-3ff4450ffeee", "title": "Cascade state",
+                    '"Vector status":"=vars.var_clearflow_vector_status"}'},
+        {"id": "section-0d16dc48-ab71-49bb-8aa2-297651845e86", "title": "Cascade state",
          "details": '{"Reversal":"=vars.var_reversal_number",'
                     '"Simulated day":"=vars.var_simulated_day",'
                     '"Grandchild cases":"=vars.var_grandchild_case_count"}'},
