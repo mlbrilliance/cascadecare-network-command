@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:uipath="http://uipath.org/schema/bpmn" id="Definitions_CaseClosedNotification" targetNamespace="http://uipath.com/cascadecare/maestro-bpmn/case-closed-notification">
+  <bpmn:process id="Process_CaseClosedNotification" name="Case Closed Notification" isExecutable="true">
+    <bpmn:extensionElements>
+      <uipath:variables version="v1">
+        <uipath:inputOutput id="caseId" name="caseId" type="string" default="" elementId="Process_CaseClosedNotification" custom="true" />
+        <uipath:inputOutput id="caseOwner" name="caseOwner" type="string" default="" elementId="Process_CaseClosedNotification" custom="true" />
+        <uipath:output id="notified" name="notified" type="boolean" default="false" elementId="Process_CaseClosedNotification" custom="true" />
+      </uipath:variables>
+      <uipath:migrationVersion version="2026.1" />
+    </bpmn:extensionElements>
+    <bpmn:startEvent id="Start_CaseClosed" name="Case Closed">
+      <bpmn:extensionElements>
+        <uipath:entryPointId value="c105ed00-0c1a-4ce0-9a5e-000000000001" />
+      </bpmn:extensionElements>
+      <bpmn:outgoing>Flow_Start_To_Notify</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="Task_SendClosureNotification" name="Send closure notification">
+      <bpmn:incoming>Flow_Start_To_Notify</bpmn:incoming>
+      <bpmn:outgoing>Flow_Notify_To_End</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="End_Notified" name="Notified">
+      <bpmn:incoming>Flow_Notify_To_End</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_Start_To_Notify" sourceRef="Start_CaseClosed" targetRef="Task_SendClosureNotification" />
+    <bpmn:sequenceFlow id="Flow_Notify_To_End" sourceRef="Task_SendClosureNotification" targetRef="End_Notified" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="Diagram_CaseClosedNotification">
+    <bpmndi:BPMNPlane id="Plane_CaseClosedNotification" bpmnElement="Process_CaseClosedNotification">
+      <bpmndi:BPMNShape id="Shape_Start_CaseClosed" bpmnElement="Start_CaseClosed">
+        <dc:Bounds x="120" y="220" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_SendClosureNotification" bpmnElement="Task_SendClosureNotification">
+        <dc:Bounds x="220" y="198" width="160" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_End_Notified" bpmnElement="End_Notified">
+        <dc:Bounds x="450" y="220" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_Flow_Start_To_Notify" bpmnElement="Flow_Start_To_Notify">
+        <di:waypoint x="156" y="238" />
+        <di:waypoint x="220" y="238" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Notify_To_End" bpmnElement="Flow_Notify_To_End">
+        <di:waypoint x="380" y="238" />
+        <di:waypoint x="450" y="238" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

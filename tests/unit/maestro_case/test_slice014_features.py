@@ -5,10 +5,12 @@ for (see CLAUDE.md "Platform features to integrate"). The generic V20
 conformance suite (test_caseplan_structure.py) does not know about these
 specific bindings, so this module guards them explicitly:
 
-  1. ``qem:`` Data Fabric fan-out  — Reversal 3, master caseplan: six
-     ``case-management`` spawn tasks, one per provider, each binding the
-     provider via a ``=datafabric.qem:Provider[...]`` reference on the
-     ``StakeholderId`` input.
+  1. Provider fan-out — Reversal 3, master caseplan: six ``case-management``
+     spawn tasks, one per provider, each carrying the provider identity as a
+     literal slug on the ``StakeholderId`` input (the child resolves the slug
+     against the Data Fabric ``Provider`` entity). The ``=datafabric.qem:``
+     expression form is FORBIDDEN here: it fails runtime evaluation in
+     JobArguments (incident 400300 "Syntax error", live-proven 2026-06-10).
   2. HITL reviewer-context capture — Reversal 4, master caseplan: the tri-party
      HITL gate is an ``action`` task that captures reviewer context into
      ``data.outputs[]`` for the post-HITL stage to read.
@@ -38,8 +40,8 @@ from typing import Any
 REPO_ROOT = Path(__file__).resolve().parents[3]
 MAESTRO_ROOT = REPO_ROOT / "maestro_case"
 
-MASTER = MAESTRO_ROOT / "clearflow-master-crisis" / "content" / "caseplan.json"
-GRANDCHILD = MAESTRO_ROOT / "clearflow-obligation-grandchild" / "content" / "caseplan.json"
+MASTER = MAESTRO_ROOT / "clearflow-master-crisis" / "caseplan.json"
+GRANDCHILD = MAESTRO_ROOT / "clearflow-obligation-grandchild" / "caseplan.json"
 
 # The six provider customers fanned out at Reversal 3 (CLAUDE.md naming table).
 EXPECTED_PROVIDERS = {"northstar", "alpha", "beta", "gamma", "delta", "epsilon"}
@@ -68,7 +70,7 @@ def _tasks_of_type(caseplan: dict[str, Any], task_type: str) -> list[dict[str, A
 
 
 class TestQemFanOut:
-    """Reversal 3 — the hero moment: six simultaneous qem: Provider spawns."""
+    """Reversal 3 — the hero moment: six simultaneous per-provider spawns."""
 
     def test_six_case_management_spawns_in_one_stage(self) -> None:
         master = _load(MASTER)
@@ -83,28 +85,43 @@ class TestQemFanOut:
 
     @staticmethod
     def _stakeholder_ref(task: dict[str, Any]) -> str:
-        """The qem:Provider binding lives on the StakeholderId input value.
+        """The provider identity lives on the StakeholderId input value.
 
         ``dataFabricEntityRef`` as a top-level task field is not part of the
-        V20 BaseTask schema; the Data Fabric entity reference is carried by the
+        V20 BaseTask schema; the provider identity is carried by the
         ``StakeholderId`` input instead (the runtime binding that actually
-        wires the provider entity into the spawned child case).
+        wires the provider into the spawned child case).
         """
         for inp in task.get("data", {}).get("inputs", []):
             if inp.get("name") == "StakeholderId":
                 return str(inp.get("value", ""))
         return ""
 
-    def test_every_spawn_has_qem_provider_entity_ref(self) -> None:
+    def test_every_spawn_has_literal_provider_slug(self) -> None:
         master = _load(MASTER)
         offenders: list[str] = []
         for _, task in _iter_tasks(master):
             if task.get("type") != "case-management":
                 continue
             ref = self._stakeholder_ref(task)
-            if not ref.startswith("=datafabric.qem:Provider["):
+            if ref not in EXPECTED_PROVIDERS:
                 offenders.append(f"{task.get('id')} -> {ref!r}")
-        assert not offenders, f"spawns missing qem:Provider entity ref: {offenders}"
+        assert not offenders, f"spawns missing literal provider slug: {offenders}"
+
+    def test_no_spawn_uses_runtime_invalid_qem_expression(self) -> None:
+        """`=datafabric.qem:Provider[...]` fails runtime evaluation in spawn
+        inputs (400300 "Syntax error at index 4", proven live on 1.0.21,
+        2026-06-10) — every spawn task faults and the fan never fires. Guard
+        against it ever coming back."""
+        master = _load(MASTER)
+        offenders: list[str] = []
+        for _, task in _iter_tasks(master):
+            if task.get("type") != "case-management":
+                continue
+            for inp in task.get("data", {}).get("inputs", []):
+                if "datafabric.qem" in str(inp.get("value", "")):
+                    offenders.append(f"{task.get('id')}.{inp.get('name')}")
+        assert not offenders, f"runtime-invalid qem: expressions on spawns: {offenders}"
 
     def test_no_spawn_carries_invalid_datafabric_entity_ref_field(self) -> None:
         """Guard against regressing to the Studio-Web-rejected top-level field."""
@@ -126,9 +143,8 @@ class TestQemFanOut:
             if task.get("type") != "case-management":
                 continue
             ref = self._stakeholder_ref(task)
-            for provider in EXPECTED_PROVIDERS:
-                if f"slug='{provider}'" in ref:
-                    found.add(provider)
+            if ref in EXPECTED_PROVIDERS:
+                found.add(ref)
         assert found == EXPECTED_PROVIDERS, (
             f"missing providers in Reversal-3 fan: {sorted(EXPECTED_PROVIDERS - found)}"
         )
@@ -140,8 +156,8 @@ class TestQemFanOut:
                 continue
             inputs = {i.get("name"): str(i.get("value", "")) for i in task.get("data", {}).get("inputs", [])}
             assert "StakeholderId" in inputs, f"{task.get('id')} missing StakeholderId input"
-            assert inputs["StakeholderId"].startswith("=datafabric.qem:Provider["), (
-                f"{task.get('id')} StakeholderId must resolve from Data Fabric, got {inputs['StakeholderId']!r}"
+            assert inputs["StakeholderId"] in EXPECTED_PROVIDERS, (
+                f"{task.get('id')} StakeholderId must be a literal provider slug, got {inputs['StakeholderId']!r}"
             )
             assert inputs.get("MasterCaseId") == "=metadata.caseId", (
                 f"{task.get('id')} MasterCaseId must back-ref the master case"

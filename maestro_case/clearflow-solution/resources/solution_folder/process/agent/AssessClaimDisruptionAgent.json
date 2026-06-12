@@ -1,0 +1,40 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "AssessClaimDisruptionAgent",
+    "kind": "process",
+    "type": "agent",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "projectKey": "a55e5500-1111-4a11-8a11-000000000a11",
+    "isOverridable": true,
+    "dependencies": [
+      {
+        "kind": "package",
+        "name": "AssessClaimDisruptionAgent"
+      }
+    ],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "type": "Agent",
+      "name": "AssessClaimDisruptionAgent",
+      "package": {
+        "key": "30b5fce9-79ac-463d-a135-e9e3db7370a5"
+      },
+      "packageName": "clearflow-solution.agent.AssessClaimDisruptionAgent",
+      "inputArguments": "{}",
+      "targetFrameworkValue": "Portable",
+      "retentionAction": "Delete",
+      "retentionPeriod": 30,
+      "staleRetentionAction": "Delete",
+      "staleRetentionPeriod": 180
+    },
+    "locks": [],
+    "key": "154a00f9-251d-4013-b86f-0bb5e198f163",
+    "files": []
+  }
+}

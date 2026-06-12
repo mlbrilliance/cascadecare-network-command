@@ -1,7 +1,7 @@
 # CascadeCare Network Command — Usage & Demo Storyboard
 
 > **Status note.** This document describes the target end-to-end demo. Many of the assets and
-> commands referenced below are still planned: `seed_data_fabric.sh` (Slice 005), Integration
+> commands referenced below are still planned: Integration
 > Service API Workflows (Slice 006), Trust Layer + BYO-LLM registration (Slice 007), Agent
 > Builder agents (Slice 008), Coded Agents (Slice 009), the stakeholder-parent and
 > obligation-grandchild caseplans + Action Center HITL gate (Slice 010), the Maestro Flow Demo

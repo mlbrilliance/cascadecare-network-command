@@ -68,7 +68,7 @@ def _owning_slug(match: Path, base: Path) -> str:
 def _maestro_cases() -> list[str]:
     base = REPO_ROOT / "maestro_case"
     # Canonical standalone definitions only; clearflow-solution/* are packaged copies.
-    return _slugs(base, "*/content/caseplan.json", exclude=("clearflow-solution",))
+    return _slugs(base, "*/caseplan.json", exclude=("clearflow-solution",))
 
 
 def _lowcode_agents() -> list[str]:
@@ -120,10 +120,10 @@ ALL_ARTIFACT_GROUPS = {
     "group, expected",
     [
         ("Maestro Case", 3),
-        ("Agent Builder agent", 4),
-        ("Coded Agent", 3),
-        ("API Workflow", 14),
-        ("Maestro BPMN", 1),
+        ("Agent Builder agent", 6),
+        ("Coded Agent", 4),
+        ("API Workflow", 19),
+        ("Maestro BPMN", 2),
         ("Maestro Flow", 1),
         ("UiPath App", 1),
     ],

@@ -13,22 +13,21 @@
     "properties": {
       "provider_id": {
         "type": "string",
-        "description": "The single provider whose BAA terms are being analyzed (e.g. northstar, alpha, beta, gamma, delta, epsilon)."
+        "description": "The single provider whose BAA terms are being analyzed (e.g. northstar, alpha, beta, gamma, delta, epsilon).",
+        "default": "northstar"
       },
       "subpoena_scope": {
         "type": "string",
-        "description": "The scope of the regulatory subpoena being assessed against this provider's BAA."
+        "description": "The scope of the regulatory subpoena being assessed against this provider's BAA.",
+        "default": "Tennessee Department of Insurance subpoena (Reversal 3) compelling ClearFlow Health Network to produce 90 days of claim-flow records, payment-routing logs, and anomaly telemetry for Northstar Regional Health, including claim metadata and transaction identifiers that may constitute PHI. The request also reaches records touching the Nimbus Patient Engagement Platform subcontractor integration and asks whether any breach or incident affected potentially exposed PHI."
       },
       "subpoena_template_id": {
         "type": "string",
-        "description": "The RegulatorTemplate identifier that defines the subpoena's discovery requests."
+        "description": "The RegulatorTemplate identifier that defines the subpoena's discovery requests.",
+        "default": "TNDOI-SUBPOENA-CLAIMFLOW-R3-2026"
       }
     },
-    "required": [
-      "provider_id",
-      "subpoena_scope",
-      "subpoena_template_id"
-    ]
+    "required": []
   },
   "outputSchema": {
     "type": "object",

@@ -212,6 +212,11 @@ tasks:
       display_name: "Spawn Stakeholder Parent — Provider Epsilon"
       type: case-management
       stage_id: Stage_JM1SVs
+    - id: tx7Dlw9cf
+      display_name: "Crisis Close-Out Slack Notification"
+      type: execute-connector-activity
+      stage_id: Stage_JW7OlW
+      notes: "Slack send_message_to_channel_v2 connector task; posts the master close-out message. Live-proven (1.0.13+)."
 
   stakeholder_parent:
     - id: tO1Iycl5a
@@ -222,6 +227,21 @@ tasks:
       display_name: "Assess Claim Disruption & Liquidity"
       type: process
       stage_id: Stage_BHfIGb
+    - id: tMRS001
+      display_name: "Medical Records Summarization & PHI Exposure Quantification"
+      type: api-workflow
+      stage_id: Stage_BHfIGb
+      notes: "Slice 024 vertical bridge: UiPath Healthcare Agentic Solution (Medical Records Summarization), case-invoked api-workflow task."
+    - id: tCDP001
+      display_name: "Claim Denial Prevention & Resolution"
+      type: api-workflow
+      stage_id: Stage_BHfIGb
+      notes: "Slice 024 vertical bridge: UiPath Healthcare Agentic Solution (Claim Denial Prevention & Resolution)."
+    - id: tPAC001
+      display_name: "Prior Authorization Continuity"
+      type: api-workflow
+      stage_id: Stage_BHfIGb
+      notes: "Slice 024 vertical bridge: UiPath Healthcare Agentic Solution (Prior Authorization)."
     - id: ta1Ou8jah
       display_name: "BAA Boundary Analysis"
       type: agent
@@ -231,6 +251,11 @@ tasks:
       display_name: "Spawn Obligation Grandchild"
       type: case-management
       stage_id: Stage_9fuQ8L
+    - id: tAkRJhJFc
+      display_name: "Generate Closure Audit Record"
+      type: api-workflow
+      stage_id: Stage_SUCBZw
+      notes: "1.0.23 closing-stage fix: Required generate-audit-record task so the empty required closing stage can complete (required-tasks-completed exit was unfirable -> cases stuck Running forever)."
 
   obligation_grandchild:
     - id: tE0pwsV58
@@ -250,6 +275,11 @@ tasks:
       type: Maestro.NotificationService
       stage_id: Stage_F95sBP
       notes: "Slice 014: Maestro.NotificationService task (May 28 feature). Fires on stage-entered; notifies parent case owner of obligation SLA breach."
+    - id: tSGWPJ8p3
+      display_name: "Generate Closure Audit Record"
+      type: api-workflow
+      stage_id: Stage_otF4rP
+      notes: "1.0.23 closing-stage fix: Required generate-audit-record task so the empty required closing stage can complete (required-tasks-completed exit was unfirable -> cases stuck Running forever)."
 
 # ── Agents ──────────────────────────────────────────────────────────────
 # key:         unique slug used in task.agent_key references

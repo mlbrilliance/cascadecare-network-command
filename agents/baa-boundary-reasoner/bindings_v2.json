@@ -1,0 +1,25 @@
+{
+  "version": "2.0",
+  "resources": [
+    {
+      "resource": "index",
+      "key": "BAA-corpus",
+      "value": {
+        "name": {
+          "defaultValue": "BAA-corpus",
+          "isExpression": false,
+          "displayName": "Index Name"
+        },
+        "folderPath": {
+          "defaultValue": "Shared",
+          "isExpression": false,
+          "displayName": "Folder path"
+        }
+      },
+      "metadata": {
+        "bindingsVersion": "2.2",
+        "solutionsSupport": "true"
+      }
+    }
+  ]
+}

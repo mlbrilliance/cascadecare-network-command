@@ -148,9 +148,12 @@ Each workflow reads from Data Fabric, shapes a payload, and emits an event consu
 
 ---
 
-## Data Fabric Entities (planned — Slice 005)
+## Data Fabric Entities (Slice 019)
 
-Seeded by `scripts/seed_data_fabric.sh` (planned — Slice 005) using `uip data-fabric` CLI commands.
+Seeded by `scripts/seed_data_fabric.sh` (Slice 019) using `uip df` and
+`uip context-grounding` CLI commands. Run `bash scripts/seed_data_fabric.sh --emit-json`
+to inspect the full seed offline; `UIPATH_LIVE=1 bash scripts/seed_data_fabric.sh --apply`
+to apply to a tenant.
 
 | Entity | Contents |
 |---|---|

@@ -1,0 +1,93 @@
+{
+  "document": {
+    "dsl": "1.0.0",
+    "name": "solution-medical-records-summarization — Medical Records Summarization & PHI Exposure Quantification",
+    "version": "0.0.1",
+    "namespace": "cascadecare",
+    "metadata": {
+      "description": "Integration Service API Workflow fronting the UiPath Healthcare Agentic Solution 'Medical Records Summarization & PHI Exposure Quantification'. Summarizes affected patient medical records to quantify PHI exposure scope post-exfiltration. Consumed by the Stakeholder-Parent Impact Assessment stage to populate affected_record_count, risk_classification, clinical_summary, and exposure_scope for a stakeholder customer. DEPLOY-TIME NOTE: the Data Fabric refs (qem:Provider[slug=<provider_slug>]) and the live Healthcare Agentic Solution invocation are resolved at deploy via 'uip api-workflow registry stub' against a live tenant. Here the outputs are shaped deterministically (no random) from workflow inputs by a JavaScript/Assign activity; the connector read and the agentic-solution call are NOT hand-authored.",
+      "variables": {
+        "schema": {
+          "format": "json",
+          "document": {
+            "type": "object",
+            "properties": {
+              "summaryPayload": { "type": "object", "default": {} }
+            },
+            "title": "Variables"
+          }
+        }
+      }
+    }
+  },
+  "input": {
+    "schema": {
+      "format": "json",
+      "document": {
+        "type": "object",
+        "properties": {
+          "stakeholder_id": { "type": "string", "default": "northstar" },
+          "master_case_id": { "type": "string", "default": "clearflow-master-crisis" },
+          "provider_slug": { "type": "string", "default": "northstar" },
+          "simulated_day": { "type": "integer", "default": 3 }
+        },
+        "title": "Inputs"
+      }
+    }
+  },
+  "output": {
+    "schema": {
+      "format": "json",
+      "document": {
+        "type": "object",
+        "properties": {
+          "affected_record_count": { "type": "integer" },
+          "risk_classification": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+          "clinical_summary": { "type": "string" },
+          "exposure_scope": { "type": "string" }
+        },
+        "title": "Outputs"
+      }
+    }
+  },
+  "do": [
+    {
+      "Sequence_1": {
+        "do": [
+          {
+            "WorkflowStart": {
+              "set": "${Object.entries($workflow.definition?.document?.metadata?.variables?.schema?.document?.properties || {}).reduce((acc, [name, def]) => ({ ...acc, [name]: def?.default }), {}) }",
+              "output": { "as": "${$input}" },
+              "export": { "as": "{ ...$context, variables: { ...$context.variables, ...$output } }" },
+              "metadata": { "activityType": "Assign", "displayName": "Workflow start", "fullName": "Assign", "isTransparent": true }
+            }
+          },
+          {
+            "Javascript_QuantifyExposure": {
+              "run": {
+                "script": {
+                  "code": "var slug = String($workflow.input.provider_slug || 'northstar').toLowerCase(); var day = Number($workflow.input.simulated_day || 0); var profiles = { northstar: { records: 184320, risk: 'critical', scope: '7-hospital system; emergency, oncology, and cardiology service lines', summary: 'Cross-departmental records across the Northstar Regional Health 7-hospital system show structured PHI (demographics, encounter notes, diagnosis codes) within the post-exfiltration window.' }, alpha: { records: 96450, risk: 'high', scope: 'urban academic medical center; inpatient and research cohort records', summary: 'Provider Alpha academic medical center records combine inpatient encounters with research-cohort identifiers, raising re-identification exposure across linked datasets.' }, beta: { records: 21870, risk: 'medium', scope: 'rural community hospital; outpatient and ED encounters', summary: 'Provider Beta rural community hospital records are concentrated in outpatient and ED encounters with limited specialty data, narrowing the clinical exposure surface.' }, gamma: { records: 142005, risk: 'high', scope: 'multi-state for-profit chain; cross-jurisdiction encounter records', summary: 'Provider Gamma multi-state chain records span several jurisdictions, multiplying breach-notification obligations across differing state thresholds.' }, delta: { records: 13260, risk: 'medium', scope: 'specialty surgical center; perioperative and implant-registry records', summary: 'Provider Delta specialty surgical center records center on perioperative notes and implant-registry identifiers within a contained patient population.' }, epsilon: { records: 58740, risk: 'high', scope: \"children's hospital; pediatric records with minor-PHI sensitivity\", summary: \"Provider Epsilon children's hospital records carry pediatric minor-PHI, elevating sensitivity and guardian-notification requirements despite moderate volume.\" } }; var p = profiles[slug] || profiles.northstar; var escalation = day >= 14 ? Math.round(p.records * 1.25) : p.records; return { affected_record_count: escalation, risk_classification: p.risk, clinical_summary: p.summary, exposure_scope: p.scope };",
+                  "language": "javascript",
+                  "arguments": "${{ \"$context\": $context, \"$workflow\": $workflow, \"$input\": $input }}"
+                }
+              },
+              "export": { "as": "{ ...$context, outputs: { ...$context?.outputs, \"Javascript_QuantifyExposure\": $output } }" },
+              "metadata": { "activityType": "JsInvoke", "displayName": "Quantify PHI Exposure", "fullName": "JsInvoke" }
+            }
+          },
+          {
+            "Response_1": {
+              "response": "${{ affected_record_count: $context.outputs.Javascript_QuantifyExposure.affected_record_count, risk_classification: $context.outputs.Javascript_QuantifyExposure.risk_classification, clinical_summary: $context.outputs.Javascript_QuantifyExposure.clinical_summary, exposure_scope: $context.outputs.Javascript_QuantifyExposure.exposure_scope }}",
+              "markJobAsFailed": false,
+              "then": "end",
+              "export": { "as": "{ ...$context, outputs: { ...$context?.outputs, \"Response_1\": $output } }" },
+              "metadata": { "activityType": "Response", "displayName": "Response", "fullName": "Response" }
+            }
+          }
+        ],
+        "metadata": { "activityType": "Sequence", "displayName": "Sequence", "fullName": "Sequence" }
+      }
+    }
+  ],
+  "evaluate": { "mode": "strict", "language": "javascript" }
+}

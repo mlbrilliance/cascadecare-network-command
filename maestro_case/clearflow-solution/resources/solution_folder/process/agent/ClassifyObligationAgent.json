@@ -1,0 +1,40 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "ClassifyObligationAgent",
+    "kind": "process",
+    "type": "agent",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "projectKey": "c1a55ee0-2222-4b22-8b22-000000000b22",
+    "isOverridable": true,
+    "dependencies": [
+      {
+        "kind": "package",
+        "name": "ClassifyObligationAgent"
+      }
+    ],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "type": "Agent",
+      "name": "ClassifyObligationAgent",
+      "package": {
+        "key": "ef2bfe82-2c54-48f6-81d3-12c55d65f314"
+      },
+      "packageName": "clearflow-solution.agent.ClassifyObligationAgent",
+      "inputArguments": "{}",
+      "targetFrameworkValue": "Portable",
+      "retentionAction": "Delete",
+      "retentionPeriod": 30,
+      "staleRetentionAction": "Delete",
+      "staleRetentionPeriod": 180
+    },
+    "locks": [],
+    "key": "719a969a-8a66-417b-8c65-14cbe0d5c41b",
+    "files": []
+  }
+}

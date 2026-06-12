@@ -1,0 +1,93 @@
+{
+  "document": {
+    "dsl": "1.0.0",
+    "name": "solution-claim-denial-prevention — Claim Denial Prevention & Resolution",
+    "version": "0.0.1",
+    "namespace": "cascadecare",
+    "metadata": {
+      "description": "Integration Service API Workflow representing the UiPath Healthcare Agentic Solution 'Claim Denial Prevention & Resolution'. Detects denial root causes and orchestrates corrective actions to protect claim revenue during the crisis. Consumed by the Stakeholder-Parent Impact Assessment stage. DEPLOY-TIME NOTE: Data Fabric refs (qem:Provider[slug=...]) resolve at deploy via 'uip api-workflow registry stub' against a live tenant. Here the outputs are shaped deterministically from workflow inputs by a JavaScript/Assign activity; the live Data Fabric read and connector calls are NOT hand-authored.",
+      "variables": {
+        "schema": {
+          "format": "json",
+          "document": {
+            "type": "object",
+            "properties": {
+              "assessment": { "type": "object", "default": {} }
+            },
+            "title": "Variables"
+          }
+        }
+      }
+    }
+  },
+  "input": {
+    "schema": {
+      "format": "json",
+      "document": {
+        "type": "object",
+        "properties": {
+          "stakeholder_id": { "type": "string", "default": "stakeholder-northstar" },
+          "master_case_id": { "type": "string", "default": "clearflow-master-crisis" },
+          "provider_slug": { "type": "string", "default": "northstar" },
+          "simulated_day": { "type": "integer", "default": 1 }
+        },
+        "title": "Inputs"
+      }
+    }
+  },
+  "output": {
+    "schema": {
+      "format": "json",
+      "document": {
+        "type": "object",
+        "properties": {
+          "denial_root_causes": { "type": "array", "items": { "type": "string" } },
+          "at_risk_claim_count": { "type": "integer" },
+          "recommended_actions": { "type": "array", "items": { "type": "string" } },
+          "revenue_at_risk_usd": { "type": "number" }
+        },
+        "title": "Outputs"
+      }
+    }
+  },
+  "do": [
+    {
+      "Sequence_1": {
+        "do": [
+          {
+            "WorkflowStart": {
+              "set": "${Object.entries($workflow.definition?.document?.metadata?.variables?.schema?.document?.properties || {}).reduce((acc, [name, def]) => ({ ...acc, [name]: def?.default }), {}) }",
+              "output": { "as": "${$input}" },
+              "export": { "as": "{ ...$context, variables: { ...$context.variables, ...$output } }" },
+              "metadata": { "activityType": "Assign", "displayName": "Workflow start", "fullName": "Assign", "isTransparent": true }
+            }
+          },
+          {
+            "Javascript_BuildAssessment": {
+              "run": {
+                "script": {
+                  "code": "var day = $workflow.input.simulated_day; var atRisk = 4200 + day * 60; var revenue = Math.round((atRisk * 1875.5) * 100) / 100; return { denial_root_causes: ['CARC-16 missing or invalid information on submitted claim', 'CARC-197 precertification/authorization absent on payer-side adjudication', 'CARC-29 timely filing limit exceeded during claim-flow outage', 'BAA-scoped eligibility data unavailable from ClearFlow Pricing Engine'], at_risk_claim_count: atRisk, recommended_actions: ['Re-run ClearFlow Pricing Engine eligibility batch for affected provider cohort', 'Open Payment Continuity escalation for stakeholder ' + $workflow.input.stakeholder_id, 'Submit corrected-claim resubmission queue to Apex Health Plan and SummitBlue within timely-filing window', 'Attach denial root-cause summary to Impact Assessment stage of master case ' + $workflow.input.master_case_id], revenue_at_risk_usd: revenue };",
+                  "language": "javascript",
+                  "arguments": "${{ \"$context\": $context, \"$workflow\": $workflow, \"$input\": $input }}"
+                }
+              },
+              "export": { "as": "{ ...$context, outputs: { ...$context?.outputs, \"Javascript_BuildAssessment\": $output } }" },
+              "metadata": { "activityType": "JsInvoke", "displayName": "Build Denial Prevention Assessment", "fullName": "JsInvoke" }
+            }
+          },
+          {
+            "Response_1": {
+              "response": "${{ denial_root_causes: $context.outputs.Javascript_BuildAssessment.denial_root_causes, at_risk_claim_count: $context.outputs.Javascript_BuildAssessment.at_risk_claim_count, recommended_actions: $context.outputs.Javascript_BuildAssessment.recommended_actions, revenue_at_risk_usd: $context.outputs.Javascript_BuildAssessment.revenue_at_risk_usd }}",
+              "markJobAsFailed": false,
+              "then": "end",
+              "export": { "as": "{ ...$context, outputs: { ...$context?.outputs, \"Response_1\": $output } }" },
+              "metadata": { "activityType": "Response", "displayName": "Response", "fullName": "Response" }
+            }
+          }
+        ],
+        "metadata": { "activityType": "Sequence", "displayName": "Sequence", "fullName": "Sequence" }
+      }
+    }
+  ],
+  "evaluate": { "mode": "strict", "language": "javascript" }
+}

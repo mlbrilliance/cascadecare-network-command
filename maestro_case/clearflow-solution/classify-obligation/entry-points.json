@@ -1,0 +1,55 @@
+{
+  "$schema": "https://cloud.uipath.com/draft/2024-12/entry-point",
+  "$id": "entry-points.json",
+  "entryPoints": [
+    {
+      "filePath": "/content/agent.json",
+      "uniqueId": "c0ffee02-2222-4b22-8b22-000000000b22",
+      "type": "agent",
+      "input": {
+        "type": "object",
+        "properties": {
+          "obligation_type": {
+            "type": "string",
+            "description": "The raised obligation, e.g. subpoena-response | breach-notification | baa-disclosure | audit-cooperation."
+          },
+          "jurisdiction": {
+            "type": "string",
+            "description": "The obligation's jurisdiction, e.g. TN-DOI | federal | contractual."
+          },
+          "baa_reference": {
+            "type": "string",
+            "description": "The originating Business Associate Agreement reference."
+          }
+        },
+        "required": []
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "obligation_class": {
+            "type": "string",
+            "description": "The classified obligation kind."
+          },
+          "severity": {
+            "type": "string",
+            "description": "Obligation severity.",
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          "required_response": {
+            "type": "string",
+            "description": "Response posture the reviewer should prepare."
+          },
+          "rationale": {
+            "type": "string",
+            "description": "Decision-support explanation of the classification."
+          }
+        }
+      }
+    }
+  ]
+}

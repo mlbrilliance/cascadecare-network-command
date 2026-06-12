@@ -1,0 +1,5 @@
+{
+  "Name": "solution-claim-denial-prevention",
+  "ProjectType": "Api",
+  "main": "main.json"
+}

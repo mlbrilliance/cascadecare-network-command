@@ -1,0 +1,58 @@
+{
+  "$schema": "https://cloud.uipath.com/draft/2024-12/entry-point",
+  "$id": "entry-points.json",
+  "entryPoints": [
+    {
+      "filePath": "/content/agent.json",
+      "uniqueId": "c0ffee01-2222-4a22-8a22-000000000a22",
+      "type": "agent",
+      "input": {
+        "type": "object",
+        "properties": {
+          "stakeholder_id": {
+            "type": "string",
+            "description": "Affected provider slug or id (northstar | alpha | beta | gamma | delta | epsilon)."
+          },
+          "claim_telemetry_summary": {
+            "type": "string",
+            "description": "Summary of the provider's claim telemetry: baseline vs observed claim volume and the disruption pattern."
+          },
+          "business_continuity_runway_days": {
+            "type": "integer",
+            "description": "Days the provider can sustain the disruption before liquidity stress."
+          }
+        },
+        "required": []
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "disruption_score": {
+            "type": "number",
+            "description": "Severity of the claim-flow disruption, 0.0 to 1.0.",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "impact_tier": {
+            "type": "string",
+            "description": "Disruption tier.",
+            "enum": [
+              "none",
+              "moderate",
+              "elevated",
+              "critical"
+            ]
+          },
+          "liquidity_assessment": {
+            "type": "string",
+            "description": "Liquidity / payment-continuity pressure given the runway."
+          },
+          "rationale": {
+            "type": "string",
+            "description": "Decision-support explanation of the assessment."
+          }
+        }
+      }
+    }
+  ]
+}

@@ -4,7 +4,7 @@ The caseplan is the core runtime artifact (the canvas IS the orchestrator),
 so it gets the same structural guard the event contracts get. These assertions
 encode the V20 recipe from the uipath-maestro-case skill: object-shaped
 variables, the required metadata markers, per-task elementId, and referential
-integrity of edges. Discovers every maestro_case/**/content/caseplan.json so a
+integrity of edges. Discovers every maestro_case/**/caseplan.json so a
 new caseplan (parent/grandchild, Slice 010) is covered automatically.
 """
 
@@ -19,9 +19,11 @@ import pytest
 REPO_ROOT = Path(__file__).resolve().parents[3]
 MAESTRO_ROOT = REPO_ROOT / "maestro_case"
 
-CASEPLANS = sorted(MAESTRO_ROOT.glob("**/content/caseplan.json"))
+CASEPLANS = sorted(MAESTRO_ROOT.glob("**/caseplan.json"))
 
 # Required V20 metadata markers (uipath-maestro-case skill, case-schema.md).
+# Studio Web canvas regens (v1.0.14+) stopped emitting `displayName` — the
+# canvas-emitted shape is live-proven ground truth, so it is no longer required.
 REQUIRED_METADATA = {
     "caseUnifiedSchemaEnabled",
     "publishVersion",
@@ -29,7 +31,6 @@ REQUIRED_METADATA = {
     "caseAppEnabled",
     "caseIdentifierType",
     "caseIdentifier",
-    "displayName",
 }
 REQUIRED_TOP_LEVEL = {"id", "version", "name", "metadata", "variables", "nodes", "edges"}
 VARIABLE_BUCKETS = ("inputs", "outputs", "inputOutputs")
@@ -62,15 +63,18 @@ PARAMS = [pytest.param(p, id=str(p.relative_to(MAESTRO_ROOT))) for p in CASEPLAN
 
 
 def test_at_least_one_caseplan_exists() -> None:
-    assert CASEPLANS, "No maestro_case/**/content/caseplan.json found (master required from Slice 003)."
+    assert CASEPLANS, "No maestro_case/**/caseplan.json found (master required from Slice 003)."
 
 
 @pytest.mark.parametrize("path", PARAMS)
 class TestCaseplanV20:
     def test_version_is_v20(self, path: Path) -> None:
+        # Canvas round-trips bump the schema version (20.0.0 -> 23.0.0 as of
+        # 2026-06); anything >= 20 is the V20-family schema this suite encodes.
         caseplan = _load(path)
-        assert str(caseplan.get("version", "")).startswith("20"), (
-            f"{path} version must be V20 (got {caseplan.get('version')!r})"
+        major = str(caseplan.get("version", "")).split(".")[0]
+        assert major.isdigit() and int(major) >= 20, (
+            f"{path} version must be V20-family (got {caseplan.get('version')!r})"
         )
 
     def test_required_top_level_keys(self, path: Path) -> None:
@@ -116,3 +120,44 @@ class TestCaseplanV20:
                 if ref is not None and ref not in node_ids:
                     dangling.append(f"edge {edge.get('id')} {end}={ref!r}")
         assert not dangling, f"{path} edges reference missing nodes: {dangling}"
+
+
+# A required stage whose completion exit is `required-tasks-completed` but which
+# holds ZERO required tasks can never complete, so the case-level
+# `required-stages-completed` exit never fires and every instance sits Running
+# forever (live-proven: 38 stuck child/grandchild instances cancelled 2026-06-11;
+# the master completes precisely because its required "Closed" stage carries a
+# required Slack close-out task). Fixed in the 1.0.23 canvas round-trip: each
+# closing stage now carries a Required `generate-audit-record` task (child
+# tAkRJhJFc, grandchild tSGWPJ8p3) — this set must stay empty.
+KNOWN_STUCK_CLOSING_STAGES: set[tuple[str, str]] = set()
+
+
+def _completion_exit_is_required_tasks(data: dict[str, Any]) -> bool:
+    return any(
+        rule.get("rule") == "required-tasks-completed"
+        for ec in data.get("exitConditions", [])
+        if ec.get("marksStageComplete")
+        for group in ec.get("rules", [])
+        for rule in group
+    )
+
+
+def test_required_stages_can_actually_complete() -> None:
+    violations: set[tuple[str, str]] = set()
+    for path in CASEPLANS:
+        caseplan = _load(path)
+        for node in caseplan.get("nodes", []):
+            data = node.get("data", {})
+            if not isinstance(data, dict) or not data.get("isRequired"):
+                continue
+            if not _completion_exit_is_required_tasks(data):
+                continue
+            if not any(t.get("isRequired") for t in _iter_tasks(node)):
+                violations.add((str(caseplan.get("name")), str(node.get("id"))))
+    assert violations == KNOWN_STUCK_CLOSING_STAGES, (
+        "Required stages whose required-tasks-completed exit can never fire. "
+        "NEW entries mean a new stuck-case defect; a SHRUNKEN set means the "
+        "closing-task fix landed — update KNOWN_STUCK_CLOSING_STAGES to match. "
+        f"Got: {sorted(violations)}"
+    )

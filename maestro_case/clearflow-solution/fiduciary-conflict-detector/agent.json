@@ -13,25 +13,28 @@
     "properties": {
       "payer_demand": {
         "type": "string",
-        "description": "The payer demand asserting a contractual right (primarily from Apex Health Plan)."
+        "description": "The payer demand asserting a contractual right (primarily from Apex Health Plan).",
+        "default": "Apex Health Plan invokes the 'operational-visibility' clause of its network-pricing agreement with ClearFlow Health Network, demanding immediate, ongoing access to provider-level claim-flow telemetry and underlying claim records for Northstar Regional Health and Provider Alpha to 'independently verify the cyber incident impact.' Apex asserts this is a contractual right that supersedes ClearFlow's confidentiality posture and threatens to withhold scheduled remittances if access is not granted within 72 hours."
       },
       "affected_provider_baas": {
         "type": "array",
         "description": "The affected providers' BAA terms relevant to the payer demand.",
         "items": {
           "type": "string"
-        }
+        },
+        "default": [
+          "Northstar Regional Health BAA: limits ClearFlow to the minimum necessary use of PHI for payment operations, expressly prohibits redisclosure of claim-level PHI to any third party (including payers) absent written provider authorization, and requires provider notification before any non-routine disclosure.",
+          "Provider Alpha BAA: permits ClearFlow to process claims solely for adjudication, bars disclosure to entities outside the treatment-payment-operations chain without a separate BAA, and obligates ClearFlow to notify Provider Alpha of any payer demand touching its PHI within 24 hours.",
+          "Provider Beta BAA: incorporates HIPAA Business Associate provisions (45 CFR 164.502(e)) requiring downstream-recipient BAAs before disclosure; Apex Health Plan holds no BAA with ClearFlow, so transmitting Beta claim data to Apex would breach this term."
+        ]
       },
       "clearflow_obligations": {
         "type": "string",
-        "description": "ClearFlow's own stated obligations (including any insurer directives from Aurora Specialty)."
+        "description": "ClearFlow's own stated obligations (including any insurer directives from Aurora Specialty).",
+        "default": "ClearFlow Health Network is bound by its provider BAAs to act as a faithful business associate and disclose claim PHI only as those agreements permit. Concurrently, cyber insurer Aurora Specialty has issued a reservation-of-rights directive instructing ClearFlow to freeze all voluntary, non-compelled disclosures of incident-related data until Northwall Forensics closes its investigation, to preserve coverage and privilege. ClearFlow therefore cannot satisfy Apex's demand without breaching at least one provider BAA and contravening its insurer directive."
       }
     },
-    "required": [
-      "payer_demand",
-      "affected_provider_baas",
-      "clearflow_obligations"
-    ]
+    "required": []
   },
   "outputSchema": {
     "type": "object",

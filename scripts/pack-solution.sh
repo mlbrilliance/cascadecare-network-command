@@ -65,6 +65,8 @@ declare -A ARTIFACTS=(
   ["fiduciary-conflict-detector"]="${REPO_ROOT}/agents/fiduciary-conflict-detector"
   ["negligent-monitoring-risk-agent"]="${REPO_ROOT}/agents/negligent-monitoring-risk-agent"
   ["vector-hypothesis-agent"]="${REPO_ROOT}/agents/vector-hypothesis-agent"
+  ["assess-claim-disruption"]="${REPO_ROOT}/agents/assess-claim-disruption"
+  ["classify-obligation"]="${REPO_ROOT}/agents/classify-obligation"
   ["clearflow-ideal-incident-response"]="${REPO_ROOT}/maestro_bpmn/clearflow-ideal-incident-response"
   ["clearflow-demo-driver"]="${REPO_ROOT}/maestro_flow/clearflow-demo-driver"
 )

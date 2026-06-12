@@ -50,3 +50,19 @@ def test_key_slugs_are_registered_source_systems() -> None:
     for slug in KEY_SLUGS:
         assert slug in text, f"Demo Driver does not reference {slug!r}"
         assert slug in registered, f"{slug!r} not a registered source_system"
+
+
+def test_delay_definition_maps_timer_value_to_bpmn_expression() -> None:
+    # Verified live 2026-06-04: a core.logic.delay definition WITHOUT model.values
+    # makes the runtime timer expression null -> incident 190001 "Invalid timer
+    # expression - Value cannot be null (Parameter 'expression')". The registry
+    # definition carries model.values mapping inputs.timerValue -> the BPMN timer.
+    flow = json.loads(FLOW_PATH.read_text(encoding="utf-8"))
+    delays = [d for d in flow.get("definitions", []) if d.get("nodeType") == "core.logic.delay"]
+    assert delays, "flow must define core.logic.delay"
+    for d in delays:
+        values = d.get("model", {}).get("values", {})
+        assert values.get("timerValue") == "inputs.timerValue", (
+            "core.logic.delay definition must map model.values.timerValue -> "
+            "inputs.timerValue or the runtime timer expression is null (190001)"
+        )

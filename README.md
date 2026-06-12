@@ -23,6 +23,24 @@ simultaneously** on the Maestro Case canvas.
 > [`docs/demo/run-playbook.md`](docs/demo/run-playbook.md) (open items: API workflow re-add to
 > clear Orchestrator Error 2005, Maestro folder context, BPMN incident 1654).
 
+## Why This Matters — Healthcare Is UiPath's 2026 Vertical
+
+Healthcare is UiPath's **#1 vertical push for 2026**. At **ViVE 2026**, UiPath launched its
+agentic healthcare solutions — **Medical Records Summarization**, **Claim Denial Prevention**,
+and **Prior Authorization**. Those agents do the work; **CascadeCare is the Maestro Case layer
+that orchestrates them under fire.** When a payment-network crisis hits, CascadeCare coordinates
+the medical-records, claim-denial, and prior-auth agents across a multi-stakeholder cascade
+instead of leaving them to run in isolation — the **vertical bridge** built in slice **S024**.
+That makes CascadeCare immediately **adoptable by the health vertical**: it is the crisis
+orchestrator for the agents UiPath already ships.
+
+The scenario is dead-on the threat that vertical exists to survive. CascadeCare's fictional
+**ClearFlow Health Network** cascade is modeled on the real class of U.S. healthcare
+clearinghouse / payment-network cyberattacks of the mid-2020s — incidents that left vast numbers
+of providers unable to get paid and drove billions of dollars in downstream cost, among the most
+consequential healthcare cyber events on record. CascadeCare demonstrates how an AI-driven
+Maestro Case would manage exactly that, end to end.
+
 ## Demo: Five Reversals
 
 | # | Name | Day | Master goal shift |
@@ -48,7 +66,16 @@ Grounding, and Trust Layer surfaces below.
 
 Wired with the native `case-management` task type — no Postgres mirror, no level-flag superset.
 
-### Agent Builder agents (4, low-code, Claude BYO-LLM)
+**Canonical case surfaces** — the Maestro Case patterns Devpost judges are trained to recognize, built into the caseplans:
+
+- **SLA + escalation → Maestro Notification**, at case and stage level across all three nesting levels — on-track / at-risk / breached, firing notification actions on breach and at-risk.
+- **Agent-driven progression** — the master advances itself: the Forensic Self-Exam agent's output drives the Vector Isolation → Regulatory Response exit when ClearFlow's vector status clears (`=js:vars.var_clearflow_vector_status === 'cleared'`).
+- **Targeted re-entry** — at Reversal 5 (ClearFlow → co-defendant), the master re-opens the Multi-Customer Investigation stage via an interrupting entry condition (`=js:vars.var_reversal_number >= 5`) and a `return-to-origin` exit, re-running **only** the cross-provider correlation while the settled anomaly classification is skipped (`shouldRunOnlyOnce`).
+- **Agent Evaluations** — eval sets for all seven agents (low-code under `agents/<name>/evals/`, coded under `agents/<name>/evaluations/`).
+
+Per-agent Agent Memory is a deploy-time toggle, not fabricated offline config; cross-timeline state is carried by the master's root variables + Data Fabric (see `docs/adr/0004-agent-memory-is-deploy-time-not-fabricated-config.md`).
+
+### Agent Builder agents (6, low-code, Claude BYO-LLM)
 
 | Agent | Role |
 |-------|------|
@@ -56,27 +83,40 @@ Wired with the native `case-management` task type — no Postgres mirror, no lev
 | `baa-boundary-reasoner` | Analyzes BAA terms (+ Context Grounding on `BAA-corpus`); finds cross-BAA conflicts |
 | `fiduciary-conflict-detector` | Multi-party obligation conflicts; builds the HITL form payload (Reversal 4) |
 | `negligent-monitoring-risk-agent` | Co-defendant exposure analysis (Reversal 5) |
+| `assess-claim-disruption` | Quantifies per-stakeholder claim disruption and liquidity impact (parent Impact Assessment) |
+| `classify-obligation` | Classifies the raised obligation (subpoena / breach-notification / BAA-disclosure / audit) for the grandchild intake |
 
-### Coded Agents (3, Python SDK)
+### Coded Agents (4, Python SDK)
 
 | Agent | Role |
 |-------|------|
 | `claim-flow-anomaly-detector` | Classifies an anomaly score on claim telemetry |
 | `multi-customer-pattern-detector` | Cross-provider correlation; emits the cascade signal |
 | `forensic-self-exam-agent` | Coordinates the other agents; routing |
+| `case-job-janitor` | Ops utility on an hourly time trigger: sweeps zombie "Running" Orchestrator job rows left behind by completed case instances (the platform never flips them to Successful) |
 
-### Integration Service API Workflows (14, `Type:"Api"`)
+### Integration Service API Workflows (19, `Type:"Api"`)
 
-Mock external-system fronts — `counsel-hawthorne`, `insurer-aurora-specialty`, `payer-apex`,
+**Source-system mocks (14)** — `counsel-hawthorne`, `insurer-aurora-specialty`, `payer-apex`,
 `payer-lakeshore`, `payer-summitblue`, `payer-union-prairie`, `provider-alpha`, `provider-beta`,
 `provider-delta`, `provider-epsilon`, `provider-gamma`, `provider-northstar`, `regulator-tn-doi`,
 `vendor-nimbus`.
 
-### Maestro BPMN (1) and Maestro Flow (1)
+**Case utilities (2)** — `register-stakeholder` (parent-case onboarding: registers the stakeholder
+and pulls its BAA) and `generate-audit-record` (writes a per-action audit record).
+
+**UiPath Healthcare Agentic Solutions (3)** — the *vertical bridge*: CascadeCare orchestrates
+UiPath's own ViVE-2026 Healthcare Solutions as case-invoked tasks inside the stakeholder-parent's
+Impact Assessment stage — `solution-medical-records-summarization` (Medical Records Summarization),
+`solution-claim-denial-prevention` (Claim Denial Prevention & Resolution), and
+`solution-prior-auth-continuity` (Prior Authorization).
+
+### Maestro BPMN (2) and Maestro Flow (1)
 
 | Artifact | Type | Role |
 |----------|------|------|
 | `clearflow-ideal-incident-response` | Maestro BPMN | The ideal-response playbook (hybrid BPMN + Case) |
+| `case-closed-notification` | Maestro BPMN | Sends the case-closure notification when a case completes |
 | `clearflow-demo-driver` | Maestro Flow | The Demo Driver that paces the 90-day timeline to wall-clock |
 
 ### UiPath Apps (1)
@@ -108,11 +148,11 @@ leaves the UiPath governance boundary.*
 ```
 cascade_command/
   maestro_case/         # 3 caseplan.json definitions + clearflow-solution/ (.uipx packaging)
-  maestro_bpmn/         # clearflow-ideal-incident-response.bpmn
+  maestro_bpmn/         # clearflow-ideal-incident-response.bpmn + case-closed-notification.bpmn
   maestro_flow/         # clearflow-demo-driver.flow (Demo Driver)
-  agents/               # 4 Agent Builder (agent.json) + 3 Coded Agents (agent.py)
-    prompts/            # 7 agent system prompts (Markdown — never inlined in Python)
-  api_workflows/        # 14 Integration Service API Workflows
+  agents/               # 6 Agent Builder (agent.json) + 4 Coded Agents (agent.py)
+    prompts/            # 9 agent system prompts (Markdown — never inlined in Python)
+  api_workflows/        # 19 Integration Service API Workflows
   apps/                 # clearflow-network-command UiPath App
   src/cascadecare/      # build-time Python wrappers (auth, maestro_client) — dev only
   tests/                # 470+ offline structure/contract gates
@@ -127,8 +167,8 @@ cascade_command/
 - **UiPath Automation Cloud** tenant with Maestro, Agent Builder, Integration Service, Data Fabric,
   Context Grounding, Trust Layer, Action Center, and Apps enabled.
 - **Anthropic (Claude) BYO-LLM** registered in the UiPath LLM Gateway for the four low-code agents.
-- **Python 3.12+** and [`uv`](https://docs.astral.sh/uv/) for the build-time tooling.
-- The UiPath **`uip` CLI** (installed via the project's dev dependencies).
+- **Python 3.12+ (LTS)** and [`uv`](https://docs.astral.sh/uv/) for the build-time tooling. (Python 3.13 available but 3.12 LTS recommended)
+- The UiPath **`uip` CLI v1.1.0+** (installed via `uipath>=2.10.79` in project dependencies).
 
 ## Quickstart (build-time)
 

@@ -1,0 +1,5 @@
+{
+  "Name": "generate-audit-record-aw",
+  "ProjectType": "Api",
+  "main": "main.json"
+}

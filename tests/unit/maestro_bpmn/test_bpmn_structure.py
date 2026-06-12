@@ -41,24 +41,30 @@ def test_one_start_and_one_end_event() -> None:
 
 
 def test_cascade_branch_bridges_to_master_case() -> None:
-    # The spawn callActivity bridges to the master case via the registry-canonical
-    # releaseKey context field (bindingInfo.resource="process") bound to a process
-    # binding — NOT a literal `name` input. The editor's "Process" selector reads
-    # releaseKey; the literal-name form left it unresolved (the Studio Web error).
+    # The spawn callActivity bridges to the master case via the editor-authored
+    # v2 contract (verified live 2026-06-04: the case spawned + ran). It binds the
+    # case process by `name` + `folderPath` inline `<uipath:binding>` (the folder
+    # identity is what the single `releaseKey` form lacked → runtime 170005
+    # "folderId missing"). The CLI packer is the authority for this contract.
     bpmn_text = BPMN_FILES[0].read_text(encoding="utf-8")
     assert "StartCaseMgmtProcessAsync" in bpmn_text, (
         ".bpmn must spawn the master case via Orchestrator.StartCaseMgmtProcessAsync"
     )
-    assert 'name="releaseKey"' in bpmn_text, (
-        ".bpmn spawn call must wire the registry-canonical releaseKey context field"
+    assert 'value="v2"' in bpmn_text or 'version="v2"' in bpmn_text, (
+        "spawn activity must use the v2 StartCaseMgmtProcessAsync contract"
     )
-    assert "=bindings.Binding_MasterCrisisCase" in bpmn_text, (
-        "releaseKey must be bound to the Binding_MasterCrisisCase process binding "
-        "(must not regress to a literal name input)"
+    assert 'name="folderPath"' in bpmn_text, (
+        "spawn must wire the folderPath context input (the folder identity that "
+        "the releaseKey-only form lacked → runtime 170005 folderId missing)"
     )
-    assert 'name="name" type="string" value="clearflow-master-crisis"' not in bpmn_text, (
-        "the literal name context input must be gone — it left the editor's "
-        "Process selector unresolved"
+    assert 'name="name"' in bpmn_text, (
+        "spawn must wire the case process `name` context input"
+    )
+    assert 'propertyAttribute="folderPath"' in bpmn_text and 'propertyAttribute="name"' in bpmn_text, (
+        "the inline <uipath:binding> pair (name + folderPath) must be present"
+    )
+    assert 'resourceKey="clearflow-master-crisis"' in bpmn_text, (
+        "the spawn bindings must target the clearflow-master-crisis case resource"
     )
 
 
@@ -99,21 +105,20 @@ def test_vars_expressions_reference_declared_variable_names() -> None:
     )
 
 
-def test_cascade_gateway_reads_affected_customer_count() -> None:
-    # The cascade decision lives in the gateway condition itself — it reads the
-    # entry input `affectedCustomerCount` directly via `=vars.affectedCustomerCount`.
-    # An earlier design computed an `isCascade` boolean in a JS scriptTask, but the
-    # Studio Web editor never injected the variable into the script runtime
-    # ("ReferenceError: affectedCustomerCount is not defined") and could not resolve
-    # `=vars.isCascade`. Reading the count directly in the gateway removes the
-    # scriptTask and the intermediate variable, so there is nothing left to mis-bind.
+def test_cascade_gateway_reads_is_cascade() -> None:
+    # The cascade decision reads the entry input `isCascade` directly via the
+    # gateway condition `=vars.isCascade == true` (verified live 2026-06-04: the
+    # gateway took the cascade branch with isCascade=true). `isCascade` is a
+    # declared `inputOutput` entry variable — NOT a JS-scriptTask computed value
+    # (that earlier approach never registered in the editor). No scriptTask exists,
+    # so there is nothing to mis-bind; the caller passes the boolean at trigger.
     bpmn_text = BPMN_FILES[0].read_text(encoding="utf-8")
-    assert "=vars.affectedCustomerCount &gt;= 3" in bpmn_text, (
-        "the cascade branch condition must read =vars.affectedCustomerCount >= 3"
+    assert "=vars.isCascade == true" in bpmn_text, (
+        "the cascade branch condition must read =vars.isCascade == true"
     )
     assert "scriptTask" not in bpmn_text, (
-        "the JS scriptTask was removed — its variables never registered in the editor"
+        "no JS scriptTask — isCascade is a declared entry inputOutput, not computed"
     )
-    assert "isCascade" not in bpmn_text, (
-        "the intermediate isCascade variable was removed — the gateway reads the count directly"
+    assert '<uipath:inputOutput id="isCascade" name="isCascade" type="boolean"' in bpmn_text, (
+        "isCascade must be a declared boolean entry inputOutput variable"
     )

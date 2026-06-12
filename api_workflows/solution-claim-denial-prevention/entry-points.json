@@ -1,0 +1,55 @@
+{
+  "$schema": "https://cloud.uipath.com/draft/2024-12/entry-point",
+  "$id": "entry-points.json",
+  "entryPoints": [
+    {
+      "filePath": "main.json",
+      "uniqueId": "c29cc656-eb2a-5cca-908d-23fb30f85f8f",
+      "type": "process",
+      "input": {
+        "type": "object",
+        "properties": {
+          "stakeholder_id": {
+            "type": "string",
+            "default": "stakeholder-northstar"
+          },
+          "master_case_id": {
+            "type": "string",
+            "default": "clearflow-master-crisis"
+          },
+          "provider_slug": {
+            "type": "string",
+            "default": "northstar"
+          },
+          "simulated_day": {
+            "type": "integer",
+            "default": 1
+          }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "denial_root_causes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "at_risk_claim_count": {
+            "type": "integer"
+          },
+          "recommended_actions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "revenue_at_risk_usd": {
+            "type": "number"
+          }
+        }
+      }
+    }
+  ]
+}

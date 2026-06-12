@@ -1,7 +1,7 @@
 # Evidence — Maestro Case definitions (3)
 
 **Authoring agent:** Claude Code + the `uipath-maestro-case` skill. **Slice:** 010.
-**Contract:** Maestro Case V20 (Private Preview), three caseplan.json files wired via
+**Contract:** Maestro Case V20 schema (product reached **Controlled GA, 2026-03-30**), three caseplan.json files wired via
 the native `case-management` task type — no Postgres mirror, no Level-flag superset.
 
 | Artifact | Role |
@@ -15,10 +15,15 @@ the native `case-management` task type — no Postgres mirror, no Level-flag sup
 - Read the V20 Private Preview guide via `uipath-maestro-case`; authored all three
   caseplans to the canonical V20 rules (`=js:` expressions, six exit types,
   `caseAppEnabled`/`publishVersion:2`/`intsvcActivityConfig:"v2"`, variable dedup).
-- Encoded the overall SLA in `metadata.slaRules` (21d) after discovering the compiler
-  ignores `defaultSla` (Slice 014 decision).
+- Encoded `metadata.slaRules` on every case after discovering the compiler ignores
+  `defaultSla` (Slice 014 decision) — grandchild at Slice 010, master (90d) + parent (45d)
+  added in **Slice 021**.
 - Wired the qem: Data Fabric fan-out + `hitlTask` output variable + `Maestro.NotificationService`
   task (Slice 014 platform-feature integration).
+- **Slice 021:** lifted the grandchild's stage-level escalation pattern up to master + parent —
+  per-stage `slaRules` whose `escalationRule` fires `sla-breached` + `at-risk` (80%) notification
+  actions to `=metadata.caseOwner`, tuned so reversal timing flips on-canvas at-risk/breached
+  badges. Gate: `tests/unit/maestro_case/test_slice021_sla_escalation.py`.
 
 ## Verifiable evidence
 

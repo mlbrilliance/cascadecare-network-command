@@ -1,0 +1,82 @@
+{
+  "document": {
+    "dsl": "1.0.0",
+    "name": "generate-audit-record — Generate Audit Record",
+    "version": "0.0.1",
+    "namespace": "cascadecare",
+    "metadata": {
+      "description": "Integration Service API Workflow for the Obligation-Grandchild 'Obligation Response' stage. Produces an immutable audit-record reference for a filed obligation response. DEPLOY-TIME NOTE: the audit-record write (qem:AuditRecord insert) is resolved at deploy via 'uip api-workflow registry stub'; here the output is shaped deterministically (no random; timestamp passed in as input) by a JavaScript/Assign activity.",
+      "variables": { "schema": { "format": "json", "document": { "type": "object", "properties": { "auditPayload": { "type": "object", "default": {} } }, "title": "Variables" } } }
+    }
+  },
+  "input": {
+    "schema": {
+      "format": "json",
+      "document": {
+        "type": "object",
+        "properties": {
+          "obligation_id": { "type": "string", "default": "obl-northstar-1" },
+          "disposition": { "type": "string", "default": "filed" },
+          "recorded_at": { "type": "string", "default": "" },
+          "jurisdiction": { "type": "string", "default": "contractual" }
+        },
+        "title": "Inputs"
+      }
+    }
+  },
+  "output": {
+    "schema": {
+      "format": "json",
+      "document": {
+        "type": "object",
+        "properties": {
+          "audit_record_id": { "type": "string" },
+          "recorded_at": { "type": "string" },
+          "disposition": { "type": "string" },
+          "audit_summary": { "type": "string" }
+        },
+        "title": "Outputs"
+      }
+    }
+  },
+  "do": [
+    {
+      "Sequence_1": {
+        "do": [
+          {
+            "WorkflowStart": {
+              "set": "${Object.entries($workflow.definition?.document?.metadata?.variables?.schema?.document?.properties || {}).reduce((acc, [name, def]) => ({ ...acc, [name]: def?.default }), {}) }",
+              "output": { "as": "${$input}" },
+              "export": { "as": "{ ...$context, variables: { ...$context.variables, ...$output } }" },
+              "metadata": { "activityType": "Assign", "displayName": "Workflow start", "fullName": "Assign", "isTransparent": true }
+            }
+          },
+          {
+            "Javascript_GenerateAudit": {
+              "run": {
+                "script": {
+                  "code": "var oid = String($workflow.input.obligation_id || 'UNASSIGNED').trim(); var disp = String($workflow.input.disposition || 'recorded'); var juris = String($workflow.input.jurisdiction || 'contractual'); var ts = String($workflow.input.recorded_at || ''); var auditId = 'AUD-' + oid.toUpperCase(); return { audit_record_id: auditId, recorded_at: ts, disposition: disp, audit_summary: 'Generated immutable audit record ' + auditId + ' for obligation ' + oid + ' (' + juris + ', disposition: ' + disp + ').' };",
+                  "language": "javascript",
+                  "arguments": "${{ \"$context\": $context, \"$workflow\": $workflow, \"$input\": $input }}"
+                }
+              },
+              "export": { "as": "{ ...$context, outputs: { ...$context?.outputs, \"Javascript_GenerateAudit\": $output } }" },
+              "metadata": { "activityType": "JsInvoke", "displayName": "Generate Audit Record", "fullName": "JsInvoke" }
+            }
+          },
+          {
+            "Response_1": {
+              "response": "${{ audit_record_id: $context.outputs.Javascript_GenerateAudit.audit_record_id, recorded_at: $context.outputs.Javascript_GenerateAudit.recorded_at, disposition: $context.outputs.Javascript_GenerateAudit.disposition, audit_summary: $context.outputs.Javascript_GenerateAudit.audit_summary }}",
+              "markJobAsFailed": false,
+              "then": "end",
+              "export": { "as": "{ ...$context, outputs: { ...$context?.outputs, \"Response_1\": $output } }" },
+              "metadata": { "activityType": "Response", "displayName": "Response", "fullName": "Response" }
+            }
+          }
+        ],
+        "metadata": { "activityType": "Sequence", "displayName": "Sequence", "fullName": "Sequence" }
+      }
+    }
+  ],
+  "evaluate": { "mode": "strict", "language": "javascript" }
+}

@@ -38,6 +38,23 @@ EXPECTED_EVENTS: dict[str, tuple[str, ...]] = {
     "regulator-tn-doi": ("regulatory-subpoena", "litigation-event"),
     "insurer-aurora-specialty": ("insurer-directive",),
     "counsel-hawthorne": (),  # utility workflow — no Maestro event
+    "generate-audit-record": (),  # utility workflow — audit logging
+    "register-stakeholder": (),  # utility workflow — stakeholder registration
+    # Healthcare Agentic Solutions (S024) — case-invoked api-workflow tasks (referenced by the
+    # stakeholder-parent caseplan's ApiWorkflow binding), NOT event-emitting source-system mocks.
+    "solution-medical-records-summarization": (),
+    "solution-claim-denial-prevention": (),
+    "solution-prior-auth-continuity": (),
+}
+
+# Case-invoked Healthcare-solution workflows + utility workflows — exempt from the source-system/event contract.
+SOLUTION_SLUGS = {
+    "solution-medical-records-summarization",
+    "solution-claim-denial-prevention",
+    "solution-prior-auth-continuity",
+    "counsel-hawthorne",
+    "generate-audit-record",
+    "register-stakeholder",
 }
 
 WORKFLOWS = sorted(API_ROOT.glob("*/main.json"))
@@ -48,7 +65,7 @@ def _vocab_source_systems() -> set[str]:
     return set(yaml.safe_load(VOCAB_PATH.read_text()).get("source_systems", []))
 
 
-def test_all_fourteen_workflows_present() -> None:
+def test_all_workflows_present() -> None:
     found = {p.parent.name for p in WORKFLOWS}
     assert found == set(EXPECTED_EVENTS), (
         f"api_workflows mismatch.\n  missing: {sorted(set(EXPECTED_EVENTS) - found)}"
@@ -56,9 +73,10 @@ def test_all_fourteen_workflows_present() -> None:
     )
 
 
-def test_every_slug_is_a_registered_source_system() -> None:
+def test_every_source_system_slug_is_registered() -> None:
+    # Source-system mocks must be registered; case-invoked Healthcare solutions are exempt.
     src = _vocab_source_systems()
-    offenders = {p.parent.name for p in WORKFLOWS} - src
+    offenders = {p.parent.name for p in WORKFLOWS} - src - SOLUTION_SLUGS
     assert not offenders, f"workflow slugs not in vocabulary.source_systems: {sorted(offenders)}"
 
 

@@ -1,0 +1,55 @@
+{
+  "$schema": "https://cloud.uipath.com/draft/2024-12/entry-point",
+  "$id": "entry-points.json",
+  "entryPoints": [
+    {
+      "filePath": "main.json",
+      "uniqueId": "e986d614-9d33-577d-b15d-590b04434c68",
+      "type": "process",
+      "input": {
+        "type": "object",
+        "properties": {
+          "stakeholder_id": {
+            "type": "string",
+            "default": "northstar"
+          },
+          "master_case_id": {
+            "type": "string",
+            "default": "clearflow-master-crisis"
+          },
+          "provider_slug": {
+            "type": "string",
+            "default": "northstar"
+          },
+          "simulated_day": {
+            "type": "integer",
+            "default": 3
+          }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "affected_record_count": {
+            "type": "integer"
+          },
+          "risk_classification": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high",
+              "critical"
+            ]
+          },
+          "clinical_summary": {
+            "type": "string"
+          },
+          "exposure_scope": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  ]
+}

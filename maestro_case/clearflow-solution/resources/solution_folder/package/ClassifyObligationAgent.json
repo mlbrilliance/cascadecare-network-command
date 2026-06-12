@@ -1,0 +1,23 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "ClassifyObligationAgent",
+    "kind": "package",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "projectKey": "c1a55ee0-2222-4b22-8b22-000000000b22",
+    "isOverridable": true,
+    "dependencies": [],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "name": "ClassifyObligationAgent"
+    },
+    "locks": [],
+    "key": "ef2bfe82-2c54-48f6-81d3-12c55d65f314",
+    "files": []
+  }
+}

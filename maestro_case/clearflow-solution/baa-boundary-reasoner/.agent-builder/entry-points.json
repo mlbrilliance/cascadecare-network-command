@@ -1,0 +1,59 @@
+{
+  "$schema": "https://cloud.uipath.com/draft/2024-12/entry-point",
+  "$id": "entry-points.json",
+  "entryPoints": [
+    {
+      "filePath": "/content/agent.json",
+      "uniqueId": "dfdb15f5-de94-4043-9460-271746581667",
+      "type": "agent",
+      "input": {
+        "type": "object",
+        "properties": {
+          "provider_id": {
+            "type": "string",
+            "description": "The single provider whose BAA terms are being analyzed (e.g. northstar, alpha, beta, gamma, delta, epsilon)."
+          },
+          "subpoena_scope": {
+            "type": "string",
+            "description": "The scope of the regulatory subpoena being assessed against this provider's BAA."
+          },
+          "subpoena_template_id": {
+            "type": "string",
+            "description": "The RegulatorTemplate identifier that defines the subpoena's discovery requests."
+          }
+        },
+        "required": [
+          "provider_id",
+          "subpoena_scope",
+          "subpoena_template_id"
+        ]
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "disclosure_position": {
+            "type": "string",
+            "description": "ClearFlow's disclosure position for this provider (maps to the BAADisclosurePosition case variable).",
+            "enum": [
+              "can_disclose",
+              "cannot_disclose",
+              "conditional",
+              "unknown"
+            ]
+          },
+          "cross_baa_conflicts": {
+            "type": "array",
+            "description": "Other providers whose BAA terms conflict with this provider's recommended action, each with a one-line reason.",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rationale": {
+            "type": "string",
+            "description": "Decision-support draft: BAA terms summary, disclosure obligation, and legal-risk note for counsel review."
+          }
+        }
+      }
+    }
+  ]
+}

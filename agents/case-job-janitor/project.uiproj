@@ -1,0 +1,6 @@
+{
+  "ProjectType": "Function",
+  "Name": "case-job-janitor",
+  "Description": "Sweeps zombie Running Orchestrator case jobs whose Maestro case instances already finished (CascadeCare Network Command, Slice 023 ops utility).",
+  "MainFile": null
+}

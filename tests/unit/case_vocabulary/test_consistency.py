@@ -2,7 +2,7 @@
 Candidate 3 — Case Vocabulary Consistency Tests
 
 Verifies that every variable name, stage ID, and task ID referenced in
-any caseplan.json file under maestro_case/**/content/caseplan.json
+any caseplan.json file under maestro_case/**/caseplan.json
 resolves against specs/003-uipath-native/case-vocabulary.yaml.
 
 Design decisions:
@@ -29,9 +29,9 @@ MAESTRO_ROOT = REPO_ROOT / "maestro_case"
 
 # The three canonical caseplan.json paths the project will eventually have.
 CANONICAL_CASEPLANS = {
-    "master": MAESTRO_ROOT / "clearflow-master-crisis" / "content" / "caseplan.json",
-    "stakeholder_parent": MAESTRO_ROOT / "clearflow-stakeholder-parent" / "content" / "caseplan.json",
-    "obligation_grandchild": MAESTRO_ROOT / "clearflow-obligation-grandchild" / "content" / "caseplan.json",
+    "master": MAESTRO_ROOT / "clearflow-master-crisis" / "caseplan.json",
+    "stakeholder_parent": MAESTRO_ROOT / "clearflow-stakeholder-parent" / "caseplan.json",
+    "obligation_grandchild": MAESTRO_ROOT / "clearflow-obligation-grandchild" / "caseplan.json",
 }
 
 
@@ -143,7 +143,7 @@ class TestMasterCaseplan:
         self.vocab = load_vocabulary()
         self.caseplan = load_caseplan(CANONICAL_CASEPLANS["master"])
         if self.caseplan is None:
-            pytest.fail("clearflow-master-crisis/content/caseplan.json is missing — required from Slice 003.")
+            pytest.fail("clearflow-master-crisis/caseplan.json is missing — required from Slice 003.")
 
     def test_all_variable_names_in_vocabulary(self) -> None:
         actual = collect_variable_names(self.caseplan)
