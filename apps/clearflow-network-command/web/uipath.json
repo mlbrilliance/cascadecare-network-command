@@ -1,0 +1,4 @@
+{
+  "scope": "PIMS OR.Execution.Read OR.Jobs.Read OR.Tasks.Read OR.Folders.Read DataFabric.Data.Read",
+  "clientId": "e7145523-3cdd-40f1-b2f2-c1b105aa217f"
+}
