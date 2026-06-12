@@ -127,13 +127,10 @@ class TestCaseplanV20:
 # `required-stages-completed` exit never fires and every instance sits Running
 # forever (live-proven: 38 stuck child/grandchild instances cancelled 2026-06-11;
 # the master completes precisely because its required "Closed" stage carries a
-# required Slack close-out task). The two closing stages below await the 1.0.23
-# Studio Web canvas round-trip that adds a Required `generate-audit-record`
-# closing task to each — once it lands, shrink this set to empty.
-KNOWN_STUCK_CLOSING_STAGES = {
-    ("clearflow-stakeholder-parent", "Stage_SUCBZw"),
-    ("clearflow-obligation-grandchild", "Stage_otF4rP"),
-}
+# required Slack close-out task). Fixed in the 1.0.23 canvas round-trip: each
+# closing stage now carries a Required `generate-audit-record` task (child
+# tAkRJhJFc, grandchild tSGWPJ8p3) — this set must stay empty.
+KNOWN_STUCK_CLOSING_STAGES: set[tuple[str, str]] = set()
 
 
 def _completion_exit_is_required_tasks(data: dict[str, Any]) -> bool:

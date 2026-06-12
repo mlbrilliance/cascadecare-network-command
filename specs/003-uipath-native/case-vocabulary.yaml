@@ -251,6 +251,11 @@ tasks:
       display_name: "Spawn Obligation Grandchild"
       type: case-management
       stage_id: Stage_9fuQ8L
+    - id: tAkRJhJFc
+      display_name: "Generate Closure Audit Record"
+      type: api-workflow
+      stage_id: Stage_SUCBZw
+      notes: "1.0.23 closing-stage fix: Required generate-audit-record task so the empty required closing stage can complete (required-tasks-completed exit was unfirable -> cases stuck Running forever)."
 
   obligation_grandchild:
     - id: tE0pwsV58
@@ -270,6 +275,11 @@ tasks:
       type: Maestro.NotificationService
       stage_id: Stage_F95sBP
       notes: "Slice 014: Maestro.NotificationService task (May 28 feature). Fires on stage-entered; notifies parent case owner of obligation SLA breach."
+    - id: tSGWPJ8p3
+      display_name: "Generate Closure Audit Record"
+      type: api-workflow
+      stage_id: Stage_otF4rP
+      notes: "1.0.23 closing-stage fix: Required generate-audit-record task so the empty required closing stage can complete (required-tasks-completed exit was unfirable -> cases stuck Running forever)."
 
 # ── Agents ──────────────────────────────────────────────────────────────
 # key:         unique slug used in task.agent_key references

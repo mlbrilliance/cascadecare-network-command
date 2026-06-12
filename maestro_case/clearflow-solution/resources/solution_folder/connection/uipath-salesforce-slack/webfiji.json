@@ -8,6 +8,7 @@
     "isOverridable": true,
     "dependencies": [],
     "runtimeDependencies": [],
+    "files": [],
     "folders": [
       {
         "fullyQualifiedName": "solution_folder"
@@ -16,13 +17,13 @@
     "spec": {
       "connectorName": "Slack",
       "name": "webfiji",
+      "description": null,
       "authenticationType": "AuthenticateAfterDeployment",
       "connectorVersion": "2.14.3",
       "connectorKey": "uipath-salesforce-slack",
       "pollingInterval": 5
     },
     "locks": [],
-    "key": "80566cbd-c70a-4f1e-bc34-2c1b262918f5",
-    "files": []
+    "key": "80566cbd-c70a-4f1e-bc34-2c1b262918f5"
   }
 }
