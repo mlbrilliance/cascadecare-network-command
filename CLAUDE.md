@@ -52,7 +52,7 @@ If /audit-ip-safety finds a match, the commit is blocked. No exceptions.
 
 ## AgentHack 2026 — Competitive Playbook
 
-**Deadline: June 29, 2026 at 11:45 PM PDT.** Early submission is better — judging starts June 3.
+**Deadline: June 29, 2026 at 11:45 PM EDT.** Early submission is better — judging starts June 3.
 
 ### Platform features to integrate (judges will notice)
 

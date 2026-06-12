@@ -1,8 +1,8 @@
 # AgentHack 2026 — Submission Package Checklist
 
-Slice 017 status. The **offline-completable** artifacts are DONE and machine-verified; the
-**human-capture** artifacts below require a live tenant + recording and are carried forward.
-Honest status only — no fabricated links.
+Status as of 2026-06-12 (slice 023 closed). The build artifacts are DONE — including the
+**live deployment** (artifact #4) — and the remaining **human-capture** artifacts
+(video, Devpost page, deck) are carried forward. Honest status only — no fabricated links.
 
 ## Required Devpost artifacts (4)
 
@@ -10,8 +10,8 @@ Honest status only — no fabricated links.
 |---|----------|--------|-------|-------|
 | 1 | Public GitHub repo (MIT) + README | ✅ DONE | — | [`README.md`](../../README.md) names every UiPath component; [`LICENSE`](../../LICENSE) MIT; gate `tests/unit/docs/test_readme_completeness.py` |
 | 2 | Devpost project page | ⬜ PENDING (human) | — | Title, Track 1, business problem, architecture, screenshots. Source copy: README inventory + [`docs/architecture.md`](../architecture.md) |
-| 3 | Demo video ≤5 min on YouTube/Vimeo | ⬜ PENDING (human) | — | Must show the solution running **live** on UiPath Automation Cloud (not slides); name each agent. Shot-list: [`docs/demo/run-playbook.md`](../demo/run-playbook.md). Hero (Reversal 3 fan-spawn) ~2:30 |
-| 4 | Solution running live on Automation Cloud | ⬜ PENDING (tenant) | — | Open blockers: API workflow re-add (Error 2005), Maestro folder context, BPMN 1654 — see [`DEVIATIONS.md`](../../DEVIATIONS.md) |
+| 3 | Demo video ≤5 min on YouTube/Vimeo | ⬜ PENDING (human) | — | Must show the solution running **live** on UiPath Automation Cloud (not slides); name each agent. Run procedure: [`docs/DEMO-RUNBOOK.md`](../DEMO-RUNBOOK.md). Hero (Reversal 3 fan-spawn) ~2:30 |
+| 4 | Solution running live on Automation Cloud | ✅ DONE (live) | — | `clearflow-solution` 1.0.23 deployed to `Shared/CascadeCare-v110`; full cascade live-proven 2026-06-12 (master + 6 children + 6 grandchildren all Completed). The former blockers (Error 2005, Maestro folder context, BPMN 1654) were resolved in slices 015–023 — see [`docs/DEMO-RUNBOOK.md`](../DEMO-RUNBOOK.md) |
 
 ## Bonus + supplementary
 
@@ -30,5 +30,5 @@ would be dishonest. Tag at the same commit as the final video upload.
 
 ## Deadlines (per `agenthack-2026-intel`)
 
-- Submission: **June 29, 2026, 11:45 PM PDT** (early submission better — judging starts June 3).
+- Submission: **June 29, 2026, 11:45 PM EDT** (early submission better — judging is rolling, started June 3).
 - UiPath Labs access for judges: apply by June 5.

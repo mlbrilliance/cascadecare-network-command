@@ -1,5 +1,13 @@
 # CascadeCare — Live Run Playbook (R1→R5)
 
+> ⚠️ **SUPERSEDED (2026-06-12).** This playbook describes the Slice-015 era
+> (`CascadeCare-Core`, v0.1.0 coded agents, Error-2005 recovery). All of those
+> blockers are resolved and the deployment moved on. For the current live run
+> procedure (auth, deploy recipe, A5 closure check, A6 zombie sweep) see
+> [`docs/DEMO-RUNBOOK.md`](../DEMO-RUNBOOK.md) — current deployment:
+> `clearflow-solution` 1.0.23 on `Shared/CascadeCare-v110`. The body below is
+> kept only as a historical record.
+
 How to launch the ClearFlow master crisis case on the tenant for a demo dry run,
 and how to recover when the Maestro folder/release-key context can't be resolved
 from the CLI. Written for Slice 015 Phase 2 (T018).

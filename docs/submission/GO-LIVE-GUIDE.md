@@ -3,7 +3,9 @@
 > **Who this is for:** someone who has never touched UiPath, Maestro, Orchestrator, or Studio Web.
 > Every step says **who does it**, **exactly what to do**, **what you should see**, and **what to do if it goes wrong**.
 >
-> **Last updated:** 2026-06-04 (v1.0.6 → `Shared/CascadeCare-v106`; spawn confirmed live + Data Fabric seeded + Demo Driver timer fixed; current step = **STEP 6**, run the 5 reversals) · **Branch:** `slice-023-reentry-agent-memory` · **Tenant:** `staging.uipath.com/hackathon26_042/DefaultTenant`
+> **Last updated:** 2026-06-12 (v1.0.23 → `Shared/CascadeCare-v110`; **full cascade live-proven** — master + 6 children + 6 grandchildren all Completed; current step = **record the demo video + submit**) · **Branch:** `master` · **Tenant:** `staging.uipath.com/hackathon26_042/DefaultTenant`
+>
+> Operational run procedure now lives in [`docs/DEMO-RUNBOOK.md`](../DEMO-RUNBOOK.md) (auth, deploy recipe, A5 closure check, A6 zombie sweep). Sections below marked with a date are historical snapshots.
 >
 > **How to read the owner tags:**
 > - 🟢 **ME** = Claude Code can do this alone, offline, no tenant/browser. Just ask.
@@ -46,11 +48,21 @@ Your project is a **bundle of files in this repo**. To make it real, that bundle
 | Now → June 29 | Final submission on Devpost. Judging is **rolling** (started June 3), so earlier = more eyeballs. | 🔴 + 🟢 | Hard deadline. |
 | June 9, 3–4 PM UTC | (Optional) Best-practices session w/ a prior winner (Ebru Sarikaya). | 🔴 | Free intel. |
 
-> ⚠️ **Deadline timezone:** the project's own notes disagree — `CLAUDE.md` says **11:45 PM PDT**, the intel memory says **EDT**. **Confirm the exact time on the Devpost page itself** and treat the earlier of the two as your real deadline.
+> ⏰ **Deadline timezone:** **June 29, 2026, 11:45 PM EDT** (per the verified `agenthack-2026-intel` notes; the earlier PDT claim in old docs was wrong). EDT is also the *earlier* of the two, so working to EDT is safe either way.
 
 ---
 
 ## 2. Where things stand right now (snapshot)
+
+### ✅ Status update (2026-06-12) — the build is live-proven
+- **`clearflow-solution` 1.0.23** deployed + active on **`Shared/CascadeCare-v110`**.
+- **Full cascade proven live**: master + all 6 child cases + all 6 grandchild cases reached
+  **Completed** (first fully-draining run, 2026-06-12, after the closing-stage fix).
+- HITL gates pause correctly at master (Reversal 4) and grandchild (File/Withdraw).
+- 4th coded agent `case-job-janitor` deployed (hourly sweep of zombie "Running" job rows).
+- Suite 613 passed / 0 failed / 7 skipped; IP audit clean.
+- Still open: Context Grounding indexes (deferred — verify or document honestly), demo video,
+  Devpost page, deck. Everything below this block is the **2026-06-04 historical snapshot**.
 
 ### ✅ Done / built (offline, machine-verified)
 - All **runtime artifacts authored**: 3 Maestro Cases, 4 Agent Builder agents, 3 Coded Agents, 14 API Workflows, 1 BPMN, 1 Maestro Flow, 1 App.
@@ -413,7 +425,7 @@ bash scripts/cleanup_deployments.sh --confirm    # actually uninstall the stale 
 | 1 | Public GitHub repo (MIT) + README naming every component | ✅ DONE | — |
 | 2 | Devpost project page (Track 1) | ⬜ PENDING | 🔴 you (🟢 I draft) |
 | 3 | Demo video ≤5 min, **live**, names each agent | ⬜ PENDING | 🔴 you (🟢 I script) |
-| 4 | Solution running **live** on Automation Cloud | ⬜ PENDING | 🟡 deploy + 🔴 verify |
+| 4 | Solution running **live** on Automation Cloud | ✅ DONE (1.0.23 on `Shared/CascadeCare-v110`, full cascade proven 2026-06-12) | — |
 | Bonus | Coding-agent evidence (`CODING_AGENTS.md`, `CLAUDE_CODE_USAGE.md`) | ✅ DONE | — |
 | Bonus | 1-min coding-agent reel | ⬜ PENDING | 🔴 you |
 | Supp. | Slides deck (AgentHack template) | ⬜ PENDING | 🔴 you |

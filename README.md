@@ -17,11 +17,12 @@ of native case nesting** — while five master-level goal reversals reshape the 
 The hero moment: **Reversal 3** (a state DOI subpoena) fans out **six grandchild cases
 simultaneously** on the Maestro Case canvas.
 
-> **Status (2026-05-31):** Every UiPath artifact below is **authored and offline-validated**
-> against its UiPath contract (V20 / CNCF Serverless 1.0.0 / Agent Builder). Tenant publish and
-> live demo runs are tracked in [`DEVIATIONS.md`](DEVIATIONS.md) and
-> [`docs/demo/run-playbook.md`](docs/demo/run-playbook.md) (open items: API workflow re-add to
-> clear Orchestrator Error 2005, Maestro folder context, BPMN incident 1654).
+> **Status (2026-06-12):** Every UiPath artifact below is authored, validated against its UiPath
+> contract (V20 / CNCF Serverless 1.0.0 / Agent Builder), and **running live on UiPath Automation
+> Cloud** — `clearflow-solution` 1.0.23 deployed to `Shared/CascadeCare-v110`, with a full
+> cascade run proven end-to-end (master + 6 child + 6 grandchild cases all Completed). Live run
+> procedure: [`docs/DEMO-RUNBOOK.md`](docs/DEMO-RUNBOOK.md). Historical deviations:
+> [`DEVIATIONS.md`](DEVIATIONS.md).
 
 ## Why This Matters — Healthcare Is UiPath's 2026 Vertical
 
