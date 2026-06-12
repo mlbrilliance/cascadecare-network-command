@@ -120,3 +120,47 @@ class TestCaseplanV20:
                 if ref is not None and ref not in node_ids:
                     dangling.append(f"edge {edge.get('id')} {end}={ref!r}")
         assert not dangling, f"{path} edges reference missing nodes: {dangling}"
+
+
+# A required stage whose completion exit is `required-tasks-completed` but which
+# holds ZERO required tasks can never complete, so the case-level
+# `required-stages-completed` exit never fires and every instance sits Running
+# forever (live-proven: 38 stuck child/grandchild instances cancelled 2026-06-11;
+# the master completes precisely because its required "Closed" stage carries a
+# required Slack close-out task). The two closing stages below await the 1.0.23
+# Studio Web canvas round-trip that adds a Required `generate-audit-record`
+# closing task to each — once it lands, shrink this set to empty.
+KNOWN_STUCK_CLOSING_STAGES = {
+    ("clearflow-stakeholder-parent", "Stage_SUCBZw"),
+    ("clearflow-obligation-grandchild", "Stage_otF4rP"),
+}
+
+
+def _completion_exit_is_required_tasks(data: dict[str, Any]) -> bool:
+    return any(
+        rule.get("rule") == "required-tasks-completed"
+        for ec in data.get("exitConditions", [])
+        if ec.get("marksStageComplete")
+        for group in ec.get("rules", [])
+        for rule in group
+    )
+
+
+def test_required_stages_can_actually_complete() -> None:
+    violations: set[tuple[str, str]] = set()
+    for path in CASEPLANS:
+        caseplan = _load(path)
+        for node in caseplan.get("nodes", []):
+            data = node.get("data", {})
+            if not isinstance(data, dict) or not data.get("isRequired"):
+                continue
+            if not _completion_exit_is_required_tasks(data):
+                continue
+            if not any(t.get("isRequired") for t in _iter_tasks(node)):
+                violations.add((str(caseplan.get("name")), str(node.get("id"))))
+    assert violations == KNOWN_STUCK_CLOSING_STAGES, (
+        "Required stages whose required-tasks-completed exit can never fire. "
+        "NEW entries mean a new stuck-case defect; a SHRUNKEN set means the "
+        "closing-task fix landed — update KNOWN_STUCK_CLOSING_STAGES to match. "
+        f"Got: {sorted(violations)}"
+    )

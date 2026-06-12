@@ -4,7 +4,7 @@ preserving the canvas-authored task bindings (assess/classify/register/audit/ViV
 and writing the merged cases into the canonical standalone dirs (pack-solution.sh
 then copies them into the solution).
 
-Two deterministic fixes the canvas does NOT produce:
+Three deterministic fixes the canvas does NOT produce:
 
   CHILD (clearflow-stakeholder-parent)
     - mainline start event is MISSING (CaseInitialVariablesSetupNode orphaned, empty
@@ -20,6 +20,18 @@ Two deterministic fixes the canvas does NOT produce:
       Hand-wire it to app "Regulatory/Contractual Obligation Response" in
       Shared/CascadeCare-v110, identical to the master gate tvlKcFYnW -> CascadeCare.
     - the mainline start event is already intact (canvas-generated) -> no patch.
+
+  BOTH (1.0.23 closing-stage fix)
+    - the closing stages ("Stakeholder Resolved" Stage_SUCBZw / "Obligation
+      Discharged" Stage_otF4rP) are isRequired:true with a required-tasks-completed
+      exit. Empty, that exit can NEVER fire -> required-stages-completed never
+      satisfied -> every instance sits Running forever (38 stuck instances
+      cancelled 2026-06-11). The canvas session adds a generate-audit-record
+      closing task to each; this merge asserts the task exists in the download
+      and forces isRequired:true on every task in those stages (caseplan +
+      embedded definition JSON) because the canvas historically leaves new
+      tasks Required=false -- the exact defect that once skipped the grandchild
+      spawn and the ViVE tasks.
 
 Usage:
   python3 scripts/merge-child-grandchild.py <extracted-download-dir>
@@ -123,6 +135,50 @@ def _flip_required(s, tid):
     return s[:j_false] + '"isRequired":true' + s[j_false + len('"isRequired":false'):]
 
 
+def _flip_or_inject_required(s, tid):
+    """Like _flip_required, but injects the key when the canvas omitted it
+    entirely (new canvas-authored tasks sometimes ship without isRequired)."""
+    i = s.find('{"id":"' + tid + '"')
+    assert i >= 0, f"{tid} not in embedded JSON"
+    if s.find('"isRequired"', i, i + 2000) < 0:
+        anchor = '{"id":"' + tid + '",'
+        assert anchor in s, f"{tid} embedded JSON not in expected key order"
+        return s.replace(anchor, anchor + '"isRequired":true,', 1)
+    return _flip_required(s, tid)
+
+
+# --- closing-stage fix (1.0.23): the canvas-added closing task MUST be Required --
+CLOSING_STAGES = {
+    "clearflow-stakeholder-parent": "Stage_SUCBZw",
+    "clearflow-obligation-grandchild": "Stage_otF4rP",
+}
+
+
+def require_closing_tasks(caseplan_path, bpmn_path, stage_id):
+    """Assert the closing stage holds >=1 task in the download (the canvas edit
+    happened) and force isRequired:true on every task in it, in both layers."""
+    d = json.load(open(caseplan_path))
+    ids = []
+    for n in d["nodes"]:
+        if n.get("id") != stage_id:
+            continue
+        for lane in (n.get("data", {}).get("tasks") or []):
+            for t in lane:
+                t["isRequired"] = True
+                ids.append(t["id"])
+    assert ids, (
+        f"{stage_id} has no tasks in the download — the closing-task canvas "
+        "edit is missing. Add the generate-audit-record task in Studio Web "
+        "before merging (empty required stage = case never completes)."
+    )
+    json.dump(d, open(caseplan_path, "w"), separators=(",", ":"))
+    s = open(bpmn_path).read()
+    for tid in ids:
+        s = _flip_or_inject_required(s, tid)
+    open(bpmn_path, "w").write(s)
+    return ids
+
+
 def patch_child_bpmn(path):
     s = open(path).read()
     if f'<bpmn:startEvent id="{CHILD_TRIGGER_ID}"' not in s:
@@ -216,15 +272,24 @@ def main():
     patch_child_bpmn(os.path.join(CHILD_CANON, "caseplan.json.bpmn"))
     patch_child_caseplan(os.path.join(CHILD_CANON, "caseplan.json"))
     json.dump(CHILD_ENTRY_POINTS, open(os.path.join(CHILD_CANON, "entry-points.json"), "w"), indent=2)
+    child_closers = require_closing_tasks(
+        os.path.join(CHILD_CANON, "caseplan.json"),
+        os.path.join(CHILD_CANON, "caseplan.json.bpmn"),
+        CLOSING_STAGES["clearflow-stakeholder-parent"])
 
     # GRANDCHILD: copy download (with canvas bindings) -> wire Human-action; start ok
     for f in ("caseplan.json", "caseplan.json.bpmn", "entry-points.json"):
         shutil.copy(os.path.join(dl_gc, f), os.path.join(GC_CANON, f))
     patch_gc_caseplan(os.path.join(GC_CANON, "caseplan.json"))
     patch_gc_bpmn(os.path.join(GC_CANON, "caseplan.json.bpmn"))
+    gc_closers = require_closing_tasks(
+        os.path.join(GC_CANON, "caseplan.json"),
+        os.path.join(GC_CANON, "caseplan.json.bpmn"),
+        CLOSING_STAGES["clearflow-obligation-grandchild"])
 
     print("merge complete -> child start-event + entry-points patched; "
-          "grandchild Human-action wired to app; canvas bindings preserved")
+          "grandchild Human-action wired to app; canvas bindings preserved; "
+          f"closing tasks Required (child={child_closers}, gc={gc_closers})")
 
 
 if __name__ == "__main__":
