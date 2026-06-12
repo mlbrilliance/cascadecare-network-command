@@ -109,7 +109,8 @@ heatmap if Case App isn't live. End card with repo URL.*
 
 - Never say "Data Fabric drives the fan-out at runtime" — spawn identities are literal
   provider slugs (runtime `qem:` in JobArguments fails; product feedback filed).
-- Don't show or claim Context Grounding unless verified live first.
+- Don't mention Context Grounding at all — the indexes are designed but not ingested
+  (verified 2026-06-12: seed script skips them; agents run on structured Data Fabric inputs).
 - If a transient LLM Gateway 520 faults an agent mid-recording: `uip maestro case instance
   retry <id>` resumes the run — cut the pause in post rather than restarting.
 

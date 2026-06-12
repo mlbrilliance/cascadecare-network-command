@@ -75,7 +75,6 @@ All running live on UiPath Automation Cloud (`clearflow-solution` 1.0.23+, folde
 - **OOTB Case App** configured for all three case types (caseSummary + stakeholder/obligation
   sections) `[VERIFY: 1.0.24 deployed + renders]`
 - **Trust Layer** PHI/PII policies on every LLM call (all agents route through LLM Gateway)
-- Context Grounding indexes (BAA corpus, claim telemetry) `[VERIFY: live before claiming]`
 
 ## Hero demo moment
 
@@ -97,6 +96,9 @@ live-debug loops. Evidence: `CODING_AGENTS.md`, `CLAUDE_CODE_USAGE.md`,
 - Per-provider spawn fan-out uses literal provider slugs in spawn inputs (runtime `qem:`
   Data Fabric expressions in JobArguments are not supported by the platform today — we filed
   product feedback).
+- Context Grounding indexes (BAA corpus, claim telemetry) are designed but not ingested —
+  source documents aren't authored yet, so the agents reason over structured Data Fabric
+  inputs rather than retrieval. We say so rather than fake it.
 
 ## Links
 
