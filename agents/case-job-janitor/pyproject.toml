@@ -1,0 +1,18 @@
+[project]
+name = "case-job-janitor"
+version = "0.1.0"
+description = "Sweeps zombie Running Orchestrator case jobs whose Maestro case instances already finished (CascadeCare Network Command, Slice 023 ops utility)."
+authors = [{ name = "CascadeCare Network Command contributors" }]
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic>=2.0",
+    "uipath>=2.10",
+]
+
+[dependency-groups]
+dev = [
+    "uipath-dev",
+]
+
+[tool.uipath]
+type = "agent"

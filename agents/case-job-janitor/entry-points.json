@@ -1,0 +1,137 @@
+{
+    "$schema": "https://cloud.uipath.com/draft/2024-12/entry-point",
+    "$id": "entry-points.json",
+    "entryPoints": [
+        {
+            "filePath": "main",
+            "uniqueId": "1eb5735a-3f1c-4ea1-98c6-b118d042b7bc",
+            "type": "function",
+            "input": {
+                "type": "object",
+                "properties": {
+                    "folder_key": {
+                        "default": "de7b7c18-d743-4c8c-b555-9bd3b96fe524",
+                        "description": "Orchestrator folder to sweep (GUID).",
+                        "title": "Folder Key",
+                        "type": "string"
+                    },
+                    "process_prefix": {
+                        "default": "clearflow",
+                        "description": "Only jobs whose process name starts with this are considered.",
+                        "title": "Process Prefix",
+                        "type": "string"
+                    },
+                    "min_age_hours": {
+                        "default": 24.0,
+                        "description": "Safety threshold: jobs younger than this are never touched (protects live demo walks and same-day HITL waits).",
+                        "title": "Min Age Hours",
+                        "type": "number"
+                    },
+                    "dry_run": {
+                        "default": false,
+                        "description": "Report eligible zombies without stopping anything.",
+                        "title": "Dry Run",
+                        "type": "boolean"
+                    }
+                },
+                "required": [],
+                "title": "Input"
+            },
+            "output": {
+                "type": "object",
+                "properties": {
+                    "scanned": {
+                        "default": 0,
+                        "title": "Scanned",
+                        "type": "integer"
+                    },
+                    "eligible": {
+                        "default": 0,
+                        "title": "Eligible",
+                        "type": "integer"
+                    },
+                    "stopped": {
+                        "default": 0,
+                        "title": "Stopped",
+                        "type": "integer"
+                    },
+                    "stopped_keys": {
+                        "default": [],
+                        "items": {
+                            "type": "string"
+                        },
+                        "title": "Stopped Keys",
+                        "type": "array"
+                    },
+                    "skipped_recent": {
+                        "default": 0,
+                        "title": "Skipped Recent",
+                        "type": "integer"
+                    },
+                    "error_type": {
+                        "default": "",
+                        "title": "Error Type",
+                        "type": "string"
+                    },
+                    "error_message": {
+                        "default": "",
+                        "title": "Error Message",
+                        "type": "string"
+                    }
+                },
+                "required": [],
+                "title": "Output"
+            },
+            "graph": {
+                "nodes": [
+                    {
+                        "id": "agent.py:190",
+                        "name": "main",
+                        "type": "function",
+                        "metadata": {
+                            "file": "agent.py"
+                        }
+                    },
+                    {
+                        "id": "agent.py:149",
+                        "name": "run_sweep",
+                        "type": "function",
+                        "metadata": {
+                            "file": "agent.py"
+                        }
+                    },
+                    {
+                        "id": "agent.py:116",
+                        "name": "select_zombies",
+                        "type": "function",
+                        "metadata": {
+                            "file": "agent.py"
+                        }
+                    },
+                    {
+                        "id": "agent.py:89",
+                        "name": "_parse_start",
+                        "type": "function",
+                        "metadata": {
+                            "file": "agent.py"
+                        }
+                    }
+                ],
+                "edges": [
+                    {
+                        "source": "agent.py:116",
+                        "target": "agent.py:89"
+                    },
+                    {
+                        "source": "agent.py:149",
+                        "target": "agent.py:116"
+                    },
+                    {
+                        "source": "agent.py:190",
+                        "target": "agent.py:149"
+                    }
+                ]
+            }
+        }
+    ]
+}
