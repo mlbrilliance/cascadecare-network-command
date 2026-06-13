@@ -74,6 +74,10 @@ All running live on UiPath Automation Cloud (`clearflow-solution` 1.0.23+, folde
 - **9 Data Fabric entities** (providers, payers, BAAs, claim telemetry — 4,320 telemetry rows)
 - **OOTB Case App** configured for all three case types (caseSummary + stakeholder/obligation
   sections) `[VERIFY: 1.0.24 deployed + renders]`
+- **2 Context Grounding indexes, live + retrieval-verified** — `BAA-corpus` (6 synthetic
+  full-text BAAs grounding the BAA Boundary Reasoner) and `ClaimTelemetry-corpus`; corpora are
+  generated from the same seed tables as the Data Fabric records, so retrieval and structured
+  data never disagree
 - **Trust Layer** PHI/PII policies on every LLM call (all agents route through LLM Gateway)
 
 ## Hero demo moment
@@ -96,9 +100,6 @@ live-debug loops. Evidence: `CODING_AGENTS.md`, `CLAUDE_CODE_USAGE.md`,
 - Per-provider spawn fan-out uses literal provider slugs in spawn inputs (runtime `qem:`
   Data Fabric expressions in JobArguments are not supported by the platform today — we filed
   product feedback).
-- Context Grounding indexes (BAA corpus, claim telemetry) are designed but not ingested —
-  source documents aren't authored yet, so the agents reason over structured Data Fabric
-  inputs rather than retrieval. We say so rather than fake it.
 
 ## Links
 
@@ -106,6 +107,8 @@ live-debug loops. Evidence: `CODING_AGENTS.md`, `CLAUDE_CODE_USAGE.md`,
 - Demo video (≤5 min, live run): `[HUMAN: YouTube/Vimeo URL]`
 - Live tenant for judges: `staging.uipath.com/hackathon26_042/DefaultTenant`,
   folder `Shared/CascadeCare-v110` (UiPath Labs access `[HUMAN: confirm Labs request]`)
+- Executive dashboard (Coded Web App, live):
+  `https://hackathon26_042.staging.uipath.host/clearflow-network-command`
 
 ## Screenshots to attach `[HUMAN]`
 

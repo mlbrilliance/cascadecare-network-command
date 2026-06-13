@@ -132,14 +132,15 @@ Impact Assessment stage — `solution-medical-records-summarization` (Medical Re
 `RegulatorTemplate` — schemas specified in
 [`specs/003-uipath-native/data-model.md`](specs/003-uipath-native/data-model.md).
 
-### Context Grounding indexes (2, designed — not ingested live)
+### Context Grounding indexes (2, live + retrieval-verified)
 
-`BAA-corpus` (BAA full text → BAA Boundary Reasoner) and `ClaimTelemetry-corpus` (90-day claim
-time-series → Vector Hypothesis Agent + Pattern Detector). **Honest status:** the index designs
-ship with the seed tooling, but ingestion needs authored source documents (BAA PDFs / telemetry
-corpus) that don't exist yet — `scripts/seed_data_fabric.py` deliberately skips index creation,
-and the deployed agents run on structured Data Fabric inputs instead of retrieval. The live demo
-makes no grounding claims.
+`BAA-corpus` (synthetic BAA full text → BAA Boundary Reasoner's grounding context) and
+`ClaimTelemetry-corpus` (per-provider 30-day claim-flow narratives). Both indexes are **live on
+the tenant and ingestion-verified** (semantic search returns the right BAA for cross-provider
+conflict questions). Source documents are committed under
+[`data/context-grounding/`](data/context-grounding/) and generated deterministically from the
+seed tables by [`scripts/gen_cg_corpus.py`](scripts/gen_cg_corpus.py), so retrieval answers
+always agree with the structured Data Fabric records.
 
 ### Trust Layer policies (2 pools)
 
