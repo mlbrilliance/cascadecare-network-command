@@ -51,9 +51,19 @@ This is the money shot — let the 6 spawns land at 1×.*
 > using Maestro's native case-management task. And each parent immediately spawns its own
 > obligation grandchild. Thirteen coordinated case instances, **three levels of native case
 > nesting**, on one screen. In each parent, the **Assess Claim Disruption agent** scores the
-> provider's liquidity risk, and the **BAA Boundary Reasoner** reads that provider's Business
-> Associate Agreement to decide what ClearFlow may legally disclose — six providers, six
-> different answers."
+> provider's liquidity risk, and the **BAA Boundary Reasoner** decides what ClearFlow may
+> legally disclose — six providers, six different answers."
+
+### 2:30–2:50 — Context Grounding proof (overlay on a BAA agent trace)
+*Show: the BAA Boundary Reasoner's run trace / output for Northstar — scroll the rationale so
+the §-cited corpus text and the cross-BAA conflicts are on screen. (Live-proven 2026-06-13:
+job 77c506d8 quotes the corpus section-by-section and flags Alpha + Delta conflicts.)*
+
+> "And this isn't the model guessing. The BAA Boundary Reasoner **retrieves each provider's
+> actual Business Associate Agreement from a UiPath Context Grounding index** and grounds every
+> citation in the retrieved text. For Northstar it returns a **conditional** disclosure
+> position — and flags that the same production would *violate* Alpha's and Delta's BAAs, which
+> restrict disclosure to counsel only. Six BAAs, real retrieval, genuinely conflicting answers."
 
 ### 2:50–3:20 — Vertical bridge (inside one parent case)
 *Show: one stakeholder parent's Impact Assessment stage with the 3 solution tasks.*
