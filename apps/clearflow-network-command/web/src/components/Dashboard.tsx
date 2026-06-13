@@ -10,9 +10,12 @@ import { useAuth } from '../hooks/useAuth';
 import { usePolling } from '../hooks/usePolling';
 import { MAESTRO_FOLDER_KEY, REFRESH_INTERVAL_MS } from '../config';
 import { deriveCrisisState } from '../caseUtils';
+import { Sidebar } from './Sidebar';
 import { CommandHeader } from './CommandHeader';
 import { KpiStrip } from './KpiStrip';
 import { CascadeGraph } from './CascadeGraph';
+import { PostureGauge } from './PostureGauge';
+import { DetailsGrid } from './DetailsGrid';
 import { ReversalTimeline } from './ReversalTimeline';
 import { AgentRoster } from './AgentRoster';
 import { OperatorConsole } from './OperatorConsole';
@@ -66,22 +69,44 @@ export function Dashboard({ onLogout }: DashboardProps) {
   const crisis = useMemo(() => deriveCrisisState(instances, hitlCount ?? 0), [instances, hitlCount]);
 
   return (
-    <div className="min-h-screen bg-radial-command">
-      <CommandHeader crisis={crisis} isActive={isActive} lastUpdated={lastUpdated} onLogout={onLogout} />
-      <main className="max-w-[1500px] mx-auto px-5 lg:px-8 py-6 space-y-6">
-        <KpiStrip crisis={crisis} />
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
-          <div className="xl:col-span-2 space-y-6 min-w-0">
-            <CascadeGraph instances={instances} isLoading={isLoading} error={error} />
+    <div className="flex min-h-screen bg-radial-command">
+      <Sidebar crisis={crisis} isActive={isActive} />
+      <div className="flex-1 min-w-0 flex flex-col">
+        <CommandHeader crisis={crisis} isActive={isActive} lastUpdated={lastUpdated} onLogout={onLogout} />
+        <main className="flex-1 px-5 lg:px-7 py-6 space-y-6 max-w-[1600px] w-full">
+          {/* Hero: energy-flow cascade + posture/details rail */}
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-stretch">
+            <div className="xl:col-span-2 min-w-0">
+              <CascadeGraph instances={instances} isLoading={isLoading} error={error} />
+            </div>
+            <div className="space-y-6 min-w-0">
+              <PostureGauge crisis={crisis} />
+              <DetailsGrid crisis={crisis} lastUpdated={lastUpdated} />
+            </div>
+          </div>
+
+          {/* Overview KPI strip */}
+          <section id="overview" className="scroll-mt-24">
+            <KpiStrip crisis={crisis} />
+          </section>
+
+          {/* Reversal timeline */}
+          <section id="reversals" className="scroll-mt-24">
             <ReversalTimeline currentReversal={crisis.reversalN} />
+          </section>
+
+          {/* Operator console + HITL + agents */}
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
+            <section id="console" className="xl:col-span-2 space-y-6 min-w-0 scroll-mt-24">
+              <OperatorConsole />
+              <HitlGates />
+            </section>
+            <section id="agents" className="min-w-0 scroll-mt-24">
+              <AgentRoster />
+            </section>
           </div>
-          <div className="space-y-6 min-w-0">
-            <OperatorConsole />
-            <AgentRoster />
-            <HitlGates />
-          </div>
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 }

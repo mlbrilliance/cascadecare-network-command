@@ -9,40 +9,31 @@ interface CommandHeaderProps {
   onLogout: () => void;
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="text-right leading-tight hidden md:block">
-      <div className="text-sm font-semibold text-slate-100 tabular-nums">{value}</div>
-      <div className="text-[10px] uppercase tracking-wider text-slate-500">{label}</div>
-    </div>
-  );
-}
-
-/** Sticky command bar: brand, live status, day/reversal, and crisis posture. */
+/** Slim sticky command bar: day/reversal, live status, crisis posture. */
 export function CommandHeader({ crisis, isActive, lastUpdated, onLogout }: CommandHeaderProps) {
   const dayLabel = crisis.reversalN > 0 ? `Day ${crisis.simulatedDay}` : 'Pre-crisis';
   const reversalLabel = crisis.reversalN > 0 ? `${crisis.reversalN} / 5` : '—';
 
   return (
-    <header className="sticky top-0 z-30 border-b border-ink-700/70 bg-ink-950/80 backdrop-blur-xl">
-      <div className="relative max-w-[1500px] mx-auto px-5 lg:px-8">
-        <div className="flex items-center gap-4 py-3 min-w-0">
-          <img src={logoUrl} alt="" className="w-9 h-9 shrink-0 animate-float" />
-          <div className="min-w-0 flex-1">
-            <h1 className="text-base lg:text-lg font-bold tracking-tight text-slate-50 truncate">
-              ClearFlow <span className="text-accent text-glow">Network Command</span>
-            </h1>
-            <p className="text-[11px] text-slate-500 truncate">Cyber Crisis Operations · Live Case State</p>
-          </div>
+    <header className="sticky top-0 z-30 border-b border-ink-700/70 bg-ink-950/85 backdrop-blur-xl">
+      <div className="flex items-center gap-4 px-5 lg:px-7 py-3 min-w-0">
+        {/* brand shown only when the sidebar is hidden (mobile) */}
+        <div className="flex items-center gap-2.5 lg:hidden min-w-0">
+          <img src={logoUrl} alt="" className="w-7 h-7 shrink-0" />
+          <span className="text-sm font-bold text-slate-50 truncate">ClearFlow Command</span>
+        </div>
 
-          <Stat label="Sim day" value={dayLabel} />
-          <Stat label="Reversal" value={reversalLabel} />
+        <div className="hidden lg:flex items-center gap-2 min-w-0">
+          <span className="text-[10px] uppercase tracking-[0.2em] text-slate-600">Cyber Crisis Operations</span>
+        </div>
+
+        <div className="flex-1 min-w-0 flex items-center gap-3 justify-end">
+          <Pill label="Sim day" value={dayLabel} />
+          <Pill label="Reversal" value={reversalLabel} />
 
           <span
             className={`flex items-center gap-1.5 text-xs font-semibold whitespace-nowrap px-2.5 py-1 rounded-full border ${
-              isActive
-                ? 'text-accent border-accent/40 bg-accent/5'
-                : 'text-slate-500 border-ink-700 bg-ink-800/40'
+              isActive ? 'text-accent border-accent/40 bg-accent/10' : 'text-slate-500 border-ink-700 bg-ink-800/40'
             }`}
             title={lastUpdated ? `Updated ${lastUpdated.toLocaleTimeString()}` : undefined}
           >
@@ -52,31 +43,40 @@ export function CommandHeader({ crisis, isActive, lastUpdated, onLogout }: Comma
 
           <button
             onClick={onLogout}
-            className="text-sm text-slate-400 hover:text-slate-100 transition-colors whitespace-nowrap"
+            className="text-sm text-slateUI hover:text-slate-100 transition-colors whitespace-nowrap"
           >
             Sign out
           </button>
         </div>
+      </div>
 
-        {/* Crisis posture banner */}
-        <div className="flex items-center gap-3 pb-3 min-w-0">
-          <span className="text-[10px] uppercase tracking-[0.18em] text-slate-500 shrink-0">Current goal</span>
-          <div className="h-px flex-1 bg-gradient-to-r from-accent/40 to-transparent" />
-          <AnimatePresence mode="wait">
-            <motion.span
-              key={crisis.posture}
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6 }}
-              transition={{ duration: 0.4 }}
-              className="text-sm font-medium text-slate-200 text-right max-w-[70%] truncate"
-              title={crisis.posture}
-            >
-              {crisis.posture}
-            </motion.span>
-          </AnimatePresence>
-        </div>
+      {/* crisis posture banner */}
+      <div className="flex items-center gap-3 px-5 lg:px-7 pb-2.5 min-w-0">
+        <span className="text-[10px] uppercase tracking-[0.18em] text-slate-600 shrink-0">Current goal</span>
+        <div className="h-px flex-1 bg-gradient-to-r from-accent/40 to-transparent" />
+        <AnimatePresence mode="wait">
+          <motion.span
+            key={crisis.posture}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.4 }}
+            className="text-sm font-medium text-slate-200 text-right max-w-[72%] truncate"
+            title={crisis.posture}
+          >
+            {crisis.posture}
+          </motion.span>
+        </AnimatePresence>
       </div>
     </header>
+  );
+}
+
+function Pill({ label, value }: { label: string; value: string }) {
+  return (
+    <span className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full border border-ink-700 bg-ink-850/70 whitespace-nowrap">
+      <span className="text-[10px] uppercase tracking-wider text-slate-600">{label}</span>
+      <span className="text-sm font-semibold text-slate-100 tabular-nums">{value}</span>
+    </span>
   );
 }

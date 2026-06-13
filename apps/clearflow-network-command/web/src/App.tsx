@@ -42,12 +42,15 @@ function AppContent() {
           className="relative max-w-md w-full rounded-2xl border border-ink-700/70 bg-ink-850/70 backdrop-blur-xl shadow-panel p-8 text-center overflow-hidden"
         >
           <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/60 to-transparent" />
+          <span className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] text-accent border border-accent/30 bg-accent/10 rounded-full px-3 py-1 mb-5">
+            ⚡ Cyber Crisis Operations
+          </span>
           <img src={logoUrl} alt="" className="w-16 h-16 mx-auto mb-5 animate-float" />
-          <h1 className="text-2xl font-bold text-slate-50">
+          <h1 className="text-2xl font-extrabold display-heading text-slate-50">
             ClearFlow <span className="text-accent text-glow">Network Command</span>
           </h1>
-          <p className="text-slate-400 mt-2 mb-7 text-sm leading-relaxed">
-            Cyber Crisis Operations console. Sign in with your UiPath account to enter the command center.
+          <p className="text-slateUI mt-2 mb-7 text-sm leading-relaxed">
+            AI-orchestrated Maestro Case command center. Sign in with your UiPath account to enter the war room.
           </p>
           {error && (
             <p className="text-sm text-rose-300 bg-rose-500/10 border border-rose-500/30 rounded-lg p-3 mb-4 break-words">

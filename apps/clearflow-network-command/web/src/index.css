@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -14,40 +14,39 @@
   body {
     margin: 0;
     font-family: 'Inter', system-ui, sans-serif;
-    color: #e8eef4;
-    background-color: #05080f;
-    /* Layered command-center backdrop: radial glows over a faint grid. */
+    color: #e6e8ec;
+    background-color: #0c0e12;
+    /* Charcoal command backdrop: one faint orange radial over a dot texture. */
     background-image:
-      radial-gradient(1200px 600px at 78% -8%, rgba(14, 124, 134, 0.22), transparent 60%),
-      radial-gradient(900px 500px at 8% 110%, rgba(56, 189, 248, 0.1), transparent 55%),
-      linear-gradient(rgba(45, 212, 191, 0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(45, 212, 191, 0.04) 1px, transparent 1px);
-    background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+      radial-gradient(1100px 560px at 82% -10%, rgba(242, 107, 29, 0.12), transparent 60%),
+      radial-gradient(820px 460px at 4% 108%, rgba(242, 107, 29, 0.05), transparent 58%),
+      radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 22px 22px;
     background-attachment: fixed;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
 
   ::selection {
-    background: rgba(45, 212, 191, 0.3);
-    color: #f0fdfa;
+    background: rgba(242, 107, 29, 0.32);
+    color: #fff7ed;
   }
 
   /* Slim, on-theme scrollbars. */
   * {
     scrollbar-width: thin;
-    scrollbar-color: rgba(45, 212, 191, 0.35) transparent;
+    scrollbar-color: rgba(138, 146, 158, 0.35) transparent;
   }
   *::-webkit-scrollbar {
     width: 8px;
     height: 8px;
   }
   *::-webkit-scrollbar-thumb {
-    background: rgba(45, 212, 191, 0.3);
+    background: rgba(138, 146, 158, 0.28);
     border-radius: 9999px;
   }
   *::-webkit-scrollbar-thumb:hover {
-    background: rgba(45, 212, 191, 0.55);
+    background: rgba(242, 107, 29, 0.5);
   }
 }
 
@@ -57,13 +56,20 @@
     background-image: linear-gradient(
       100deg,
       transparent 30%,
-      rgba(45, 212, 191, 0.12) 50%,
+      rgba(242, 107, 29, 0.12) 50%,
       transparent 70%
     );
     background-size: 300% 100%;
   }
 
+  /* Reserved for the brand mark only — glow is not a blanket. */
   .text-glow {
-    text-shadow: 0 0 18px rgba(45, 212, 191, 0.55);
+    text-shadow: 0 0 16px rgba(242, 107, 29, 0.45);
+  }
+
+  /* Uppercase condensed technical heading (Phoenix display style). */
+  .display-heading {
+    letter-spacing: 0.04em;
+    font-weight: 800;
   }
 }

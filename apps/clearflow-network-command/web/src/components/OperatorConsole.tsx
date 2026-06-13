@@ -41,12 +41,12 @@ function FireButton({
         onClick={() => onFire(override)}
         disabled={working}
         title={override.tooltip}
-        className="col-span-2 group relative flex items-center justify-center gap-2 rounded-xl border border-accent/60 bg-accent/15 px-4 py-3.5 font-semibold text-accent shadow-glow-sm hover:bg-accent/25 disabled:opacity-50 transition-all animate-pulse-glow"
+        className="col-span-2 group relative flex items-center justify-center gap-2.5 rounded-xl bg-accent px-4 py-4 font-bold text-ink-950 shadow-glow hover:bg-accent-glow disabled:opacity-50 transition-all animate-pulse-glow"
       >
-        {working ? <Spinner /> : <span className="text-lg leading-none">⚡</span>}
-        Fire Reversal 3 ★
-        <span className="absolute -top-2 right-3 text-[9px] uppercase tracking-wider bg-accent text-ink-950 px-1.5 py-0.5 rounded-full font-bold">
-          Hero
+        {working ? <Spinner /> : <span className="text-xl leading-none">⚡</span>}
+        Fire Reversal 3
+        <span className="absolute -top-2 right-3 text-[9px] uppercase tracking-wider bg-ink-950 text-accent px-1.5 py-0.5 rounded-full font-bold border border-accent/40">
+          ★ Hero
         </span>
       </button>
     );
@@ -56,7 +56,7 @@ function FireButton({
       onClick={() => onFire(override)}
       disabled={working}
       title={override.tooltip}
-      className="flex items-center justify-center gap-2 rounded-lg border border-ink-600 bg-ink-800/60 px-3 py-2.5 text-sm font-medium text-slate-200 hover:border-accent/50 hover:bg-ink-700/60 disabled:opacity-50 transition-all"
+      className="flex items-center justify-center gap-2 rounded-xl border border-ink-600 bg-ink-800/60 px-3 py-2.5 text-sm font-medium text-slate-200 hover:border-accent/50 hover:bg-ink-700/60 disabled:opacity-50 transition-all"
     >
       {working ? <Spinner /> : <span className="text-accent">▸</span>}
       {override.label}

@@ -1,15 +1,12 @@
-import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { motion } from 'motion/react';
 import type { CaseInstanceGetResponse } from '@uipath/uipath-typescript/cases';
 import {
-  dedupeByLabel,
-  formatTime,
-  getExternalId,
   inferCaseLevel,
-  slugFromInstance,
+  rollupStakeholders,
   statusTone,
 } from '../caseUtils';
-import { STAKEHOLDERS } from '../narrative';
+import type { RollupStatus, StakeholderRollup } from '../caseUtils';
 import { Panel, PanelError, PanelLoading } from './Panel';
 
 interface CascadeGraphProps {
@@ -18,235 +15,185 @@ interface CascadeGraphProps {
   error: Error | null;
 }
 
-const R = { master: 24, stakeholder: 8.5, grandchild: 6.5 } as const;
-const MIN_Z = 0.1;
-const MAX_Z = 6;
-const VIEW_PX_H = 580;
-const START = -Math.PI / 2; // first node at top
+// SVG coordinate space (scaled responsively via viewBox).
+const W = 1000;
+const TOP = 46;
+const PITCH = 60;
+const PORT_H = 46;
+const PORT_X = 548;
+const PORT_W = 300;
+const PORT_RIGHT = PORT_X + PORT_W;
+const MX = 40;
+const MW = 214;
+const MH = 124;
+const BOLT_X = MX + MW; // cable origin
 
-/** Best human name for the info strip (real stakeholder name, else tier + seq). */
-function niceName(inst: CaseInstanceGetResponse, kind: 'stakeholder' | 'grandchild', seq: number): string {
-  const slug = slugFromInstance(inst);
-  const known = slug ? STAKEHOLDERS.find((s) => s.slug === slug) : undefined;
-  if (known) return known.displayName;
-  const title = (inst.caseTitle || inst.instanceDisplayName || '').replace(/^clearflow[-\s]*/i, '').trim();
-  if (title && !/^[0-9a-f-]{8,}$/i.test(title)) return title;
-  return kind === 'stakeholder' ? `Stakeholder ${seq}` : `Obligation ${seq}`;
+/** Status → cable + node colour, mirroring the disciplined orange palette. */
+const STATUS_COLOR: Record<RollupStatus, string> = {
+  running: '#F26B1D',
+  faulted: '#F43F5E',
+  paused: '#D9963B',
+  completed: '#34D399',
+  idle: '#3A4150',
+};
+const ACTIVE: RollupStatus[] = ['running', 'faulted'];
+
+function truncate(s: string, n: number): string {
+  return s.length > n ? `${s.slice(0, n - 1)}…` : s;
 }
 
-interface Node {
-  inst: CaseInstanceGetResponse;
-  x: number;
-  y: number;
-  r: number;
-  name: string;
-  /** edge target (parent) — center for stakeholders, owner/center for grandchildren */
-  px: number;
-  py: number;
+/** Smooth horizontal cable from the master bolt to a port. */
+function cablePath(x1: number, y1: number, x2: number, y2: number): string {
+  const mid = (x1 + x2) / 2;
+  return `M ${x1} ${y1} C ${mid} ${y1}, ${mid} ${y2}, ${x2} ${y2}`;
 }
 
-interface Particle { x: number; y: number; s: number; o: number; c: string; d: number; dur: number }
-
-interface Layout {
-  master: CaseInstanceGetResponse | null;
-  stakeholders: Node[];
-  grandchildren: Node[];
-  half: number;
-  viewBox: string;
+function cableWeight(rawCount: number): number {
+  return Math.max(2.5, Math.min(11, 2.5 + rawCount * 0.7));
 }
 
-/** Seeded RNG so the particle field is stable across re-renders. */
-function mulberry32(seed: number): () => number {
-  return () => {
-    seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
-    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-function buildLayout(instances: CaseInstanceGetResponse[]): Layout {
-  const masters = instances.filter((i) => inferCaseLevel(i) === 0);
-  const sInsts = dedupeByLabel(instances.filter((i) => inferCaseLevel(i) === 1));
-  const gInsts = dedupeByLabel(instances.filter((i) => inferCaseLevel(i) === 2));
-
-  const innerR = Math.max(240, sInsts.length * 6.4);
-  const outerR = innerR + 150;
-  const half = outerR + 90;
-
-  const ring = (count: number, i: number, radius: number) => {
-    const a = START + (count > 0 ? (i / count) * Math.PI * 2 : 0);
-    return { x: Math.cos(a) * radius, y: Math.sin(a) * radius };
-  };
-
-  const stakeholders: Node[] = sInsts.map((inst, i) => {
-    const p = ring(sInsts.length, i, innerR);
-    return { inst, x: p.x, y: p.y, r: R.stakeholder, name: niceName(inst, 'stakeholder', i + 1), px: 0, py: 0 };
-  });
-
-  const grandchildren: Node[] = gInsts.map((inst, i) => {
-    const p = ring(gInsts.length, i, outerR);
-    const slug = slugFromInstance(inst);
-    const owner = slug ? stakeholders.find((s) => slugFromInstance(s.inst) === slug) : undefined;
-    return {
-      inst, x: p.x, y: p.y, r: R.grandchild, name: niceName(inst, 'grandchild', i + 1),
-      px: owner ? owner.x : 0, py: owner ? owner.y : 0,
-    };
-  });
-
-  return { master: masters[0] ?? null, stakeholders, grandchildren, half, viewBox: `${-half} ${-half} ${half * 2} ${half * 2}` };
-}
-
-function buildParticles(half: number, count: number): Particle[] {
-  const rand = mulberry32(Math.round(half) * 131 + count);
-  const out: Particle[] = [];
-  for (let i = 0; i < 120; i++) {
-    const ang = rand() * Math.PI * 2;
-    const rad = half * 1.05 * Math.pow(rand(), 1.45); // denser toward centre
-    out.push({
-      x: Math.cos(ang) * rad,
-      y: Math.sin(ang) * rad,
-      s: 2 + rand() * 5,
-      o: 0.08 + rand() * 0.4,
-      c: rand() > 0.62 ? '#F59E0B' : '#2DD4BF',
-      d: rand() * 4,
-      dur: 2.5 + rand() * 4,
-    });
-  }
-  return out;
-}
-
-function ConstellationNode({ node, kind, hovered, onHover }: {
-  node: Node; kind: 'stakeholder' | 'grandchild'; hovered: boolean; onHover: (n: Node | null) => void;
-}) {
-  const tone = statusTone(node.inst.latestRunStatus);
-  const r = hovered ? node.r * 1.5 : node.r;
+function StatusDot({ status, cx, cy }: { status: RollupStatus; cx: number; cy: number }) {
+  const c = STATUS_COLOR[status];
+  const live = ACTIVE.includes(status);
   return (
-    <g
-      transform={`translate(${node.x},${node.y})`}
-      onMouseEnter={() => onHover(node)}
-      onMouseLeave={() => onHover(null)}
-      style={{ cursor: 'pointer' }}
-    >
-      <circle r={node.r + 14} fill="transparent" />
-      <circle r={r + (hovered ? 9 : 5)} fill={tone.stroke} opacity={hovered ? 0.35 : 0.16} />
-      <circle r={r} fill={tone.fill} stroke={tone.stroke} strokeWidth={hovered ? 2.5 : 1.8}
-        opacity={kind === 'grandchild' ? 0.92 : 1} />
+    <g>
+      {live && <circle cx={cx} cy={cy} r={9} fill={c} opacity={0.22} className="animate-pulse" />}
+      <circle cx={cx} cy={cy} r={4.5} fill={c} />
     </g>
   );
 }
 
-/** Generalized zoom/pan viewport: wheel-zoom (centre-anchored), drag-pan, fit-on-mount. */
-function ZoomPanCanvas({ contentW, contentH, viewBox, onZoom, children }: {
-  contentW: number; contentH: number; viewBox: string; onZoom: (z: number) => void; children: React.ReactNode;
+function PortCard({ port, y, hovered, onHover }: {
+  port: StakeholderRollup; y: number; hovered: boolean; onHover: (slug: string | null) => void;
 }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [zoom, setZoom] = useState(0.3);
-  const prevZoom = useRef(0.3);
-  const drag = useRef<{ x: number; y: number; sl: number; st: number; moved: boolean } | null>(null);
-
-  const fit = useCallback(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const z = Math.max(MIN_Z, Math.min(1, Math.min(el.clientWidth / contentW, el.clientHeight / contentH)));
-    prevZoom.current = z;
-    setZoom(z);
-    onZoom(z);
-    el.scrollLeft = (contentW * z - el.clientWidth) / 2;
-    el.scrollTop = (contentH * z - el.clientHeight) / 2;
-  }, [contentW, contentH, onZoom]);
-
-  useLayoutEffect(() => { fit(); }, [fit]);
-
-  useLayoutEffect(() => {
-    const el = containerRef.current;
-    if (!el || prevZoom.current === zoom) return;
-    const ratio = zoom / prevZoom.current;
-    el.scrollLeft = (el.scrollLeft + el.clientWidth / 2) * ratio - el.clientWidth / 2;
-    el.scrollTop = (el.scrollTop + el.clientHeight / 2) * ratio - el.clientHeight / 2;
-    prevZoom.current = zoom;
-  }, [zoom]);
-
-  const applyZoom = useCallback((factor: number) => {
-    setZoom((z) => { const next = Math.max(MIN_Z, Math.min(MAX_Z, z * factor)); onZoom(next); return next; });
-  }, [onZoom]);
-
-  useLayoutEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const handler = (e: WheelEvent) => { e.preventDefault(); applyZoom(e.deltaY < 0 ? 1.15 : 0.87); };
-    el.addEventListener('wheel', handler, { passive: false });
-    return () => el.removeEventListener('wheel', handler);
-  }, [applyZoom]);
-
-  const onPointerDown = (e: React.PointerEvent) => {
-    const el = containerRef.current; if (!el) return;
-    el.setPointerCapture(e.pointerId);
-    drag.current = { x: e.clientX, y: e.clientY, sl: el.scrollLeft, st: el.scrollTop, moved: false };
-  };
-  const onPointerMove = (e: React.PointerEvent) => {
-    const el = containerRef.current; if (!el || !drag.current) return;
-    el.scrollLeft = drag.current.sl - (e.clientX - drag.current.x);
-    el.scrollTop = drag.current.st - (e.clientY - drag.current.y);
-  };
-  const endDrag = (e: React.PointerEvent) => { containerRef.current?.releasePointerCapture(e.pointerId); drag.current = null; };
-
-  const btn = 'w-8 h-8 flex items-center justify-center rounded-md border border-ink-600 bg-ink-850/80 text-slate-300 hover:border-accent/50 hover:text-accent text-sm font-bold backdrop-blur';
-
+  const c = STATUS_COLOR[port.status];
+  const cy = y + PORT_H / 2;
+  const active = ACTIVE.includes(port.status);
+  const kindLabel = port.kind === 'other' ? 'UNMAPPED' : port.kind.toUpperCase();
   return (
-    <div className="relative">
-      <div className="absolute top-3 right-3 z-10 flex flex-col gap-1.5">
-        <button className={btn} title="Zoom in" onClick={() => applyZoom(1.3)}>+</button>
-        <button className={btn} title="Zoom out" onClick={() => applyZoom(0.77)}>−</button>
-        <button className={btn} title="Fit to view" onClick={fit}>⤢</button>
-      </div>
-      <span className="absolute bottom-3 left-3 z-10 text-[10px] text-slate-500 bg-ink-950/60 px-2 py-1 rounded backdrop-blur pointer-events-none">
-        scroll to zoom · drag to pan · hover a node for detail
-      </span>
-      <div
-        ref={containerRef}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={endDrag}
-        onPointerLeave={endDrag}
-        className="overflow-hidden rounded-lg border border-ink-700/50 bg-[#040810] cursor-grab active:cursor-grabbing"
-        style={{ height: VIEW_PX_H, touchAction: 'none' }}
-      >
-        <svg width={contentW * zoom} height={contentH * zoom} viewBox={viewBox} style={{ display: 'block' }}>
-          {children}
-        </svg>
-      </div>
-    </div>
+    <g
+      onMouseEnter={() => onHover(port.slug)}
+      onMouseLeave={() => onHover(null)}
+      style={{ cursor: 'pointer' }}
+    >
+      <rect
+        x={PORT_X} y={y} width={PORT_W} height={PORT_H} rx={11}
+        fill={hovered ? '#1B1F27' : '#15181E'}
+        stroke={hovered || active ? c : '#242935'}
+        strokeOpacity={hovered ? 0.9 : active ? 0.55 : 1}
+        strokeWidth={hovered ? 1.8 : 1.2}
+      />
+      <StatusDot status={port.status} cx={PORT_X + 22} cy={cy} />
+      <text x={PORT_X + 40} y={cy - 5} className="fill-slate-100" style={{ fontSize: 14, fontWeight: 600 }}>
+        {truncate(port.displayName, 24)}
+      </text>
+      <text x={PORT_X + 40} y={cy + 12} style={{ fontSize: 9.5, fontWeight: 600, letterSpacing: 1 }} className="fill-slateUI">
+        {kindLabel}
+      </text>
+      {/* right: instance count + obligation chip */}
+      <text x={PORT_RIGHT - 78} y={cy + 5} textAnchor="end" className="fill-slate-200" style={{ fontSize: 16, fontWeight: 700 }}>
+        {port.rawCount}
+      </text>
+      <text x={PORT_RIGHT - 74} y={cy + 5} style={{ fontSize: 9, fill: '#8A929E' }}>inst</text>
+      {port.grandchildren.length > 0 && (
+        <g>
+          <rect x={PORT_RIGHT - 46} y={cy - 9} width={38} height={18} rx={9}
+            fill={active ? 'rgba(242,107,29,0.16)' : 'rgba(138,146,158,0.12)'}
+            stroke={active ? 'rgba(242,107,29,0.5)' : 'rgba(138,146,158,0.3)'} strokeWidth={1} />
+          <text x={PORT_RIGHT - 27} y={cy + 3.5} textAnchor="middle"
+            style={{ fontSize: 10, fontWeight: 700 }} className={active ? 'fill-accent-glow' : 'fill-slateUI'}>
+            ▸{port.openObligations || port.grandchildren.length}
+          </text>
+        </g>
+      )}
+    </g>
   );
 }
 
-/**
- * The hero: a radial constellation of the case cascade. The master crisis is a
- * glowing core; stakeholder parents orbit on an inner ring and obligation
- * grandchildren on an outer ring, each linked by a thin sunburst edge. Glowing
- * nodes carry no inline text (so it never garbles at any density) — hovering a
- * node lights it up and surfaces its real name/status in the info strip below.
- * Levels inferred from packageId/processKey.
- */
+/** Hovered port's obligation grandchildren as a small right-side sub-fan. */
+function SubFan({ port, y }: { port: StakeholderRollup; y: number }) {
+  const cy = y + PORT_H / 2;
+  const kids = port.grandchildren.slice(0, 7);
+  const fanX = PORT_RIGHT + 70;
+  const spread = Math.min(160, kids.length * 26);
+  return (
+    <g>
+      {kids.map((g, i) => {
+        const gy = cy - spread / 2 + (kids.length > 1 ? (i / (kids.length - 1)) * spread : 0);
+        const tone = statusTone(g.latestRunStatus);
+        return (
+          <g key={g.instanceId}>
+            <path d={cablePath(PORT_RIGHT, cy, fanX, gy)} fill="none" stroke={tone.stroke} strokeWidth={1.2} strokeOpacity={0.5} />
+            <circle cx={fanX} cy={gy} r={5} fill={tone.fill} stroke={tone.stroke} strokeWidth={1.6}>
+              <title>{`Obligation grandchild · ${g.latestRunStatus ?? 'Unknown'}`}</title>
+            </circle>
+          </g>
+        );
+      })}
+      {port.grandchildren.length > kids.length && (
+        <text x={fanX + 12} y={cy} style={{ fontSize: 10 }} className="fill-slateUI">
+          +{port.grandchildren.length - kids.length}
+        </text>
+      )}
+    </g>
+  );
+}
+
+function MasterCore({ cy, status, activePorts }: { cy: number; status: RollupStatus; activePorts: number }) {
+  const c = STATUS_COLOR[status === 'idle' ? 'running' : status];
+  const top = cy - MH / 2;
+  return (
+    <g>
+      <rect x={MX} y={top} width={MW} height={MH} rx={14} fill="#15181E" stroke="#242935" strokeWidth={1.2} />
+      <rect x={MX} y={top} width={4} height={MH} rx={2} fill={c} />
+      <text x={MX + 22} y={top + 34} style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2 }} className="fill-slateUI">
+        CLEARFLOW · CFCS
+      </text>
+      <text x={MX + 22} y={top + 60} className="fill-slate-50 display-heading" style={{ fontSize: 21 }}>MASTER</text>
+      <text x={MX + 22} y={top + 84} className="fill-slate-50 display-heading" style={{ fontSize: 21 }}>CRISIS</text>
+      <text x={MX + 22} y={top + 108} style={{ fontSize: 10.5 }} className="fill-slateUI">
+        {activePorts} stakeholder{activePorts === 1 ? '' : 's'} live
+      </text>
+      {/* glowing bolt — the cable origin */}
+      <circle cx={BOLT_X} cy={cy} r={26} fill={c} opacity={0.18} className="animate-pulse" style={{ animationDuration: '2.6s' }} />
+      <circle cx={BOLT_X} cy={cy} r={17} fill={c} filter="url(#cf-glow)" />
+      <path
+        d={`M ${BOLT_X + 2} ${cy - 9} L ${BOLT_X - 5} ${cy + 1} L ${BOLT_X + 1} ${cy + 1} L ${BOLT_X - 2} ${cy + 9} L ${BOLT_X + 6} ${cy - 2} L ${BOLT_X} ${cy - 2} Z`}
+        fill="#0C0E12"
+      />
+    </g>
+  );
+}
+
 export function CascadeGraph({ instances, isLoading, error }: CascadeGraphProps) {
-  const layout = useMemo(() => buildLayout(instances ?? []), [instances]);
-  const particles = useMemo(() => buildParticles(layout.half, (instances ?? []).length), [layout.half, instances]);
-  const [, setZoom] = useState(0.3);
-  const [hover, setHover] = useState<Node | null>(null);
-  const { master, stakeholders, grandchildren, half, viewBox } = layout;
-  const total = (instances ?? []).length;
-  const side = half * 2;
-  const masterTone = master ? statusTone(master.latestRunStatus) : statusTone(null);
-  const hoveredId = hover?.inst.instanceId;
+  const ports = useMemo(() => rollupStakeholders(instances), [instances]);
+  const [hover, setHover] = useState<string | null>(null);
+
+  const all = instances ?? [];
+  const masters = all.filter((i) => inferCaseLevel(i) === 0);
+  const stakeholderInsts = all.filter((i) => inferCaseLevel(i) === 1).length;
+  const grandchildInsts = all.filter((i) => inferCaseLevel(i) === 2).length;
+  const total = all.length;
+
+  const masterStatus: RollupStatus = ports.some((p) => p.status === 'faulted')
+    ? 'faulted'
+    : ports.some((p) => p.status === 'running')
+      ? 'running'
+      : masters.length > 0 ? 'running' : 'idle';
+  const activePorts = ports.filter((p) => p.rawCount > 0).length;
+
+  const H = TOP + ports.length * PITCH + 24;
+  const cy = H / 2;
+  const hoveredPort = ports.find((p) => p.slug === hover) ?? null;
 
   let body;
   if (error && !instances) {
     body = <PanelError message={`Failed to load case instances: ${error.message}`} />;
   } else if (isLoading && !instances) {
-    body = <PanelLoading label="Loading cascade…" />;
+    body = <PanelLoading label="Loading energy flow…" />;
   } else if (total === 0) {
     body = (
-      <p className="text-sm text-slate-500 py-12 text-center">
+      <p className="text-sm text-slateUI py-16 text-center">
         Awaiting first signal — fire <span className="text-accent font-semibold">Reversal 1</span> to open the master crisis case.
       </p>
     );
@@ -254,82 +201,86 @@ export function CascadeGraph({ instances, isLoading, error }: CascadeGraphProps)
     body = (
       <div>
         {error && <div className="mb-3"><PanelError message={`Refresh failed: ${error.message}`} /></div>}
-        <ZoomPanCanvas contentW={side} contentH={side} viewBox={viewBox} onZoom={setZoom}>
-          {/* ambiance: faint guide rings */}
-          <circle r={half * 0.62} fill="none" stroke="#2DD4BF" strokeOpacity={0.06} />
-          <circle r={half * 0.86} fill="none" stroke="#2DD4BF" strokeOpacity={0.05} />
-          {/* stardust */}
-          {particles.map((p, i) => (
-            <rect key={`p${i}`} x={p.x} y={p.y} width={p.s} height={p.s} fill={p.c} opacity={p.o}
-              className="animate-pulse" style={{ animationDelay: `${p.d}s`, animationDuration: `${p.dur}s` }} />
-          ))}
+        <div className="rounded-xl border border-ink-700/70 bg-[#0a0c10] bg-dots [background-size:18px_18px] p-2">
+          <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ display: 'block', maxHeight: 560 }} preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <filter id="cf-glow" x="-60%" y="-60%" width="220%" height="220%">
+                <feGaussianBlur stdDeviation="3.2" result="b" />
+                <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+              </filter>
+            </defs>
 
-          <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }}>
-            {/* edges: centre → stakeholders */}
-            {master && stakeholders.map((s) => {
-              const on = hoveredId === s.inst.instanceId;
-              return <line key={`es${s.inst.instanceId}`} x1={0} y1={0} x2={s.x} y2={s.y}
-                stroke="#2DD4BF" strokeWidth={on ? 1.8 : 0.9} strokeOpacity={on ? 0.85 : 0.22} />;
+            {/* cables: master → each port */}
+            {ports.map((p, i) => {
+              const py = TOP + i * PITCH + PORT_H / 2;
+              const c = STATUS_COLOR[p.status];
+              const live = ACTIVE.includes(p.status);
+              const on = hover === p.slug;
+              const idle = p.rawCount === 0;
+              const d = cablePath(BOLT_X, cy, PORT_X, py);
+              return (
+                <g key={`cable-${p.slug}`}>
+                  <path
+                    d={d} fill="none" stroke={idle ? '#2A303C' : c}
+                    strokeWidth={idle ? 2 : cableWeight(p.rawCount)}
+                    strokeOpacity={on ? 0.95 : idle ? 0.5 : 0.7}
+                    strokeLinecap="round"
+                  />
+                  {live && (
+                    <path
+                      d={d} fill="none" stroke="#FFD9B8" strokeWidth={2}
+                      strokeDasharray="2 14" strokeLinecap="round"
+                      className="animate-flow-dash" strokeOpacity={0.9}
+                    />
+                  )}
+                </g>
+              );
             })}
-            {/* edges: grandchild → owner (or centre) */}
-            {grandchildren.map((g) => {
-              const on = hoveredId === g.inst.instanceId;
-              return <line key={`eg${g.inst.instanceId}`} x1={g.px} y1={g.py} x2={g.x} y2={g.y}
-                stroke="#5EEAD4" strokeWidth={on ? 1.8 : 0.8} strokeOpacity={on ? 0.85 : 0.2} />;
-            })}
 
-            {/* nodes */}
-            {grandchildren.map((g) => (
-              <ConstellationNode key={g.inst.instanceId} node={g} kind="grandchild" hovered={hoveredId === g.inst.instanceId} onHover={setHover} />
-            ))}
-            {stakeholders.map((s) => (
-              <ConstellationNode key={s.inst.instanceId} node={s} kind="stakeholder" hovered={hoveredId === s.inst.instanceId} onHover={setHover} />
-            ))}
-
-            {/* master core */}
-            {master && (
-              <g>
-                <circle r={R.master + 16} fill={masterTone.stroke} opacity={0.12} className="animate-pulse" style={{ animationDuration: '3s' }} />
-                <circle r={R.master + 7} fill={masterTone.stroke} opacity={0.2} />
-                <circle r={R.master} fill={masterTone.fill} stroke={masterTone.stroke} strokeWidth={3} />
-                <text y={5} textAnchor="middle" className="fill-slate-100" style={{ fontSize: 13, fontWeight: 700, letterSpacing: 1 }}>CFCS</text>
-                <text y={R.master + 22} textAnchor="middle" className="fill-slate-400" style={{ fontSize: 12, fontWeight: 600, letterSpacing: 2 }}>MASTER CRISIS</text>
-              </g>
+            {hoveredPort && hoveredPort.grandchildren.length > 0 && (
+              <SubFan port={hoveredPort} y={TOP + ports.indexOf(hoveredPort) * PITCH} />
             )}
-          </motion.g>
-        </ZoomPanCanvas>
 
-        {/* info strip — crisp HTML, updates on hover (no canvas text → no garble) */}
-        <div className="flex items-center justify-between gap-3 mt-2 text-xs min-h-[34px]">
-          {hover ? (
-            <div className="flex items-center gap-2 min-w-0">
-              <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: statusTone(hover.inst.latestRunStatus).stroke }} />
-              <span className="text-slate-200 font-medium truncate">{hover.name}</span>
-              <span className="text-slate-500 truncate hidden sm:inline">
-                · {hover.inst.latestRunStatus ?? 'Unknown'} · {getExternalId(hover.inst).slice(0, 8)} · started {formatTime(hover.inst.startedTime)}
+            <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
+              {ports.map((p, i) => (
+                <PortCard key={p.slug} port={p} y={TOP + i * PITCH} hovered={hover === p.slug} onHover={setHover} />
+              ))}
+              <MasterCore cy={cy} status={masterStatus} activePorts={activePorts} />
+            </motion.g>
+          </svg>
+        </div>
+
+        {/* info strip — crisp HTML */}
+        <div className="flex items-center justify-between gap-3 mt-3 text-xs min-h-[20px]">
+          {hoveredPort ? (
+            <span className="flex items-center gap-2 min-w-0">
+              <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: STATUS_COLOR[hoveredPort.status] }} />
+              <span className="text-slate-200 font-medium truncate">{hoveredPort.displayName}</span>
+              <span className="text-slateUI truncate hidden sm:inline">
+                · {hoveredPort.status} · {hoveredPort.rawCount} instances · {hoveredPort.grandchildren.length} obligations
               </span>
-            </div>
+            </span>
           ) : (
-            <span className="text-slate-500">
-              <span className="text-slate-300 font-semibold">{master ? 1 : 0}</span> master ·{' '}
-              <span className="text-slate-300 font-semibold">{stakeholders.length}</span> stakeholders ·{' '}
-              <span className="text-slate-300 font-semibold">{grandchildren.length}</span> grandchildren
+            <span className="text-slateUI">
+              <span className="text-slate-200 font-semibold">{masters.length}</span> master ·{' '}
+              <span className="text-slate-200 font-semibold">{stakeholderInsts}</span> stakeholder ·{' '}
+              <span className="text-slate-200 font-semibold">{grandchildInsts}</span> obligation instances
             </span>
           )}
-          <span className="flex items-center gap-3 shrink-0">
-            <Legend color="#34D399" label="Completed" />
-            <Legend color="#38BDF8" label="Running" />
-            <Legend color="#F59E0B" label="Paused" />
-            <Legend color="#F43F5E" label="Faulted" />
+          <span className="hidden md:flex items-center gap-3 shrink-0">
+            <Legend color={STATUS_COLOR.running} label="Live" />
+            <Legend color={STATUS_COLOR.completed} label="Closed" />
+            <Legend color={STATUS_COLOR.paused} label="Paused" />
+            <Legend color={STATUS_COLOR.faulted} label="Faulted" />
           </span>
         </div>
-        {grandchildren.length === 0 && <p className="text-xs italic text-slate-600 mt-1">Grandchildren spawn at Reversal 3</p>}
+        <p className="text-[11px] text-slate-600 mt-1">Hover a port to trace its obligation grandchildren.</p>
       </div>
     );
   }
 
   return (
-    <Panel title="Cascade" subtitle="Master crisis → stakeholder parents → obligation grandchildren" accent>
+    <Panel id="cascade" title="Energy Flow — Crisis Cascade" subtitle="Master crisis → stakeholder ports → obligation grandchildren" accent className="h-full">
       {body}
     </Panel>
   );
@@ -337,9 +288,9 @@ export function CascadeGraph({ instances, isLoading, error }: CascadeGraphProps)
 
 function Legend({ color, label }: { color: string; label: string }) {
   return (
-    <span className="inline-flex items-center gap-1.5 text-slate-500">
+    <span className="inline-flex items-center gap-1.5 text-slateUI">
       <span className="w-2 h-2 rounded-full" style={{ background: color }} />
-      <span className="hidden md:inline">{label}</span>
+      {label}
     </span>
   );
 }
