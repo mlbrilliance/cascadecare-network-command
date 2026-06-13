@@ -4,21 +4,25 @@ import type {
   CaseInstanceGetAllWithPaginationOptions,
   CaseInstanceGetResponse,
 } from '@uipath/uipath-typescript/cases';
+import { Tasks } from '@uipath/uipath-typescript/tasks';
 import type { PaginatedResponse, PaginationCursor } from '@uipath/uipath-typescript/core';
 import { useAuth } from '../hooks/useAuth';
 import { usePolling } from '../hooks/usePolling';
 import { MAESTRO_FOLDER_KEY, REFRESH_INTERVAL_MS } from '../config';
-import { inferCaseLevel } from '../caseUtils';
-import { CascadeTree } from './CascadeTree';
-import { MasterCaseStatus } from './MasterCaseStatus';
+import { deriveCrisisState } from '../caseUtils';
+import { CommandHeader } from './CommandHeader';
+import { KpiStrip } from './KpiStrip';
+import { CascadeGraph } from './CascadeGraph';
 import { ReversalTimeline } from './ReversalTimeline';
+import { AgentRoster } from './AgentRoster';
+import { OperatorConsole } from './OperatorConsole';
 import { HitlGates } from './HitlGates';
 
 interface DashboardProps {
   onLogout: () => void;
 }
 
-/** Cursor-loops every page of case instances in the Maestro folder (skill rule 14). */
+/** Cursor-loops every page of case instances in the Maestro folder. */
 async function fetchAllCaseInstances(service: CaseInstances): Promise<CaseInstanceGetResponse[]> {
   const all: CaseInstanceGetResponse[] = [];
   let cursor: PaginationCursor | undefined;
@@ -28,7 +32,6 @@ async function fetchAllCaseInstances(service: CaseInstances): Promise<CaseInstan
       pageSize: 100,
       ...(cursor ? { cursor } : {}),
     } as CaseInstanceGetAllWithPaginationOptions;
-    // Pagination options are always passed, so the response is paginated.
     const page = (await service.getAll(options)) as PaginatedResponse<CaseInstanceGetResponse>;
     all.push(...page.items);
     if (!page.hasNextPage || !page.nextCursor) break;
@@ -40,8 +43,13 @@ async function fetchAllCaseInstances(service: CaseInstances): Promise<CaseInstan
 export function Dashboard({ onLogout }: DashboardProps) {
   const { sdk, isAuthenticated } = useAuth();
   const caseInstances = useMemo(() => new CaseInstances(sdk), [sdk]);
+  const tasks = useMemo(() => new Tasks(sdk), [sdk]);
 
   const fetchCases = useCallback(() => fetchAllCaseInstances(caseInstances), [caseInstances]);
+  const fetchHitlCount = useCallback(async () => {
+    const r = await tasks.getAll({ pageSize: 100, jumpToPage: 1 });
+    return r.totalCount ?? r.items.length;
+  }, [tasks]);
 
   const { data: instances, isLoading, error, isActive, lastUpdated } = usePolling<CaseInstanceGetResponse[]>({
     fetchFn: fetchCases,
@@ -49,53 +57,29 @@ export function Dashboard({ onLogout }: DashboardProps) {
     enabled: isAuthenticated,
   });
 
-  // Most recent master crisis instance (level 0, latest startedTime).
-  const master = useMemo(() => {
-    if (!instances) return null;
-    const masters = instances.filter(inst => inferCaseLevel(inst) === 0);
-    masters.sort((a, b) => new Date(b.startedTime ?? 0).getTime() - new Date(a.startedTime ?? 0).getTime());
-    return masters[0] ?? null;
-  }, [instances]);
+  const { data: hitlCount } = usePolling<number>({
+    fetchFn: fetchHitlCount,
+    interval: REFRESH_INTERVAL_MS,
+    enabled: isAuthenticated,
+  });
+
+  const crisis = useMemo(() => deriveCrisisState(instances, hitlCount ?? 0), [instances, hitlCount]);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200">
-      <header className="border-b border-slate-800 bg-slate-900/60">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center gap-4 min-w-0">
-          <div className="min-w-0 flex-1">
-            <h1 className="text-lg font-semibold text-slate-100 truncate" title="ClearFlow Network Command">
-              ClearFlow Network Command
-            </h1>
-            <p className="text-xs text-slate-500 truncate" title="Cyber Crisis Operations — Live Case State">
-              Cyber Crisis Operations — Live Case State
-            </p>
+    <div className="min-h-screen bg-radial-command">
+      <CommandHeader crisis={crisis} isActive={isActive} lastUpdated={lastUpdated} onLogout={onLogout} />
+      <main className="max-w-[1500px] mx-auto px-5 lg:px-8 py-6 space-y-6">
+        <KpiStrip crisis={crisis} />
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
+          <div className="xl:col-span-2 space-y-6 min-w-0">
+            <CascadeGraph instances={instances} isLoading={isLoading} error={error} />
+            <ReversalTimeline currentReversal={crisis.reversalN} />
           </div>
-          {isActive && (
-            <span className="flex items-center gap-1.5 text-xs text-teal-300 whitespace-nowrap">
-              <span className="w-2 h-2 bg-teal-400 rounded-full animate-pulse" />
-              LIVE
-            </span>
-          )}
-          {lastUpdated && (
-            <span className="text-xs text-slate-500 whitespace-nowrap hidden sm:inline">
-              Updated {lastUpdated.toLocaleTimeString()}
-            </span>
-          )}
-          <button
-            onClick={onLogout}
-            className="text-sm text-slate-400 hover:text-slate-100 whitespace-nowrap"
-          >
-            Sign out
-          </button>
-        </div>
-      </header>
-      <main className="max-w-7xl mx-auto px-6 py-6 grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-        <div className="min-w-0">
-          <CascadeTree instances={instances} isLoading={isLoading} error={error} />
-        </div>
-        <div className="space-y-6 min-w-0">
-          <MasterCaseStatus master={master} parentLoading={isLoading} />
-          <ReversalTimeline />
-          <HitlGates />
+          <div className="space-y-6 min-w-0">
+            <OperatorConsole />
+            <AgentRoster />
+            <HitlGates />
+          </div>
         </div>
       </main>
     </div>

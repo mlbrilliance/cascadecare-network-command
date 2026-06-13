@@ -1,50 +1,56 @@
+import { motion } from 'motion/react';
+import { REVERSALS } from '../narrative';
 import { Panel } from './Panel';
 
-interface Reversal {
-  n: number;
-  name: string;
-  day: number;
-  shift: string;
-  hero?: boolean;
-}
+/** Horizontal animated timeline of the five master reversals. */
+export function ReversalTimeline({ currentReversal }: { currentReversal: number }) {
+  const reached = Math.max(0, Math.min(currentReversal, REVERSALS.length));
+  const progressPct = REVERSALS.length > 1 ? ((reached - 1) / (REVERSALS.length - 1)) * 100 : 0;
 
-const REVERSALS: Reversal[] = [
-  { n: 1, day: 1, name: 'Multi-customer correlation', shift: '"Assist isolated customers" → "Determine if ClearFlow is the vector"' },
-  { n: 2, day: 5, name: 'ClearFlow cleared + Nimbus identified', shift: '"Am I the cause?" → "Visible bystander with strategic posture decision"' },
-  { n: 3, day: 30, name: 'State DOI subpoena collision', shift: 'Three-level nesting goes live; 6 grandchild cases spawn', hero: true },
-  { n: 4, day: 45, name: 'Payer demands vs BAAs', shift: 'Fiduciary Conflict Detector fires; tri-party HITL gate' },
-  { n: 5, day: 90, name: 'Litigation cascade', shift: 'Bystander → co-defendant; privilege reshuffles' },
-];
-
-/** Static narrative timeline of the five master-level reversals. */
-export function ReversalTimeline() {
   return (
-    <Panel title="Reversal Timeline" subtitle="Five master goal shifts across the 90-day simulated crisis">
-      <table className="w-full table-fixed text-sm">
-        <thead>
-          <tr className="text-left text-xs text-slate-500 uppercase tracking-wider">
-            <th className="w-8 pb-2">#</th>
-            <th className="w-16 pb-2">Day</th>
-            <th className="w-2/5 pb-2">Reversal</th>
-            <th className="pb-2">Master goal shift</th>
-          </tr>
-        </thead>
-        <tbody>
-          {REVERSALS.map(r => (
-            <tr key={r.n} className={`border-t border-slate-800/60 ${r.hero ? 'bg-teal-500/5' : ''}`}>
-              <td className="py-2 text-slate-400 align-top">{r.n}</td>
-              <td className="py-2 text-slate-400 align-top whitespace-nowrap">Day {r.day}</td>
-              <td className="py-2 align-top max-w-0">
-                <span className="text-slate-200 block truncate" title={r.name}>{r.name}</span>
-                {r.hero && <span className="text-xs text-teal-400">★ Hero moment</span>}
-              </td>
-              <td className="py-2 text-slate-400 align-top max-w-0">
-                <span className="block truncate" title={r.shift}>{r.shift}</span>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <Panel title="Reversal Timeline" subtitle="Five master goal shifts across the 90-day crisis">
+      <div className="relative pt-2 pb-1">
+        {/* rail */}
+        <div className="absolute left-[8%] right-[8%] top-[18px] h-0.5 bg-ink-700 rounded-full" />
+        <motion.div
+          className="absolute left-[8%] top-[18px] h-0.5 bg-accent rounded-full shadow-glow-sm"
+          initial={{ width: 0 }}
+          animate={{ width: `${(progressPct / 100) * 84}%` }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        />
+        <div className="relative grid grid-cols-5">
+          {REVERSALS.map((r, i) => {
+            const done = r.n < reached;
+            const active = r.n === reached;
+            const state = active ? 'active' : done ? 'done' : 'future';
+            const dot =
+              state === 'active'
+                ? 'bg-accent border-accent text-ink-950 animate-pulse-glow'
+                : state === 'done'
+                  ? 'bg-accent/80 border-accent text-ink-950'
+                  : 'bg-ink-800 border-ink-600 text-slate-500';
+            return (
+              <motion.div
+                key={r.n}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.08 }}
+                className="flex flex-col items-center text-center px-1"
+                title={`${r.goalFrom} → ${r.goalTo}`}
+              >
+                <div className={`w-9 h-9 rounded-full border-2 flex items-center justify-center text-sm font-bold ${dot}`}>
+                  {r.n}
+                </div>
+                <div className="mt-2 text-[11px] font-semibold text-slate-300 leading-tight line-clamp-2">
+                  {r.name}
+                </div>
+                <div className="text-[10px] text-slate-500 mt-0.5">Day {r.day}</div>
+                {r.hero && <div className="text-[10px] text-accent font-semibold mt-0.5">★ Hero</div>}
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
     </Panel>
   );
 }
