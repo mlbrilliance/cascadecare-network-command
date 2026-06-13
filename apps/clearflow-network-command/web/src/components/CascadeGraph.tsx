@@ -38,13 +38,21 @@ interface Node {
   parentY: number;
 }
 
-function shortLabel(inst: CaseInstanceGetResponse, dense: boolean): string {
+/**
+ * Human-readable node label. Prefers the real stakeholder name when the
+ * instance carries a known slug; otherwise falls back to a tier + spawn-order
+ * label (e.g. "Stakeholder 12", "Obligation 5") rather than a meaningless
+ * instance-id fragment. Full id/status/started stay on hover.
+ */
+function nodeLabel(inst: CaseInstanceGetResponse, kind: 'parent' | 'child', seq: number, dense: boolean): string {
   const slug = slugFromInstance(inst);
-  if (dense) return slug ?? getExternalId(inst).slice(0, 6);
-  const known = slug && STAKEHOLDERS.find((s) => s.slug === slug);
-  if (known) return known.displayName;
-  const label = getDisplayLabel(inst).replace(/^clearflow[-\s]*/i, '');
-  return label.length > 20 ? `${label.slice(0, 18)}…` : label;
+  const known = slug ? STAKEHOLDERS.find((s) => s.slug === slug) : undefined;
+  if (known) return dense ? known.slug : known.displayName;
+  const title = (inst.caseTitle || inst.instanceDisplayName || '').replace(/^clearflow[-\s]*/i, '').trim();
+  if (title && !/^[0-9a-f-]{8,}$/i.test(title)) {
+    return title.length > 20 ? `${title.slice(0, 18)}…` : title;
+  }
+  return kind === 'parent' ? `Stakeholder ${seq}` : `Obligation ${seq}`;
 }
 
 function edgePath(x1: number, y1: number, x2: number, y2: number): string {
@@ -77,7 +85,7 @@ function buildLayout(instances: CaseInstanceGetResponse[]): Layout {
 
   const parents: Node[] = parentInsts.map((inst, i) => ({
     inst, x: rowX(parentInsts.length, i), y: Y.parent,
-    label: shortLabel(inst, dense), parentX: cx, parentY: Y.master,
+    label: nodeLabel(inst, 'parent', i + 1, dense), parentX: cx, parentY: Y.master,
   }));
 
   const children: Node[] = childInsts.map((inst, i) => {
@@ -85,7 +93,7 @@ function buildLayout(instances: CaseInstanceGetResponse[]): Layout {
     const owner = slug ? parents.find((p) => slugFromInstance(p.inst) === slug) : undefined;
     return {
       inst, x: rowX(childInsts.length, i), y: Y.child,
-      label: shortLabel(inst, dense),
+      label: nodeLabel(inst, 'child', i + 1, dense),
       parentX: owner ? owner.x : cx,
       parentY: owner ? owner.y : Y.master,
     };
