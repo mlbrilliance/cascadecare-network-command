@@ -12,6 +12,9 @@ const NAV: NavItem[] = [
   { id: 'agents', label: 'Agents', glyph: '◆' },
 ];
 
+// Stable module-level reference so the observer effect doesn't re-run every render.
+const NAV_IDS = NAV.map((n) => n.id);
+
 function useScrollSpy(ids: string[]): string {
   const [active, setActive] = useState(ids[0]);
   useEffect(() => {
@@ -34,7 +37,7 @@ function useScrollSpy(ids: string[]): string {
 }
 
 export function Sidebar({ crisis, isActive }: { crisis: CrisisState; isActive: boolean }) {
-  const active = useScrollSpy(NAV.map((n) => n.id));
+  const active = useScrollSpy(NAV_IDS);
 
   const go = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });

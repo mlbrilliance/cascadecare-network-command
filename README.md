@@ -17,11 +17,13 @@ of native case nesting** — while five master-level goal reversals reshape the 
 The hero moment: **Reversal 3** (a state DOI subpoena) fans out **six grandchild cases
 simultaneously** on the Maestro Case canvas.
 
-> **Status (2026-06-12):** Every UiPath artifact below is authored, validated against its UiPath
+> **Status (2026-06-13):** Every UiPath artifact below is authored, validated against its UiPath
 > contract (V20 / CNCF Serverless 1.0.0 / Agent Builder), and **running live on UiPath Automation
 > Cloud** — `clearflow-solution` 1.0.23 deployed to `Shared/CascadeCare-v110`, with a full
-> cascade run proven end-to-end (master + 6 child + 6 grandchild cases all Completed). Live run
-> procedure: [`docs/DEMO-RUNBOOK.md`](docs/DEMO-RUNBOOK.md). Historical deviations:
+> cascade run proven end-to-end (master + 6 child + 6 grandchild cases all Completed). The
+> operator dashboard is live as the `clearflow-network-command` **Coded Web App (v1.0.7)** at
+> [`…/clearflow-network-command`](https://hackathon26_042.staging.uipath.host/clearflow-network-command).
+> Live run procedure: [`docs/DEMO-RUNBOOK.md`](docs/DEMO-RUNBOOK.md). Historical deviations:
 > [`DEVIATIONS.md`](DEVIATIONS.md).
 
 ## Why This Matters — Healthcare Is UiPath's 2026 Vertical
@@ -124,7 +126,7 @@ Impact Assessment stage — `solution-medical-records-summarization` (Medical Re
 
 | App | Role |
 |-----|------|
-| `clearflow-network-command` | Narrative dashboard: cascade tree, reversal timeline, agent activity, HITL overrides |
+| `clearflow-network-command` | Live Coded Web App command center: **Energy-Flow cascade** (master crisis → stakeholder ports → obligation grandchildren), containment gauge, reversal timeline, agent roster, and an operator console that fires reversals + approves the HITL gate live |
 
 ### Data Fabric entities (9)
 

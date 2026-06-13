@@ -5,6 +5,7 @@ import {
   inferCaseLevel,
   rollupStakeholders,
   statusTone,
+  STATUS_HEX,
 } from '../caseUtils';
 import type { RollupStatus, StakeholderRollup } from '../caseUtils';
 import { Panel, PanelError, PanelLoading } from './Panel';
@@ -28,14 +29,7 @@ const MW = 214;
 const MH = 124;
 const BOLT_X = MX + MW; // cable origin
 
-/** Status → cable + node colour, mirroring the disciplined orange palette. */
-const STATUS_COLOR: Record<RollupStatus, string> = {
-  running: '#F26B1D',
-  faulted: '#F43F5E',
-  paused: '#D9963B',
-  completed: '#34D399',
-  idle: '#3A4150',
-};
+/** Which statuses count as "live" (animated cable + pulsing dot). */
 const ACTIVE: RollupStatus[] = ['running', 'faulted'];
 
 function truncate(s: string, n: number): string {
@@ -53,7 +47,7 @@ function cableWeight(rawCount: number): number {
 }
 
 function StatusDot({ status, cx, cy }: { status: RollupStatus; cx: number; cy: number }) {
-  const c = STATUS_COLOR[status];
+  const c = STATUS_HEX[status];
   const live = ACTIVE.includes(status);
   return (
     <g>
@@ -66,7 +60,7 @@ function StatusDot({ status, cx, cy }: { status: RollupStatus; cx: number; cy: n
 function PortCard({ port, y, hovered, onHover }: {
   port: StakeholderRollup; y: number; hovered: boolean; onHover: (slug: string | null) => void;
 }) {
-  const c = STATUS_COLOR[port.status];
+  const c = STATUS_HEX[port.status];
   const cy = y + PORT_H / 2;
   const active = ACTIVE.includes(port.status);
   const kindLabel = port.kind === 'other' ? 'UNMAPPED' : port.kind.toUpperCase();
@@ -140,7 +134,7 @@ function SubFan({ port, y }: { port: StakeholderRollup; y: number }) {
 }
 
 function MasterCore({ cy, status, activePorts }: { cy: number; status: RollupStatus; activePorts: number }) {
-  const c = STATUS_COLOR[status === 'idle' ? 'running' : status];
+  const c = STATUS_HEX[status === 'idle' ? 'running' : status];
   const top = cy - MH / 2;
   return (
     <g>
@@ -213,7 +207,7 @@ export function CascadeGraph({ instances, isLoading, error }: CascadeGraphProps)
             {/* cables: master → each port */}
             {ports.map((p, i) => {
               const py = TOP + i * PITCH + PORT_H / 2;
-              const c = STATUS_COLOR[p.status];
+              const c = STATUS_HEX[p.status];
               const live = ACTIVE.includes(p.status);
               const on = hover === p.slug;
               const idle = p.rawCount === 0;
@@ -254,7 +248,7 @@ export function CascadeGraph({ instances, isLoading, error }: CascadeGraphProps)
         <div className="flex items-center justify-between gap-3 mt-3 text-xs min-h-[20px]">
           {hoveredPort ? (
             <span className="flex items-center gap-2 min-w-0">
-              <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: STATUS_COLOR[hoveredPort.status] }} />
+              <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: STATUS_HEX[hoveredPort.status] }} />
               <span className="text-slate-200 font-medium truncate">{hoveredPort.displayName}</span>
               <span className="text-slateUI truncate hidden sm:inline">
                 · {hoveredPort.status} · {hoveredPort.rawCount} instances · {hoveredPort.grandchildren.length} obligations
@@ -268,10 +262,10 @@ export function CascadeGraph({ instances, isLoading, error }: CascadeGraphProps)
             </span>
           )}
           <span className="hidden md:flex items-center gap-3 shrink-0">
-            <Legend color={STATUS_COLOR.running} label="Live" />
-            <Legend color={STATUS_COLOR.completed} label="Closed" />
-            <Legend color={STATUS_COLOR.paused} label="Paused" />
-            <Legend color={STATUS_COLOR.faulted} label="Faulted" />
+            <Legend color={STATUS_HEX.running} label="Live" />
+            <Legend color={STATUS_HEX.completed} label="Closed" />
+            <Legend color={STATUS_HEX.paused} label="Paused" />
+            <Legend color={STATUS_HEX.faulted} label="Faulted" />
           </span>
         </div>
         <p className="text-[11px] text-slate-600 mt-1">Hover a port to trace its obligation grandchildren.</p>

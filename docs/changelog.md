@@ -1,5 +1,33 @@
 # CascadeCare Network Command — Changelog
 
+## Dashboard "Energy-Flow" Redesign (2026-06-13)
+
+Redesigned the live `clearflow-network-command` Coded Web App around two human-designed reference
+dashboards (Phoenix energy-flow + Stakent fintech) to shed the generic AI-generated look, then ran
+the mandatory quality loop.
+
+**Redesigned:**
+- Theme → charcoal canvas + a single orange "crisis energy" accent, glow reserved for the hero
+  bolt + active cables only (`tailwind.config.js`, `index.css`).
+- Shell → new left `Sidebar` (scroll-spy nav + crisis-posture card) + slim `CommandHeader`.
+- Hero → `CascadeGraph` rebuilt as the **Energy-Flow cable diagram**: a master-crisis core bolt
+  fans cables to ~9 deduped stakeholder ports (`rollupStakeholders()` reconciles all raw + grandchild
+  instances, no truncation) with hover-expand obligation sub-fans.
+- New `PostureGauge` (semicircle % containment) + `DetailsGrid` spec card; `KpiStrip` restyled to
+  orange tiles + a real cascade-growth sparkline. Operator-console / HITL-approve / polling / auth
+  wiring unchanged.
+
+**Quality loop (`/thermo-nuclear-code-quality-review` + `/improve-codebase-architecture`):** fixed
+3 structural smells (shared `useCountUp` hook, stable `NAV_IDS`, hoisted `SLUGS_BY_LENGTH`) and
+applied the Strong architecture candidate — a canonical `normalizeStatus()` classifier that collapses
+4 duplicated status-parsing ladders into one, with chip/tone/cable colours as keyed lookups. All
+behavior-preserving; `tsc -b && vite build` + `eslint` clean.
+
+**Live**: published Deploy Version 7 → `uip codedapp deploy` (bare upgrade form) → **v1.0.7**,
+HTTP 200. Commits `fa702f1` → `de55974` → `4a3dd07` pushed to origin.
+
+---
+
 ## Slice 015 Phase 2 + Slice 016 — Run-blocker fix + coding-agent evidence (2026-05-31)
 
 **Slice 015 T016/T017 — Orchestrator Error 2005 root-caused + fixed offline:** an offline

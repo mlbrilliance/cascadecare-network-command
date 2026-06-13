@@ -23,3 +23,10 @@ to the nupkg contents — then fixed and re-proved offline.
 - [`agents/prompts/*.md`](agents/prompts/) — 7 committed agent prompt templates.
 - [`specs/003-uipath-native/`](specs/003-uipath-native/) — the spec-kit authoring trail.
 - [`tests/`](tests/) — the offline gates Claude Code wrote before each artifact.
+- [`apps/clearflow-network-command/web/`](apps/clearflow-network-command/web/) — the live Coded
+  Web App (React + Vite + UiPath TS SDK), authored and iteratively redesigned by Claude Code from
+  a plain page to a mission-control center to the final **Energy-Flow** design (charcoal/orange,
+  sidebar shell, cable cascade). Verifiable in git history — commits `fa702f1` (mission-control),
+  `de55974` (constellation), `4a3dd07` (Energy-Flow), each pack/publish/deployed live via `uip
+  codedapp`. The redesign slice ran the mandatory `/thermo-nuclear-code-quality-review` +
+  `/improve-codebase-architecture` loop, applying every Blocker before commit.

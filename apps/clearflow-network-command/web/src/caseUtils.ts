@@ -36,14 +36,66 @@ export function getDisplayLabel(instance: CaseInstanceGetResponse): string {
   return instance.caseTitle || instance.instanceDisplayName || instance.packageId || instance.instanceId;
 }
 
-/** Tailwind classes for a status chip (Running=orange, Completed=green, Faulted=red, Paused=amber). */
-export function statusChipClasses(status: string | null | undefined): string {
+/** Our normalised 5-state model for a UiPath run status. */
+export type RollupStatus = 'running' | 'faulted' | 'paused' | 'completed' | 'idle';
+
+export interface StatusTone {
+  /** Node fill colour for SVG. */
+  fill: string;
+  /** Node stroke / glow colour for SVG. */
+  stroke: string;
+}
+
+/**
+ * The ONE place that classifies a raw UiPath `latestRunStatus` string into our
+ * 5-state model. Precedence: completed → faulted → paused → running → idle.
+ * Every status-derived lookup (chip classes, SVG tones, cable colours,
+ * aggregation, isCompleted) keys off this — change it here and all follow.
+ */
+export function normalizeStatus(status: string | null | undefined): RollupStatus {
   const s = (status ?? '').toLowerCase();
-  if (s.includes('complet')) return 'bg-emerald-500/15 text-emerald-300 border-emerald-500/40';
-  if (s.includes('fault') || s.includes('error')) return 'bg-rose-500/15 text-rose-300 border-rose-500/40';
-  if (s.includes('paus')) return 'bg-amber-500/15 text-amber-300 border-amber-500/40';
-  if (s.includes('run') || s.includes('resum') || s.includes('pend')) return 'bg-accent/15 text-accent-glow border-accent/40';
-  return 'bg-slate-500/15 text-slate-300 border-slate-500/40';
+  if (s.includes('complet')) return 'completed';
+  if (s.includes('fault') || s.includes('error')) return 'faulted';
+  if (s.includes('paus')) return 'paused';
+  if (s.includes('run') || s.includes('resum') || s.includes('pend')) return 'running';
+  return 'idle';
+}
+
+/** Tailwind chip classes keyed by normalised status (Running=orange, Completed=green…). */
+const CHIP_CLASS: Record<RollupStatus, string> = {
+  completed: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/40',
+  faulted: 'bg-rose-500/15 text-rose-300 border-rose-500/40',
+  paused: 'bg-amber-500/15 text-amber-300 border-amber-500/40',
+  running: 'bg-accent/15 text-accent-glow border-accent/40',
+  idle: 'bg-slate-500/15 text-slate-300 border-slate-500/40',
+};
+
+/** SVG fill/stroke tones keyed by normalised status. */
+const TONE: Record<RollupStatus, StatusTone> = {
+  completed: { fill: '#0E2A1C', stroke: '#34D399' },
+  faulted: { fill: '#2E0F14', stroke: '#F43F5E' },
+  paused: { fill: '#2A1C08', stroke: '#D9963B' },
+  running: { fill: '#2A1206', stroke: '#F26B1D' },
+  idle: { fill: '#1B1F27', stroke: '#8A929E' },
+};
+
+/** Single accent hex per status — canonical home for the cascade cable/node colour. */
+export const STATUS_HEX: Record<RollupStatus, string> = {
+  running: '#F26B1D',
+  faulted: '#F43F5E',
+  paused: '#D9963B',
+  completed: '#34D399',
+  idle: '#3A4150',
+};
+
+/** Tailwind classes for a status chip. */
+export function statusChipClasses(status: string | null | undefined): string {
+  return CHIP_CLASS[normalizeStatus(status)];
+}
+
+/** Hex fill/stroke tones for SVG nodes by run status. */
+export function statusTone(status: string | null | undefined): StatusTone {
+  return TONE[normalizeStatus(status)];
 }
 
 export function formatTime(value: string | null | undefined): string {
@@ -57,11 +109,13 @@ export function byStartedTimeAsc(a: CaseInstanceGetResponse, b: CaseInstanceGetR
   return new Date(a.startedTime ?? 0).getTime() - new Date(b.startedTime ?? 0).getTime();
 }
 
-const _STATUS_OF = (s: string | null | undefined): string => (s ?? '').toLowerCase();
-
 export function isCompleted(inst: CaseInstanceGetResponse): boolean {
-  return _STATUS_OF(inst.latestRunStatus).includes('complet');
+  return normalizeStatus(inst.latestRunStatus) === 'completed';
 }
+
+// Longest slug first so 'summitblue' wins before a hypothetical 'blue'. Sorted
+// once at module load — slugFromInstance is hot (called ~9×N during rollup).
+const SLUGS_BY_LENGTH = STAKEHOLDERS.map((s) => s.slug).sort((a, b) => b.length - a.length);
 
 /**
  * Best-effort stakeholder slug for an instance, matched from its label/keys
@@ -69,8 +123,7 @@ export function isCompleted(inst: CaseInstanceGetResponse): boolean {
  */
 export function slugFromInstance(instance: CaseInstanceGetResponse): string | null {
   const hay = `${getDisplayLabel(instance)} ${instance.packageId ?? ''} ${instance.processKey ?? ''}`.toLowerCase();
-  // Longest slug first so 'summitblue' wins before a hypothetical 'blue'.
-  for (const slug of [...STAKEHOLDERS.map((s) => s.slug)].sort((a, b) => b.length - a.length)) {
+  for (const slug of SLUGS_BY_LENGTH) {
     if (hay.includes(slug)) return slug;
   }
   return null;
@@ -148,29 +201,6 @@ export function deriveCrisisState(
   };
 }
 
-export interface StatusTone {
-  /** Node fill colour for SVG. */
-  fill: string;
-  /** Node stroke / glow colour for SVG. */
-  stroke: string;
-}
-
-/**
- * Hex tones for SVG nodes by run status. Disciplined palette: orange = the live
- * crisis energy (running), green = closed, red = faulted, amber = paused, grey =
- * idle/unknown. Green/red are used sparingly — only for discrete terminal states.
- */
-export function statusTone(status: string | null | undefined): StatusTone {
-  const s = _STATUS_OF(status);
-  if (s.includes('complet')) return { fill: '#0E2A1C', stroke: '#34D399' };
-  if (s.includes('fault') || s.includes('error')) return { fill: '#2E0F14', stroke: '#F43F5E' };
-  if (s.includes('paus')) return { fill: '#2A1C08', stroke: '#D9963B' };
-  if (s.includes('run') || s.includes('resum') || s.includes('pend')) return { fill: '#2A1206', stroke: '#F26B1D' };
-  return { fill: '#1B1F27', stroke: '#8A929E' };
-}
-
-export type RollupStatus = 'running' | 'faulted' | 'paused' | 'completed' | 'idle';
-
 export interface StakeholderRollup {
   /** Canonical slug, or 'other' for instances that matched no known stakeholder. */
   slug: string;
@@ -191,19 +221,11 @@ export interface StakeholderRollup {
 /** Worst-of aggregate status for a port (faulted ≻ running ≻ paused ≻ completed ≻ idle). */
 function aggregateStatus(insts: CaseInstanceGetResponse[]): RollupStatus {
   if (insts.length === 0) return 'idle';
-  let running = false;
-  let paused = false;
-  let anyOpen = false;
-  for (const i of insts) {
-    const s = _STATUS_OF(i.latestRunStatus);
-    if (s.includes('fault') || s.includes('error')) return 'faulted';
-    if (s.includes('run') || s.includes('resum') || s.includes('pend')) running = true;
-    if (s.includes('paus')) paused = true;
-    if (!s.includes('complet')) anyOpen = true;
-  }
-  if (running) return 'running';
-  if (paused) return 'paused';
-  return anyOpen ? 'idle' : 'completed';
+  const states = insts.map((i) => normalizeStatus(i.latestRunStatus));
+  if (states.includes('faulted')) return 'faulted';
+  if (states.includes('running')) return 'running';
+  if (states.includes('paused')) return 'paused';
+  return states.every((s) => s === 'completed') ? 'completed' : 'idle';
 }
 
 /**

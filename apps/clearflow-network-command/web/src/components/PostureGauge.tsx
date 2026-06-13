@@ -1,21 +1,7 @@
-import { useEffect, useState } from 'react';
-import { animate } from 'motion/react';
 import { RadialBarChart, RadialBar, PolarAngleAxis } from 'recharts';
 import type { CrisisState } from '../caseUtils';
 import { Panel } from './Panel';
-
-function useCountUp(value: number, duration = 0.9): number {
-  const [display, setDisplay] = useState(0);
-  useEffect(() => {
-    const controls = animate(0, value, {
-      duration,
-      ease: [0.22, 1, 0.36, 1],
-      onUpdate: (v) => setDisplay(v),
-    });
-    return () => controls.stop();
-  }, [value, duration]);
-  return display;
-}
+import { useCountUp } from '../hooks/useCountUp';
 
 /**
  * Phoenix-style semicircle gauge — % of cases closed (containment). Big centred
