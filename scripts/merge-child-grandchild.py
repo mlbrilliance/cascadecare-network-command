@@ -126,25 +126,25 @@ GC_OUTPUT_XML = "".join(
 # strips it; a canvas-authored config wins (setdefault).
 CASE_APP_CONFIGS = {
     "clearflow-stakeholder-parent": {
-        "caseSummary": ('=string.Format("Stakeholder {0} - BAA position: {1}", '
+        "caseSummary": ('=string.Format("Stakeholder {0}— BAA position: {1}", '
                         'vars.var_stakeholder_id, vars.var_baa_disclosure_position)'),
         "sections": [
-            {"id": "section-ba3b1c76-bab8-4ad1-acf6-76da3166ccaf", "title": "Stakeholder",
+            {"id": "section-f1db5168-20e9-4fc1-a5fe-f8cdea629e79", "title": "Stakeholder",
              "details": '{"Stakeholder":"=vars.var_stakeholder_id",'
                         '"Master case":"=vars.var_master_case_id"}'},
-            {"id": "section-b93648bd-cece-4de5-be3e-d3cb1f8fd6c7", "title": "Obligation posture",
+            {"id": "section-6eea132f-521e-4ade-b916-38dfdf4cac3e", "title": "Obligation posture",
              "details": '{"BAA disclosure position":"=vars.var_baa_disclosure_position",'
                         '"Privilege flag":"=vars.var_privilege_flag"}'},
         ],
     },
     "clearflow-obligation-grandchild": {
-        "caseSummary": ('=string.Format("{0} obligation - ref {1}", '
+        "caseSummary": ('=string.Format("{0} obligation — ref {1}", '
                         'vars.var_obligation_type, vars.var_subpoena_reference_id)'),
         "sections": [
-            {"id": "section-da977890-3420-4c94-8c1d-9f91f1185bb7", "title": "Obligation",
+            {"id": "section-06e02992-e386-4599-b3e3-da307558b282", "title": "Obligation",
              "details": '{"Type":"=vars.var_obligation_type",'
                         '"Subpoena reference":"=vars.var_subpoena_reference_id"}'},
-            {"id": "section-4f3e9d54-c65e-4d46-9846-890de5e48f50", "title": "Case lineage",
+            {"id": "section-bca6e1c1-64a4-414f-9495-28e11eeee638", "title": "Case lineage",
              "details": '{"Parent case":"=vars.var_parent_case_id",'
                         '"Master case":"=vars.var_master_case_id"}'},
         ],
