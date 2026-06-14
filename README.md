@@ -134,6 +134,61 @@ live EDI connector endpoints is the only production-readiness delta.
 | 4 | Payer demands vs. BAAs | 45 | Fiduciary Conflict Detector fires; tri-party HITL gate |
 | 5 | Litigation cascade | 90 | Bystander → co-defendant; privilege reshuffles |
 
+## Human-in-the-Loop Gates: Branch Behavior
+
+CascadeCare has two HITL gates. Each produces a different downstream effect depending on what
+the reviewer chooses. This is not cosmetic — the `reviewerDecision` and `responseDisposition`
+output variables are read by subsequent tasks and agents.
+
+### Gate 1 — Tri-Party Fiduciary Conflict Review (master crisis, Reversal 4)
+
+Apex Health Plan invokes its operational-visibility clause and demands direct access to provider
+claim records within 72 hours. The Fiduciary Conflict Detector agent identifies a three-way
+collision: Apex contract vs. provider BAA confidentiality terms vs. Aurora Specialty insurer
+freeze directive.
+
+| Reviewer choice | `reviewerDecision` | What happens next |
+|---|---|---|
+| **Approve** | `"approved"` | ClearFlow cooperates with Apex under restricted disclosure terms. R5 (co-defendant stage) frames ClearFlow as a cooperative party. Weaker BAA protection; lower adversarial friction with Apex but disclosure risk if providers sue. |
+| **Deny** | `"denied"` | ClearFlow refuses Apex's demand, citing BAA obligations and the insurer freeze directive. R5 frames ClearFlow as contesting the payer demand. Stronger HIPAA/BAA compliance posture; higher adversarial risk with Apex. |
+
+The case records `reviewerId`, `reviewerContext`, and `reviewTimestamp` regardless of the
+decision — creating an auditable ruling with the reviewer's rationale and timestamp.
+
+**Why both paths are defensible:** Approve = contractual alignment with payer, risk of BAA breach.
+Deny = BAA/HIPAA compliance, risk of payer withholding remittances. CascadeCare surfaces the
+conflict; the human makes the call; the case records it.
+
+### Gate 2 — Prepare & File Obligation Response (obligation grandchild, Reversal 3 fan-out)
+
+Each of the 6 grandchild cases handles one specific legal/compliance obligation spawned by the
+Tennessee DOI subpoena. The reviewer prepares and files (or withdraws) the response.
+
+| Reviewer choice | `responseDisposition` | What happens next |
+|---|---|---|
+| **File** | `"filed"` | Obligation response formally submitted to the requesting party (regulator, payer, or court). `Generate Audit Record` logs `disposition=filed` with timestamp. Grandchild closes with full compliance record. Clean outcome. |
+| **Withdraw** | `"withdrawn"` | ClearFlow declines to respond to this obligation. Audit record logs `disposition=withdrawn` — a permanent compliance gap in the case record. Grandchild still closes (no rework loop), but the audit trail flags an unresolved obligation that would trigger escalation in production. |
+
+**Demo talking point for Withdraw:** "When I withdraw an obligation response, the case records it
+as an open compliance gap. In production this triggers the SLA breach escalation path — the
+stakeholder-parent relationship manager is notified, and the obligation is flagged for the next
+regulatory review cycle. CascadeCare tracks not just what was done, but what wasn't."
+
+### Why parallel cases keep running while HITL gates are open
+
+The master crisis, stakeholder-parents, and grandchildren are independent nested cases. They do
+not block each other. The master crisis continues through reversals R1→R2→R3→R4 while grandchildren
+work their obligation responses in parallel — because in a real crisis, the incident command
+doesn't freeze while field teams file paperwork.
+
+In production, each reversal is triggered by an external event at a real timestamp (Day 1, Day 5,
+Day 30, Day 45, Day 90). The demo compresses this to minutes. The architecture is identical.
+
+**Judge framing:** "Maestro Case models real crisis behavior correctly — the command structure
+keeps moving as new information arrives, while parallel specialist teams handle their individual
+obligations independently. HITL gates pause only the specific case that needs human input, not
+the entire network."
+
 ## UiPath Component Inventory
 
 Every runtime asset is a UiPath artifact. **27 core artifacts** plus the Data Fabric, Context

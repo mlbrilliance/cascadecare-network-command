@@ -48,20 +48,45 @@ artifact on the tenant.
 
 ---
 
-## Scene 3 — The HITL Gate (Reversal 4)
+## Scene 3 — The HITL Gates (Reversals 3 & 4)
 
-**What you show:** Action Center task for Tri-Party Fiduciary Conflict Review.
+**What you show:** Action Center — both the Tri-Party Fiduciary Conflict Review (master crisis)
+and the Prepare & File Obligation Response tasks (grandchild × 6).
 
 **What you say:**
-> "Reversal 4. Apex Health Plan invokes an operational-visibility clause and demands direct access
-> to provider claim data — threatening to withhold remittances in 72 hours.
+> "Two types of human decision, running in parallel.
 >
+> At the top level — Reversal 4. Apex Health Plan invokes an operational-visibility clause and
+> demands direct access to provider claim data, threatening to withhold remittances in 72 hours.
 > The Fiduciary Conflict Detector agent identifies the three-way collision: Apex's contract demand
 > vs. provider BAA confidentiality terms vs. the Aurora Specialty insurer freeze directive.
-> Complying with Apex violates at least two BAAs. The agent surfaces this to a human reviewer
-> here, in Action Center, with the full conflict analysis pre-populated.
+> Complying with Apex violates at least two BAAs. The agent surfaces this here, pre-populated,
+> with its full conflict analysis.
 >
-> This is AI doing the legal triage. The human makes the call. The case records it and moves on."
+> At the same time — Reversal 3 already fired. Six grandchild obligation cases are waiting for
+> their own reviewers to prepare and file each individual DOI subpoena response.
+>
+> Two different decisions. Two different case levels. Both waiting for humans simultaneously.
+> That's Maestro Case nesting working exactly as intended."
+
+**Approve vs. Deny (Fiduciary gate) — what to say:**
+> "If I Approve — ClearFlow cooperates with Apex under restricted disclosure terms. Contractual
+> alignment with the payer, but disclosure risk if providers challenge the BAA breach.
+>
+> If I Deny — ClearFlow refuses, citing BAA obligations and the insurer freeze directive. Stronger
+> HIPAA compliance posture, but Apex may escalate to remittance withholding.
+>
+> Either way, the case records my decision, my identity, and my timestamp. That's the audit trail
+> that matters in a regulatory investigation."
+
+**File vs. Withdraw (Obligation Response gate) — what to say:**
+> "For each of the six obligation grandchildren — I can File the response to the DOI subpoena, or
+> Withdraw. File means the obligation is resolved, audited, closed. Withdraw means ClearFlow
+> chose not to respond — and the case records that as a compliance gap. In production, a withdrawal
+> triggers the SLA breach escalation path: the relationship manager gets notified, the obligation
+> is flagged for the next regulatory cycle.
+>
+> CascadeCare tracks not just what was done. It tracks what wasn't done — and why."
 
 ---
 
@@ -174,6 +199,51 @@ artifact on the tenant.
 > With LangGraph you write the orchestrator. With Maestro Case you describe the process and
 > UiPath runs it. For a crisis that spans 90 days, 37 obligations, 6 stakeholders, and 2 human
 > approval gates — that's the right level of abstraction."
+
+### "Why did the master crisis keep advancing even though you hadn't approved the obligation responses yet?"
+
+> "Because they're independent concerns on independent timelines — and that's correct.
+>
+> The master crisis advancing to R4 (Payer Fiduciary demand on Day 45) doesn't depend on whether
+> individual obligation responses from R3 (DOI subpoena on Day 30) have been filed. In a real
+> crisis, the incident command doesn't freeze while field teams file paperwork. New information
+> keeps arriving; new reversals keep happening.
+>
+> Maestro Case models this correctly. Nested cases are independent. The HITL gate pauses only the
+> specific case waiting for human input — not the entire case network. The master crisis paused
+> at R4 waiting for the Fiduciary Review; the grandchildren paused at their Obligation Response
+> gate simultaneously. Both waiting at the same time, independently. That's not a flaw. That's
+> parallel case management.
+>
+> The demo compresses 90 days to minutes. In production, Day 30 events and Day 45 events are
+> separated by two weeks of real-world work. The architecture is identical."
+
+### "What does Approve vs. Deny actually change downstream?"
+
+> "The `reviewerDecision` output variable from the Fiduciary gate is read by the R5 co-defendant
+> stage. Approve frames ClearFlow as a cooperative party in the litigation — weaker BAA protection
+> but lower adversarial friction with the payer. Deny frames ClearFlow as contesting the payer
+> demand — stronger HIPAA/BAA compliance posture, higher adversarial risk.
+>
+> Either way, the case advances to R5. The decision isn't about skipping stages. It's about what
+> posture the subsequent agent takes when ClearFlow is named a co-defendant. Same case, different
+> legal framing based on what the human decided 15 days earlier."
+
+### "What does File vs. Withdraw mean for each obligation response?"
+
+> "File means the DOI subpoena response is formally submitted. The audit record shows
+> `disposition=filed` with a timestamp — compliance confirmed, obligation closed, no escalation.
+>
+> Withdraw means ClearFlow chose not to respond to that specific obligation. The audit record
+> shows `disposition=withdrawn`. The grandchild case still closes — there's no rework loop that
+> forces a filing — but the compliance gap is permanent in the case record. In production, that
+> withdrawal triggers the SLA breach escalation path: the relationship manager for that stakeholder
+> gets notified, the obligation gets flagged for the next regulatory review cycle, and the master
+> crisis summary reflects an unresolved obligation.
+>
+> For a demo with mixed File and Withdraw decisions: 'I filed the urgent ones and withdrew the
+> low-priority responses to show that CascadeCare handles both outcomes. The system doesn't just
+> track successful compliance — it tracks where compliance broke down and why.'"
 
 ### "What happens after the demo ends? Is this production-ready?"
 
