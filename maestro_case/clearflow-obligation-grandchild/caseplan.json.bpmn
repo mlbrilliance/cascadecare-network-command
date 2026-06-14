@@ -1047,6 +1047,9 @@ return { upsertKeys: allEventsUpdatedKeys, deleteKeys: [...exitedStageKeysToDele
               <uipath:input name="labels" type="string" />
               <uipath:input name="actionCatalogName" type="string" />
               <uipath:input name="recipient" type="json" />
+              <uipath:input name="ObligationType" type="string" value="=js:vars.var_obligation_type" />
+              <uipath:input name="Jurisdiction" type="string" value="TN-DOI (Tennessee Department of Insurance) — Federal HIPAA 45 CFR 164 also applies" />
+              <uipath:input name="BAAReference" type="string" value="=js:vars.var_subpoena_reference_id" />
             </uipath:context>
             <uipath:output name="ReviewerId" type="string" source="=ReviewerId" var="reviewerId" target="=reviewerId" />
             <uipath:output name="ResponseDisposition" type="string" source="=ResponseDisposition" var="responseDisposition" target="=responseDisposition" />

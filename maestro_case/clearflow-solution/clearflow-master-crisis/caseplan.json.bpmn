@@ -1513,6 +1513,10 @@ return { upsertKeys: allEventsUpdatedKeys, deleteKeys: [...exitedStageKeysToDele
               <uipath:input name="labels" type="string" />
               <uipath:input name="actionCatalogName" type="string" />
               <uipath:input name="recipient" type="json" />
+              <uipath:input name="PayerDemand" type="string" value="Apex Health Plan invokes the operational-visibility clause in Schedule D of the ClearFlow-Apex Master Network Agreement, demanding direct access to provider claim records within 72 hours or it will withhold remittances." />
+              <uipath:input name="AffectedProviderBAAs" type="string" value="Northstar Regional Health BAA §4.2: prohibits redisclosure of claim-level PHI to payers outside treatment-payment-operations chain. Provider Alpha BAA §3.1: bars disclosure without separate BAA. Both BAAs obligate ClearFlow to reject third-party PHI access demands." />
+              <uipath:input name="ClearFlowObligations" type="string" value="ClearFlow is bound by provider BAAs to act as faithful business associate and disclose claim PHI only as those agreements permit. Aurora Specialty insurer freeze directive also bars data sharing pending forensic review." />
+              <uipath:input name="ConflictAnalysis" type="string" value="CONFLICT DETECTED — Three-way obligation collision: (1) Apex contractual demand for PHI access vs. provider BAA confidentiality terms, (2) provider BAA redisclosure bar vs. payer operational-visibility clause, (3) insurer freeze directive vs. Apex 72-hour ultimatum. Complying with Apex violates at minimum two BAAs and the insurer directive." />
             </uipath:context>
             <uipath:output name="ReviewerId" type="string" source="=ReviewerId" var="reviewerId" target="=reviewerId" />
             <uipath:output name="ReviewerDecision" type="string" source="=ReviewerDecision" var="reviewerDecision" target="=reviewerDecision" />
