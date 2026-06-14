@@ -10,12 +10,14 @@ wedges in Terminating, SoftStop wedges in Stopping). Killing the job shell does
 not touch the case instance: Maestro Monitoring keeps showing Completed
 (verified on 27 jobs).
 
-Deterministic core: ``select_zombies`` / ``run_sweep`` — given Running jobs,
-pick the ones matching our case-definition prefix that are older than the safety
-threshold (default 24 h, so a live demo walk or a same-day HITL wait is never
-touched) and bulk-stop them. Both are fully testable without UiPath auth — the
-module imports only stdlib + pydantic at module level; every UiPath import lives
-inside a function body.
+Deterministic core: ``select_zombies`` / ``run_sweep`` — given Running/Pending
+jobs, pick the ones matching our case-definition prefix that are older than the
+safety threshold (code default 24 h; the hourly trigger passes a lower value for
+demo hygiene) and bulk-stop them. Age is taken from StartTime, falling back to
+CreationTime so Maestro "Agentic process" / Pending jobs (which can have an empty
+StartTime) are aged correctly instead of being skipped forever. Both are fully
+testable without UiPath auth — the module imports only stdlib + pydantic at module
+level; every UiPath import lives inside a function body.
 
 Deployed standalone next to the other coded agents and run on an hourly
 Orchestrator time trigger, it keeps the Jobs view free of zombie "Running" rows
@@ -108,7 +110,10 @@ def select_zombies(
         if not str(job.get("process_name", "")).startswith(prefix):
             continue
         scanned += 1
-        started = _parse_start(job.get("start_time"))
+        # Age basis: StartTime, falling back to CreationTime. Maestro
+        # "Agentic process" / Pending jobs can carry an empty StartTime; without
+        # the fallback those would be treated as unknowable-age and never swept.
+        started = _parse_start(job.get("start_time")) or _parse_start(job.get("creation_time"))
         if started is None or (now - started).total_seconds() < min_age_hours * 3600:
             skipped_recent += 1
             continue
@@ -163,7 +168,7 @@ def main(input: Input) -> Output:  # noqa: A002 — UiPath entrypoint signature 
         for page in range(_MAX_PAGES):
             result = sdk.jobs.list(
                 folder_key=input.folder_key,
-                filter="State eq 'Running'",
+                filter="State eq 'Running' or State eq 'Pending'",
                 skip=page * _PAGE_SIZE,
                 top=_PAGE_SIZE,
             )
@@ -178,6 +183,8 @@ def main(input: Input) -> Output:  # noqa: A002 — UiPath entrypoint signature 
                         or "",
                         "start_time": getattr(job, "start_time", None)
                         or getattr(job, "StartTime", None),
+                        "creation_time": getattr(job, "creation_time", None)
+                        or getattr(job, "CreationTime", None),
                     }
                 )
             if len(items) < _PAGE_SIZE:

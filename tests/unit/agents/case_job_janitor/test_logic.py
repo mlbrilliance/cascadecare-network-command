@@ -109,6 +109,44 @@ class TestSelectZombies:
         assert skipped == 1
 
 
+class TestCreationTimeFallback:
+    """v0.2.0: age falls back to creation_time when start_time is missing —
+    Maestro Agentic/Pending jobs can carry an empty StartTime."""
+
+    def _iso(self, age_hours: float) -> str:
+        return (NOW - timedelta(hours=age_hours)).isoformat()
+
+    def test_null_start_old_creation_is_eligible(self, agent: ModuleType) -> None:
+        jobs = [{"key": "k1", "process_name": "clearflow-obligation-grandchild",
+                 "start_time": None, "creation_time": self._iso(30)}]
+        eligible, scanned, skipped = agent.select_zombies(jobs, "clearflow", 24.0, NOW)
+        assert eligible == ["k1"]
+        assert scanned == 1
+        assert skipped == 0
+
+    def test_null_start_young_creation_is_protected(self, agent: ModuleType) -> None:
+        jobs = [{"key": "k1", "process_name": "clearflow-master-crisis",
+                 "start_time": "", "creation_time": self._iso(1)}]
+        eligible, _, skipped = agent.select_zombies(jobs, "clearflow", 24.0, NOW)
+        assert eligible == []
+        assert skipped == 1
+
+    def test_both_timestamps_missing_is_skipped(self, agent: ModuleType) -> None:
+        jobs = [{"key": "k1", "process_name": "clearflow-master-crisis",
+                 "start_time": None, "creation_time": None}]
+        eligible, _, skipped = agent.select_zombies(jobs, "clearflow", 24.0, NOW)
+        assert eligible == []
+        assert skipped == 1
+
+    def test_start_time_takes_precedence(self, agent: ModuleType) -> None:
+        # start_time young (protect) even though creation_time is old.
+        jobs = [{"key": "k1", "process_name": "clearflow-master-crisis",
+                 "start_time": self._iso(1), "creation_time": self._iso(99)}]
+        eligible, _, skipped = agent.select_zombies(jobs, "clearflow", 24.0, NOW)
+        assert eligible == []
+        assert skipped == 1
+
+
 class _StopRecorder:
     def __init__(self, fail: bool = False) -> None:
         self.calls: list[list[str]] = []
