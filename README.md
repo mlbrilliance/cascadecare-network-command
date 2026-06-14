@@ -44,6 +44,52 @@ of providers unable to get paid and drove billions of dollars in downstream cost
 consequential healthcare cyber events on record. CascadeCare demonstrates how an AI-driven
 Maestro Case would manage exactly that, end to end.
 
+## How CascadeCare Detects a Crisis — Production Trigger Architecture
+
+> *"When a provider goes dark, the payment network feels it first."* — Here is exactly how
+> CascadeCare would know, in production, before any human does.
+
+The demo is kicked off manually to control pacing on stage. In a live deployment, **zero human
+intervention is required between crisis onset and master case creation.** The signal chain:
+
+```
+Provider goes dark
+  → EDI 837 claim submissions stop (provider API workflow detects silence)
+  → claim-flow-anomaly-detector runs (scheduled every 15 min via Orchestrator time trigger)
+      claim_drop_pct: 94%  |  anomaly_score: 0.97  |  severity: "critical"
+  → multi-customer-pattern-detector sees SAME fingerprint across 3+ providers
+      "This is a cascade, not an isolated outage"
+  → Integration Service event fires → ClearFlowIdealIncidentResponse BPMN
+      Triage task runs → is_cascade? gateway routes →
+  → clearflow-master-crisis case spawns. Reversal 1 begins.
+```
+
+### The four real-world signals — all modeled in this project
+
+| Signal | Detected by | Artifact type |
+|--------|-------------|---------------|
+| Claim volume collapse (94% drop) | `claim-flow-anomaly-detector` coded agent (`claim_drop_pct`, `anomaly_score` outputs) | Coded Agent |
+| Provider API silence | 14 mock API workflows (`provider-northstar`, `provider-alpha`, …) | Integration Service API Workflow |
+| Multi-provider cascade fingerprint | `multi-customer-pattern-detector` coded agent | Coded Agent |
+| Cascade routing decision | `is_cascade?` gateway in `ClearFlowIdealIncidentResponse` BPMN | Maestro BPMN |
+
+### Why this answer matters for judges
+
+The real CH/Change Healthcare-class incident went undetected at scale for days; first-responder
+organizations took hours to activate their crisis protocols. CascadeCare's pipeline:
+
+- **Detection** — 15-minute polling cycle on claim telemetry (configurable down to real-time webhook)
+- **Classification** — `claim-flow-anomaly-detector` scores severity; `multi-customer-pattern-detector`
+  confirms cascade vs. isolated outage — two independent agent signals required before escalation
+- **Spawn** — Master crisis case live within seconds of cascade confirmation
+- **Governance** — All LLM calls flow through the UiPath LLM Gateway Trust Layer (PHI/PII guardrails)
+  from the first agent invocation; no raw provider data ever leaves the UiPath boundary
+
+In production, the BPMN's `Start: Incident Intake` event node binds to an Integration Service
+webhook trigger (SIEM alert, EDI monitoring platform, or claim-queue watchdog). The triage and
+routing logic is already built into the BPMN — swapping the mock API workflows for live EDI feeds
+is the only production-readiness delta.
+
 ## Demo: Five Reversals
 
 | # | Name | Day | Master goal shift |

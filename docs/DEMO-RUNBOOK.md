@@ -372,5 +372,60 @@ bash scripts/cleanup_deployments.sh        # or cancel individually:
    and **walk** (not stuck).
 3. `obligation-grandchild` jobs appear — **three levels live**.
 4. Two Action Center tasks render: *Tri-Party Fiduciary Conflict Review* and *Prepare & File
-   Obligation Response*. Approve both.
+   Obligation Response*. Approve both — all four display fields (Payer Demand, Affected Provider
+   BAAs, ClearFlow Obligations, Conflict Analysis) should now be populated.
 5. Master reaches **Completed**; the Slack close-out notification fires.
+
+---
+
+## Judge Q&A — Production Trigger Architecture
+
+> *"This is a demo. How would CascadeCare detect a real crisis without someone manually kicking
+> it off?"*
+
+**The short answer:** In production, `clearflow-master-crisis` is never started manually. The
+`ClearFlowIdealIncidentResponse` BPMN — already live on the tenant — is the event-driven entry
+point. Its `Start: Incident Intake` node binds to an Integration Service webhook trigger (SIEM
+alert, EDI monitoring feed, or claim-queue watchdog). Swapping the 14 mock API workflows for live
+EDI connector endpoints is the only production-readiness delta.
+
+**The signal chain:**
+
+```
+Provider goes dark
+  ↓
+EDI 837 claim submissions stop → provider API workflow detects silence
+  ↓
+claim-flow-anomaly-detector (scheduled every 15 min via Orchestrator time trigger)
+  outputs: claim_drop_pct=94%, anomaly_score=0.97, severity="critical"
+  ↓
+multi-customer-pattern-detector correlates across all providers
+  conclusion: same fingerprint on 3+ providers → cascade confirmed
+  ↓
+Integration Service event fires → ClearFlowIdealIncidentResponse BPMN
+  Triage task → is_cascade? gateway → Spawn clearflow-master-crisis
+  ↓
+Master crisis case live. Reversal 1 begins. Zero human intervention.
+```
+
+**Why two independent agents before escalation:**
+`claim-flow-anomaly-detector` scores a single provider's telemetry. `multi-customer-pattern-detector`
+correlates across all providers simultaneously. Both must fire before the BPMN's `is_cascade?`
+gateway routes to case creation — preventing false positives from a single-provider outage
+triggering a full multi-stakeholder crisis response.
+
+**Time-to-detect vs. historical reality:**
+The real CH/Change Healthcare-class incident went undetected at scale for days. CascadeCare's
+polling interval is 15 minutes. First-responder organizations took hours to activate. CascadeCare
+spawns the master case within seconds of cascade confirmation.
+
+**One-liner for the judges:**
+> *"The scenario we're demonstrating — a payment network going dark across multiple providers — is
+> exactly what the Change Healthcare incident looked like in the first 72 hours. CascadeCare shows
+> how an AI-driven Maestro Case, triggered automatically by anomaly detection, would manage that
+> in real time rather than through manual war-room coordination."*
+
+**Governance from first call:**
+All LLM calls flow through the UiPath LLM Gateway → Trust Layer (PHI/PII detection + content
+filtering) from the very first agent invocation in the BPMN triage task. No raw provider data
+ever leaves the UiPath governance boundary.
