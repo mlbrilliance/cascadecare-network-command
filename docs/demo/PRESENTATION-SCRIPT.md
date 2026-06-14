@@ -83,6 +83,38 @@ artifact on the tenant.
 
 ## Judge Q&A
 
+### "Why not just kick off the claim-flow-anomaly-detector directly, instead of the master crisis case?"
+
+> "In production, you DO kick it off — it runs on an Orchestrator time trigger every 15 minutes,
+> right now, on the tenant. When it fires at critical severity, the multi-customer-pattern-detector
+> confirms the cascade, and the BPMN spawns the master crisis case. They are sequential steps in
+> the same pipeline, not alternatives.
+>
+> The reason you can't replace the master case with just the anomaly detector: a Python function
+> scores telemetry, returns a severity score, and exits. It holds no state. After it fires — who
+> coordinates the 6 providers? Who tracks the 37 legal obligations over 90 days? Who manages the
+> BAA compliance, the DOI subpoena, the payer fiduciary conflict, the insurer freeze directive,
+> the SLA escalations, and the two human approval gates? That is Maestro Case.
+>
+> The anomaly detector is the smoke alarm. The BPMN is the 911 call. The master crisis case is
+> the incident command structure. You need all three."
+
+### "Why not just run the Medical Records / Claim Denial / Prior Auth agents directly?"
+
+> "Those agents each handle one clinical job for one provider. Without CascadeCare coordinating
+> them you'd run each of 3 agents for each of 6 providers — 18 manual invocations with no shared
+> state, no SLA tracking, no legal layer, no human approval gates, and no case record.
+>
+> A payment-network crisis isn't one clinical job. It's a BAA compliance review, a state
+> regulatory subpoena, a payer fiduciary conflict, an insurer reservation-of-rights directive,
+> and a clinical continuity problem, all happening simultaneously across six providers. Each is a
+> different agent, a different obligation, a different deadline, and potentially a different human
+> reviewer.
+>
+> CascadeCare tells those agents when to run, for which provider, under which legal constraints,
+> in what order. That's the vertical bridge — CascadeCare is the crisis orchestrator for the
+> agents UiPath already ships."
+
 ### "How does it detect a real crisis? You kicked this off manually."
 
 > "Manual start is for demo pacing. In production, the `ClearFlowIdealIncidentResponse` BPMN is

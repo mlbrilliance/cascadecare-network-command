@@ -50,45 +50,79 @@ Maestro Case would manage exactly that, end to end.
 > CascadeCare would know, in production, before any human does.
 
 The demo is kicked off manually to control pacing on stage. In a live deployment, **zero human
-intervention is required between crisis onset and master case creation.** The signal chain:
+intervention is required between crisis onset and master case creation.**
+
+### Three-layer architecture
+
+```
+LAYER 1 — DETECTION (runs always, on a 15-min Orchestrator schedule)
+  claim-flow-anomaly-detector     → "Is provider X's claim volume anomalous?"
+  multi-customer-pattern-detector → "Is this a cascade across multiple providers?"
+  These are FIRE ALARMS. A Python function scores telemetry and exits. It holds no state.
+
+LAYER 2 — ORCHESTRATION (spawned once per confirmed cascade)
+  ClearFlowIdealIncidentResponse BPMN → routes: cascade? yes → spawn master case
+  clearflow-master-crisis              → the 90-day crisis spine (5 reversals, SLAs, state)
+  clearflow-stakeholder-parent × 6    → per-provider response with obligations
+  clearflow-obligation-grandchild × N → per-legal-obligation with filing deadlines
+  This is the INCIDENT COMMAND STRUCTURE.
+
+LAYER 3 — WORK EXECUTION (invoked by the case at the right stage)
+  Medical Records Summarization   → "What records does this provider have outstanding?"
+  Claim Denial Prevention         → "Which claims are at risk of denial?"
+  Prior Authorization             → "Which prior auths need continuity?"
+  BAA Boundary Reasoner, Fiduciary Conflict Detector, classify-obligation, …
+  These are the SPECIALISTS. Each does one job, for one provider, at one stage.
+```
+
+**The signal chain (Layers 1 → 2):**
 
 ```
 Provider goes dark
   → EDI 837 claim submissions stop (provider API workflow detects silence)
-  → claim-flow-anomaly-detector runs (scheduled every 15 min via Orchestrator time trigger)
-      claim_drop_pct: 94%  |  anomaly_score: 0.97  |  severity: "critical"
-  → multi-customer-pattern-detector sees SAME fingerprint across 3+ providers
-      "This is a cascade, not an isolated outage"
-  → Integration Service event fires → ClearFlowIdealIncidentResponse BPMN
-      Triage task runs → is_cascade? gateway routes →
-  → clearflow-master-crisis case spawns. Reversal 1 begins.
+  → claim-flow-anomaly-detector fires: claim_drop_pct=94%, anomaly_score=0.97, severity=critical
+  → multi-customer-pattern-detector confirms: same fingerprint on 3+ providers → cascade
+  → ClearFlowIdealIncidentResponse BPMN: Triage → is_cascade? → Spawn master crisis case
+  → clearflow-master-crisis live. Reversal 1 begins. Zero human intervention.
 ```
 
-### The four real-world signals — all modeled in this project
+### Why you can't replace the master case with just the anomaly detector
+
+A Python function scores telemetry, returns `{"anomaly_score": 0.97, "severity": "critical"}`,
+and **exits**. It holds no state. After it fires — who coordinates the 6 providers? Who tracks
+the 37 legal obligations over 90 days? Who manages the BAA compliance, the DOI subpoena, the
+payer fiduciary conflict, the insurer freeze directive, the SLA escalations, and the two human
+approval gates? That is Maestro Case.
+
+In production you DO kick off the anomaly detector — it runs on an Orchestrator time trigger
+every 15 minutes. When it fires at critical severity, the BPMN catches the event and spawns the
+master crisis case. **They are sequential steps in the same pipeline, not alternatives.**
+
+### Why you can't replace the master case with just the Healthcare Agents
+
+UiPath's ViVE-2026 agents (Medical Records Summarization, Claim Denial Prevention, Prior Auth)
+each handle one clinical job for one provider. Without CascadeCare coordinating them you would
+need to run each of 3 agents for each of 6 providers = **18 manual invocations with no shared
+state, no SLA tracking, no legal layer, no human approval gates, and no case record.** CascadeCare
+tells those agents when to run, for which provider, under which legal constraints, in what order.
+
+**One-liner:**
+> *"The anomaly detector is the smoke alarm. The BPMN is the 911 call. The master crisis case is
+> the incident command. The healthcare agents are the specialists on scene. You need all four —
+> and CascadeCare is what makes them work together instead of independently."*
+
+### The four real-world signals — all live in this project
 
 | Signal | Detected by | Artifact type |
 |--------|-------------|---------------|
-| Claim volume collapse (94% drop) | `claim-flow-anomaly-detector` coded agent (`claim_drop_pct`, `anomaly_score` outputs) | Coded Agent |
+| Claim volume collapse (94% drop) | `claim-flow-anomaly-detector` coded agent (`claim_drop_pct`, `anomaly_score`) | Coded Agent |
 | Provider API silence | 14 mock API workflows (`provider-northstar`, `provider-alpha`, …) | Integration Service API Workflow |
 | Multi-provider cascade fingerprint | `multi-customer-pattern-detector` coded agent | Coded Agent |
 | Cascade routing decision | `is_cascade?` gateway in `ClearFlowIdealIncidentResponse` BPMN | Maestro BPMN |
 
-### Why this answer matters for judges
-
-The real CH/Change Healthcare-class incident went undetected at scale for days; first-responder
-organizations took hours to activate their crisis protocols. CascadeCare's pipeline:
-
-- **Detection** — 15-minute polling cycle on claim telemetry (configurable down to real-time webhook)
-- **Classification** — `claim-flow-anomaly-detector` scores severity; `multi-customer-pattern-detector`
-  confirms cascade vs. isolated outage — two independent agent signals required before escalation
-- **Spawn** — Master crisis case live within seconds of cascade confirmation
-- **Governance** — All LLM calls flow through the UiPath LLM Gateway Trust Layer (PHI/PII guardrails)
-  from the first agent invocation; no raw provider data ever leaves the UiPath boundary
-
-In production, the BPMN's `Start: Incident Intake` event node binds to an Integration Service
-webhook trigger (SIEM alert, EDI monitoring platform, or claim-queue watchdog). The triage and
-routing logic is already built into the BPMN — swapping the mock API workflows for live EDI feeds
-is the only production-readiness delta.
+In production, the BPMN's `Start: Incident Intake` node binds to an Integration Service webhook
+(SIEM alert, EDI monitoring feed, or claim-queue watchdog). Swapping the mock API workflows for
+live EDI connector endpoints is the only production-readiness delta.
 
 ## Demo: Five Reversals
 

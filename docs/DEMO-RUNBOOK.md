@@ -419,11 +419,39 @@ The real CH/Change Healthcare-class incident went undetected at scale for days. 
 polling interval is 15 minutes. First-responder organizations took hours to activate. CascadeCare
 spawns the master case within seconds of cascade confirmation.
 
+**"Why not just kick off the claim-flow-anomaly-detector directly instead of the master crisis case?"**
+
+In production you DO kick off the anomaly detector — it runs on an Orchestrator time trigger every
+15 minutes. They are **sequential steps, not alternatives**:
+
+```
+claim-flow-anomaly-detector fires (Layer 1 — Detection)
+  → BPMN catches event, confirms cascade (Layer 1 → 2 handoff)
+  → master crisis case spawns (Layer 2 — Orchestration)
+  → Medical Records / Claim Denial / Prior Auth invoked per-stakeholder (Layer 3 — Execution)
+```
+
+A Python function scores telemetry, returns a severity score, and exits. It holds no state. After
+it fires — who coordinates 6 providers over 90 days? Who manages the BAA compliance, the DOI
+subpoena, the payer fiduciary conflict, the insurer freeze directive, the SLA escalations, and
+the two HITL gates? That is Maestro Case.
+
+**"Why not just run the Healthcare Agents (Medical Records, Claim Denial, Prior Auth) directly?"**
+
+Those agents each handle one clinical job for one provider. Without the orchestration layer: 3
+agents × 6 providers = 18 manual invocations with no shared state, no SLA tracking, no legal
+layer (BAA / subpoena / fiduciary conflict), and no case record. CascadeCare tells those agents
+when to run, for which provider, under which legal constraints, in what order.
+
 **One-liner for the judges:**
-> *"The scenario we're demonstrating — a payment network going dark across multiple providers — is
-> exactly what the Change Healthcare incident looked like in the first 72 hours. CascadeCare shows
-> how an AI-driven Maestro Case, triggered automatically by anomaly detection, would manage that
-> in real time rather than through manual war-room coordination."*
+> *"The anomaly detector is the smoke alarm. The BPMN is the 911 call. The master crisis case is
+> the incident command. The healthcare agents are the specialists on scene. You need all four —
+> and CascadeCare is what makes them work together instead of independently."*
+
+**"The scenario we're demonstrating — a payment network going dark across multiple providers — is
+exactly what the Change Healthcare incident looked like in the first 72 hours. CascadeCare shows
+how an AI-driven Maestro Case, triggered automatically by anomaly detection, would manage that
+in real time rather than through manual war-room coordination."**
 
 **Governance from first call:**
 All LLM calls flow through the UiPath LLM Gateway → Trust Layer (PHI/PII detection + content
