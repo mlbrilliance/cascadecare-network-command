@@ -175,6 +175,26 @@ class TestBuildCompleteArgv:
         assert '"ReviewerDecision": "Approve"' in argv[data_idx]
 
 
+class TestBuildAssignArgv:
+    def test_assigns_to_user(self):
+        argv = da.build_assign_argv(FIDUCIARY_TASKS[0], assignee="me@org.com")
+        assert argv[:2] == ["tasks", "assign"]
+        assert "1001" in argv
+        assert "--user" in argv and "me@org.com" in argv
+
+
+class TestAssignTask:
+    def test_success_true(self):
+        with patch.object(da, "_run_uip", return_value={"Result": "Success"}) as m:
+            assert da.assign_task(FIDUCIARY_TASKS[0], "me@org.com") is True
+        argv = m.call_args[0][0]
+        assert argv[:2] == ["tasks", "assign"]
+
+    def test_failure_false(self):
+        with patch.object(da, "_run_uip", return_value={"Result": "Failure"}):
+            assert da.assign_task(FIDUCIARY_TASKS[0], "me@org.com") is False
+
+
 class TestClassifyResult:
     def test_success_is_completed(self):
         assert da.classify_result({"Result": "Success"}) == da.COMPLETED

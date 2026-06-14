@@ -98,13 +98,17 @@ No caseplan/BPMN/deployment changes needed.
 3. **No coded agent needed.** A deployed on-platform agent would be *worse* for the pre-demo use
    case (it runs on a schedule and could clear the tasks you want to keep). Dropped.
 
-**`scripts/demo_autocomplete.py` was rewritten** (this session, uncommitted) to drive the CLI:
-- `uip tasks list --as-admin` → filter Pending AppTasks → 2+2 partition → `uip tasks complete`.
-- Orphan-aware: a completion returning "This action has been already deleted" is reported, not fatal.
-- 33 unit tests pass; `--dry-run` verified live (lists 6 Fiduciary + 11 Obligation, previews).
-- Fiduciary outcomes Approve/Deny are verified; **Obligation outcome button names are UNVERIFIED**
-  (defaults File/Withdraw, env-overridable `DEMO_OBLIGATION_ACTION_FILED/_WITHDRAWN`) — confirm on
-  the first fresh live run; the script prints any invalid-action server error.
+**`scripts/demo_autocomplete.py` was rewritten** this session to drive the CLI:
+- `uip tasks list --as-admin` → filter Pending AppTasks → 2+2 partition → **`uip tasks assign`
+  (REQUIRED) → `uip tasks complete`**. An unassigned task fails "This action is no longer
+  assigned to you", so the script assigns each task to `DEMO_ASSIGNEE` first.
+- **Set `DEMO_ASSIGNEE=<your Action-Center login email>` for a real run** (no default). `--dry-run`
+  needs no assignee.
+- Orphan-aware: completion returning "This action has been already deleted" is reported, not fatal.
+- 36 unit tests pass; mypy clean. Verified live end-to-end: a fresh grandchild obligation task was
+  assigned + completed → `Completed`; the orphan path was exercised against the dead queue.
+- Outcomes verified live: **Fiduciary = Approve/Deny**; **Obligation accepts any action string**
+  (no fixed outcomes), so the File/Withdraw defaults complete cleanly.
 
 **⚠ DEMO LANDMINE — the current 17 Action Center tasks are ORPHANED (dead).** Every one returns
 "This action has been already deleted": their backing Maestro case instances were stopped (manual

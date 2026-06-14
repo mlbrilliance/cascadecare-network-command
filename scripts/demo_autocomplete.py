@@ -24,6 +24,9 @@ Usage (after a master crisis run, once tasks have appeared in Action Center):
     uv run python scripts/demo_autocomplete.py             # complete the excess
 
 Env overrides:
+    DEMO_ASSIGNEE=you@org.com  (REQUIRED for a real run — the Action-Center user to
+                                assign tasks to before completing; usually your login
+                                email. AppTask completion fails if the task is unassigned.)
     DEMO_KEEP_FIDUCIARY=2    (default 2 — keep 1 to Approve + 1 to Deny live)
     DEMO_KEEP_OBLIGATION=2   (default 2 — keep 1 to File  + 1 to Withdraw live)
     DEMO_FOLDER_ID=3059530   (numeric Action-Center folder id; unset = all folders)
@@ -37,18 +40,16 @@ DEMO FLOW (run before going live to judges):
                de7b7c18-d743-4c8c-b555-9bd3b96fe524
        To action BOTH Approve AND Deny live you need 2 Fiduciary tasks → trigger twice.
     3. Wait ~2 min for grandchild obligation cases to spawn and tasks to appear.
-    4. Preview, then run:
+    4. Preview, then run (set DEMO_ASSIGNEE to your Action-Center login email):
            uv run python scripts/demo_autocomplete.py --dry-run
-           uv run python scripts/demo_autocomplete.py
+           DEMO_ASSIGNEE=you@org.com uv run python scripts/demo_autocomplete.py
     5. You are left with ~4 tasks. Action them LIVE on stage *before* stopping any
        jobs and within 24 h (after which the janitor sweep orphans them).
 
-NOTE on obligation outcome names: the Fiduciary app's outcomes are Approve/Deny
-(verified). The Obligation app's outcome button names are unverified (every task on
-the tenant was orphaned at authoring time, so none could be probed live). The
-defaults below are best guesses; if completion returns an invalid-action error on
-the first real run, set DEMO_OBLIGATION_ACTION_FILED / _WITHDRAWN to the names the
-error reports.
+NOTE on outcome names (verified live 2026-06-14): the Fiduciary app's outcomes are
+Approve/Deny. The Obligation app accepts ANY action string — it has no fixed outcome
+set — so the File/Withdraw defaults below complete cleanly. Override via
+DEMO_OBLIGATION_ACTION_FILED / _WITHDRAWN if desired.
 """
 
 from __future__ import annotations
@@ -64,6 +65,9 @@ from typing import Any
 KEEP_FIDUCIARY = int(os.getenv("DEMO_KEEP_FIDUCIARY", "2"))
 KEEP_OBLIGATION = int(os.getenv("DEMO_KEEP_OBLIGATION", "2"))
 UIP_BIN = os.getenv("DEMO_UIP_BIN", "uip")
+# Action-Center user to assign tasks to before completing. AppTask completion fails
+# ("This action is no longer assigned to you") unless the task is assigned first.
+ASSIGNEE = os.getenv("DEMO_ASSIGNEE", "")
 
 _FIDUCIARY_MARKER = "Fiduciary"
 _OBLIGATION_MARKER = "Obligation Response"
@@ -179,6 +183,11 @@ def filter_actionable(tasks: list[Task], folder_id: int | None = None) -> list[T
     return out
 
 
+def build_assign_argv(task: Task, assignee: str) -> list[str]:
+    """Build the `uip tasks assign ...` argument vector for one task."""
+    return ["tasks", "assign", str(task["Id"]), "--user", assignee]
+
+
 def build_complete_argv(task: Task, action: str, data: dict[str, str]) -> list[str]:
     """Build the `uip tasks complete ...` argument vector for one AppTask."""
     return [
@@ -231,6 +240,12 @@ def list_actionable_tasks(folder_id: int | None = None) -> list[Task]:
     return filter_actionable(parse_task_list(raw), folder_id)
 
 
+def assign_task(task: Task, assignee: str) -> bool:
+    """Assign one task to `assignee` (best-effort). Required before completing."""
+    result = _run_uip(build_assign_argv(task, assignee))
+    return result.get("Result") == "Success"
+
+
 def complete_task(task: Task, action: str, data: dict[str, str]) -> tuple[str, dict[str, Any]]:
     """Complete one AppTask; return (classification, raw_result)."""
     result = _run_uip(build_complete_argv(task, action, data))
@@ -264,6 +279,7 @@ def _auto_complete(
     *,
     is_fiduciary: bool,
     dry_run: bool,
+    assignee: str,
 ) -> dict[str, int]:
     tally = {COMPLETED: 0, ORPHANED: 0, FAILED: 0}
     label = "Fiduciary" if is_fiduciary else "Obligation"
@@ -279,6 +295,7 @@ def _auto_complete(
         if dry_run:
             print(f"  [DRY] {label} #{task['Id']} → {action}")
             continue
+        assign_task(task, assignee)  # required: completion fails on an unassigned task
         status, result = complete_task(task, action, payload)
         tally[status] += 1
         glyph = {COMPLETED: "✓", ORPHANED: "⊘", FAILED: "✗"}[status]
@@ -308,8 +325,16 @@ def run(dry_run: bool = False) -> None:
     print(f"  Obligation tasks  : {len(obligation):2d}  → auto {len(obl_auto)}, keep {len(obl_keep)}")
     print()
 
-    fid_tally = _auto_complete(fid_auto, is_fiduciary=True, dry_run=dry_run)
-    obl_tally = _auto_complete(obl_auto, is_fiduciary=False, dry_run=dry_run)
+    if not dry_run and (fid_auto or obl_auto) and not ASSIGNEE:
+        print(
+            "✗ DEMO_ASSIGNEE is not set. Completion assigns each task first and fails otherwise.\n"
+            "  Set it to your Action-Center login email, e.g.:\n"
+            "    DEMO_ASSIGNEE=you@org.com uv run python scripts/demo_autocomplete.py"
+        )
+        sys.exit(1)
+
+    fid_tally = _auto_complete(fid_auto, is_fiduciary=True, dry_run=dry_run, assignee=ASSIGNEE)
+    obl_tally = _auto_complete(obl_auto, is_fiduciary=False, dry_run=dry_run, assignee=ASSIGNEE)
 
     completed = fid_tally[COMPLETED] + obl_tally[COMPLETED]
     orphaned = fid_tally[ORPHANED] + obl_tally[ORPHANED]
