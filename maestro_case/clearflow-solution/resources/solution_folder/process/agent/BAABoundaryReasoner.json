@@ -13,7 +13,30 @@
         "name": "BAABoundaryReasoner"
       }
     ],
-    "runtimeDependencies": [],
+    "runtimeDependencies": [
+      {
+        "bindingType": "index",
+        "bindingKey": "BAA-corpus",
+        "bindingValues": {
+          "name": {
+            "defaultValue": "BAA-corpus",
+            "isExpression": false
+          },
+          "folderPath": {
+            "defaultValue": "Shared",
+            "isExpression": false
+          }
+        },
+        "bindingMetadata": {
+          "bindingsVersion": "2.2",
+          "solutionsSupport": "true"
+        },
+        "resourceKind": "Index",
+        "resourceKey": "bc3b9560-54f2-4ab7-1ede-08dec2e15f21",
+        "resourceName": "BAA-corpus_1",
+        "folderKey": "de7b7c18-d743-4c8c-b555-9bd3b96fe524"
+      }
+    ],
     "folders": [
       {
         "fullyQualifiedName": "solution_folder"

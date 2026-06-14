@@ -1,0 +1,38 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "BAA-corpus_1",
+    "kind": "index",
+    "apiVersion": "ecs.uipath.com/v2",
+    "isOverridable": true,
+    "dependencies": [
+      {
+        "name": "baa-corpus-docs",
+        "kind": "bucket"
+      }
+    ],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "name": "BAA-corpus_1",
+      "description": "",
+      "storageBucketReference": {
+        "name": "baa-corpus-docs",
+        "key": "bcc92c62-dc5c-4787-96d3-3f21f739ccbd",
+        "folderKey": "de7b7c18-d743-4c8c-b555-9bd3b96fe524"
+      },
+      "fileNameGlob": "All",
+      "dataSourceType": "StorageBucket",
+      "includeSubfolders": true,
+      "ingestionType": "Advanced",
+      "encrypted": false
+    },
+    "locks": [],
+    "key": "bc3b9560-54f2-4ab7-1ede-08dec2e15f21",
+    "files": []
+  }
+}
