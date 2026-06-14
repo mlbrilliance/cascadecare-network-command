@@ -8,6 +8,9 @@ requires-python = ">=3.12"
 dependencies = [
     "httpx>=0.28.1",
     "uipath>=2.10.79",
+    "langgraph>=0.2",
+    "langchain-core>=0.3",
+    "typing-extensions>=4.12",
 ]
 
 [project.optional-dependencies]

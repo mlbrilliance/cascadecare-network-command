@@ -224,13 +224,14 @@ Per-agent Agent Memory is a deploy-time toggle, not fabricated offline config; c
 | `assess-claim-disruption` | Quantifies per-stakeholder claim disruption and liquidity impact (parent Impact Assessment) |
 | `classify-obligation` | Classifies the raised obligation (subpoena / breach-notification / BAA-disclosure / audit) for the grandchild intake |
 
-### Coded Agents (4, Python SDK)
+### Coded Agents (5, Python SDK)
 
 | Agent | Role |
 |-------|------|
 | `claim-flow-anomaly-detector` | Classifies an anomaly score on claim telemetry |
 | `multi-customer-pattern-detector` | Cross-provider correlation; emits the cascade signal |
 | `forensic-self-exam-agent` | Coordinates the other agents; routing |
+| `forensic-self-exam-agent-langgraph` | LangGraph conversion of the forensic routing agent — demonstrates framework-agnostic agent layer under Maestro Case (conditional `StateGraph`: clamp → route → conditional LLM enrich) |
 | `case-job-janitor` | Ops utility on an hourly time trigger: sweeps zombie "Running" Orchestrator job rows left behind by completed case instances (the platform never flips them to Successful) |
 
 ### Integration Service API Workflows (19, `Type:"Api"`)
@@ -293,7 +294,7 @@ cascade_command/
   maestro_case/         # 3 caseplan.json definitions + clearflow-solution/ (.uipx packaging)
   maestro_bpmn/         # clearflow-ideal-incident-response.bpmn + case-closed-notification.bpmn
   maestro_flow/         # clearflow-demo-driver.flow (Demo Driver)
-  agents/               # 6 Agent Builder (agent.json) + 4 Coded Agents (agent.py)
+  agents/               # 6 Agent Builder (agent.json) + 5 Coded Agents (agent.py)
     prompts/            # 9 agent system prompts (Markdown — never inlined in Python)
   api_workflows/        # 19 Integration Service API Workflows
   apps/                 # clearflow-network-command UiPath App

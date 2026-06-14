@@ -1,0 +1,20 @@
+[project]
+name = "forensic-self-exam-agent-langgraph"
+version = "0.1.0"
+description = "LangGraph conversion of the Forensic Self-Exam agent — conditional routing graph under Maestro Case orchestration."
+authors = [{ name = "CascadeCare Network Command contributors" }]
+requires-python = ">=3.12"
+dependencies = [
+    "langgraph>=0.2",
+    "langchain-core>=0.3",
+    "typing-extensions>=4.12",
+    "uipath>=2.10",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+]
+
+[tool.uipath]
+type = "agent"

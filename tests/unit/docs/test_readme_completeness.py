@@ -121,7 +121,7 @@ ALL_ARTIFACT_GROUPS = {
     [
         ("Maestro Case", 3),
         ("Agent Builder agent", 6),
-        ("Coded Agent", 4),
+        ("Coded Agent", 5),
         ("API Workflow", 19),
         ("Maestro BPMN", 2),
         ("Maestro Flow", 1),
