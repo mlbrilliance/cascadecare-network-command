@@ -53,6 +53,15 @@ artifact on the tenant.
 **What you show:** Action Center — both the Tri-Party Fiduciary Conflict Review (master crisis)
 and the Prepare & File Obligation Response tasks (grandchild × 6).
 
+**Opening line (use the full task queue as the visual):**
+> "ClearFlow is currently holding 17 simultaneous compliance decisions — two payer fiduciary
+> conflicts and fifteen obligation responses — all waiting for human review. I'm going to action
+> four of them live."
+
+The 13 tasks you don't touch during the demo stay in Action Center throughout — this reinforces
+the scale story rather than distracting from it. Complete 4, watch those specific case branches
+advance on screen, move on.
+
 **What you say:**
 > "Two types of human decision, running in parallel.
 >
