@@ -1,57 +1,89 @@
-"""Demo pacing helper — auto-complete excess Action Center tasks.
+"""Demo pacing helper — auto-complete excess Action Center tasks via the `uip` CLI.
 
 Leaves exactly KEEP_FIDUCIARY Fiduciary tasks and KEEP_OBLIGATION Obligation
 Response tasks for the presenter to action live. All others are auto-completed
 with realistic alternating decisions so the case network advances cleanly.
 
-Usage (after master crisis has started and tasks have appeared in Action Center):
-    uv run python scripts/demo_autocomplete.py
+WHY THE CLI (not raw OData): Action-Center AppTasks complete through
+``POST /tasks/AppTasks/CompleteAppTask`` — the path the ``uip tasks complete
+--type AppTask`` verb uses. The earlier httpx version hit the generic
+``Tasks(id)/...OData.Complete`` action and ``forms/AppTasks/...`` by hand and got
+405s; those were wrong endpoints, not a platform limit. Listing likewise works
+with a normal ``uip login`` user token (``--as-admin``) — the "returns 0" problem
+was specific to client-credentials auth, which only sees its own tasks.
 
-Optional env override:
-    DEMO_KEEP_FIDUCIARY=2   (default 2 — 1 to Approve + 1 to Deny)
-    DEMO_KEEP_OBLIGATION=2  (default 2 — 1 to File  + 1 to Withdraw)
+ORPHANED TASKS: a Pending task whose backing Maestro case instance was stopped
+(manual ``jobs stop`` or the hourly case-job-janitor sweep) returns
+"This action has been already deleted" on completion. Such tasks are dead husks —
+they CANNOT be completed here AND cannot be actioned live in Action Center either.
+This script reports them separately; if everything is orphaned you need a FRESH
+master run.
 
-DEMO FLOW (run this before going live to judges):
-    1. Start master crisis run(s) via Demo Driver or:
-           uip maestro case process run AC365BA5-C807-4DFC-A009-00F3EA61E497 de7b7c18-d743-4c8c-b555-9bd3b96fe524
-       For both Approve AND Deny live: trigger the master crisis TWICE.
-    2. Wait ~2 min for grandchild obligation cases to spawn and Action Center
-       tasks to appear (watch Orchestrator Jobs or the live dashboard).
-    3. Run this script:
-           uv run python scripts/demo_autocomplete.py
-       Use --dry-run first to preview what will be auto-completed without touching anything:
+Usage (after a master crisis run, once tasks have appeared in Action Center):
+    uv run python scripts/demo_autocomplete.py --dry-run   # preview, touches nothing
+    uv run python scripts/demo_autocomplete.py             # complete the excess
+
+Env overrides:
+    DEMO_KEEP_FIDUCIARY=2    (default 2 — keep 1 to Approve + 1 to Deny live)
+    DEMO_KEEP_OBLIGATION=2   (default 2 — keep 1 to File  + 1 to Withdraw live)
+    DEMO_FOLDER_ID=3059530   (numeric Action-Center folder id; unset = all folders)
+    DEMO_OBLIGATION_ACTION_FILED / _WITHDRAWN  (outcome names — see note below)
+    DEMO_UIP_BIN=uip         (path to the uip binary)
+
+DEMO FLOW (run before going live to judges):
+    1. Confirm auth:  uip login status        (staging / hackathon26_042 / DefaultTenant)
+    2. Start a FRESH master crisis run:
+           uip maestro case process run AC365BA5-C807-4DFC-A009-00F3EA61E497 \
+               de7b7c18-d743-4c8c-b555-9bd3b96fe524
+       To action BOTH Approve AND Deny live you need 2 Fiduciary tasks → trigger twice.
+    3. Wait ~2 min for grandchild obligation cases to spawn and tasks to appear.
+    4. Preview, then run:
            uv run python scripts/demo_autocomplete.py --dry-run
-    4. You are left with exactly 4 tasks in Action Center:
-           Fiduciary  ×2  → Approve one | Deny the other
-           Obligation ×2  → File one    | Withdraw the other
-       Total live actions: 4. Estimated time on stage: ~60 seconds.
+           uv run python scripts/demo_autocomplete.py
+    5. You are left with ~4 tasks. Action them LIVE on stage *before* stopping any
+       jobs and within 24 h (after which the janitor sweep orphans them).
+
+NOTE on obligation outcome names: the Fiduciary app's outcomes are Approve/Deny
+(verified). The Obligation app's outcome button names are unverified (every task on
+the tenant was orphaned at authoring time, so none could be probed live). The
+defaults below are best guesses; if completion returns an invalid-action error on
+the first real run, set DEMO_OBLIGATION_ACTION_FILED / _WITHDRAWN to the names the
+error reports.
 """
 
 from __future__ import annotations
 
+import json
 import os
+import shutil
+import subprocess
 import sys
 from datetime import datetime, timezone
-from pathlib import Path
 from typing import Any
 
-import httpx
-
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
-from cascadecare.uipath.auth import UiPathCredentials, get_access_token
-
-FOLDER_KEY = os.getenv("DEMO_FOLDER_KEY", "de7b7c18-d743-4c8c-b555-9bd3b96fe524")
 KEEP_FIDUCIARY = int(os.getenv("DEMO_KEEP_FIDUCIARY", "2"))
 KEEP_OBLIGATION = int(os.getenv("DEMO_KEEP_OBLIGATION", "2"))
+UIP_BIN = os.getenv("DEMO_UIP_BIN", "uip")
 
 _FIDUCIARY_MARKER = "Fiduciary"
 _OBLIGATION_MARKER = "Obligation Response"
+
+# Outcome ("--action") names. Fiduciary outcomes are verified; obligation are guesses.
+_OBLIGATION_ACTION = {
+    "filed": os.getenv("DEMO_OBLIGATION_ACTION_FILED", "File"),
+    "withdrawn": os.getenv("DEMO_OBLIGATION_ACTION_WITHDRAWN", "Withdraw"),
+}
+
+# Result classifications returned by classify_result().
+COMPLETED = "completed"
+ORPHANED = "orphaned"
+FAILED = "failed"
 
 Task = dict[str, Any]
 
 
 # ---------------------------------------------------------------------------
-# Classification
+# Classification (pure)
 # ---------------------------------------------------------------------------
 
 
@@ -76,7 +108,7 @@ def partition_tasks(tasks: list[Task], keep: int) -> tuple[list[Task], list[Task
 
 
 # ---------------------------------------------------------------------------
-# Auto-decision helpers
+# Auto-decision helpers (pure)
 # ---------------------------------------------------------------------------
 
 
@@ -86,6 +118,16 @@ def auto_fiduciary_decision(index: int) -> str:
 
 def auto_obligation_disposition(index: int) -> str:
     return "filed" if index % 2 == 0 else "withdrawn"
+
+
+def fiduciary_action(decision: str) -> str:
+    """Outcome button name for the Fiduciary app (== the decision itself)."""
+    return decision
+
+
+def obligation_action(disposition: str) -> str:
+    """Outcome button name for the Obligation app (mapped from disposition)."""
+    return _OBLIGATION_ACTION.get(disposition, disposition)
 
 
 def _now_iso() -> str:
@@ -111,37 +153,88 @@ def build_obligation_payload(disposition: str, index: int) -> dict[str, str]:
 
 
 # ---------------------------------------------------------------------------
-# Orchestrator API
+# uip CLI plumbing (pure helpers + thin IO)
 # ---------------------------------------------------------------------------
 
 
-def list_pending_tasks(client: httpx.Client, folder_key: str) -> list[Task]:
-    """GET /odata/Tasks — returns all Pending tasks in the folder."""
-    resp = client.get(
+def parse_task_list(raw: dict[str, Any]) -> list[Task]:
+    """Extract the task array from a `uip tasks list --output json` response."""
+    data = raw.get("Data")
+    if data is None:
+        data = raw.get("value", [])
+    return list(data or [])
+
+
+def filter_actionable(tasks: list[Task], folder_id: int | None = None) -> list[Task]:
+    """Keep only Pending/Unassigned AppTasks (optionally scoped to a folder)."""
+    out: list[Task] = []
+    for t in tasks:
+        if t.get("Status") not in ("Pending", "Unassigned"):
+            continue
+        if t.get("Type") not in (None, "AppTask"):
+            continue
+        if folder_id is not None and t.get("FolderId") != folder_id:
+            continue
+        out.append(t)
+    return out
+
+
+def build_complete_argv(task: Task, action: str, data: dict[str, str]) -> list[str]:
+    """Build the `uip tasks complete ...` argument vector for one AppTask."""
+    return [
         "tasks",
-        params={"$filter": "Status eq 'Pending'", "$top": 200},
-        headers={"X-UIPATH-OrganizationUnitId": folder_key},
-    )
-    resp.raise_for_status()
-    return list(resp.json().get("value", []))
+        "complete",
+        str(task["Id"]),
+        "--type",
+        "AppTask",
+        "--folder-id",
+        str(task.get("FolderId", "")),
+        "--action",
+        action,
+        "--data",
+        json.dumps(data),
+    ]
 
 
-def complete_task(
-    client: httpx.Client,
-    folder_key: str,
-    task_id: int,
-    action_data: dict[str, str],
-) -> None:
-    """POST /odata/Tasks({id})/Complete — mark a task complete with output data."""
-    resp = client.post(
-        f"tasks({task_id})/UiPath.Server.Configuration.OData.Complete",
-        json={"actionData": action_data},
-        headers={
-            "X-UIPATH-OrganizationUnitId": folder_key,
-            "Content-Type": "application/json",
-        },
+def classify_result(result: dict[str, Any]) -> str:
+    """Map a `uip tasks complete` JSON result to COMPLETED / ORPHANED / FAILED."""
+    if result.get("Result") == "Success":
+        return COMPLETED
+    blob = f"{result.get('Instructions', '')} {result.get('Message', '')}".lower()
+    if "already deleted" in blob or "already been completed" in blob:
+        return ORPHANED
+    return FAILED
+
+
+def _run_uip(args: list[str]) -> dict[str, Any]:
+    """Run `uip <args> --output json` and return the parsed JSON object."""
+    proc = subprocess.run(
+        [UIP_BIN, *args, "--output", "json"],
+        capture_output=True,
+        text=True,
     )
-    resp.raise_for_status()
+    out = proc.stdout.strip()
+    try:
+        parsed = json.loads(out)
+    except json.JSONDecodeError as exc:
+        detail = out[:300] or proc.stderr.strip()[:300]
+        raise RuntimeError(
+            f"`uip {' '.join(args)}` did not return JSON (exit {proc.returncode}): {detail}"
+        ) from exc
+    if not isinstance(parsed, dict):
+        return {"Data": parsed}
+    return parsed
+
+
+def list_actionable_tasks(folder_id: int | None = None) -> list[Task]:
+    raw = _run_uip(["tasks", "list", "--as-admin"])
+    return filter_actionable(parse_task_list(raw), folder_id)
+
+
+def complete_task(task: Task, action: str, data: dict[str, str]) -> tuple[str, dict[str, Any]]:
+    """Complete one AppTask; return (classification, raw_result)."""
+    result = _run_uip(build_complete_argv(task, action, data))
+    return classify_result(result), result
 
 
 # ---------------------------------------------------------------------------
@@ -149,25 +242,61 @@ def complete_task(
 # ---------------------------------------------------------------------------
 
 
-def _build_http_client(creds: UiPathCredentials, token: str) -> httpx.Client:
-    base = f"{creds.tenant_url}/orchestrator_/odata/"
-    return httpx.Client(
-        base_url=base,
-        headers={"Authorization": f"Bearer {token}"},
-        timeout=30.0,
-    )
+def _preflight() -> bool:
+    if shutil.which(UIP_BIN) is None and not os.path.exists(UIP_BIN):
+        print(f"✗ `{UIP_BIN}` not found on PATH. Install the uip CLI or set DEMO_UIP_BIN.")
+        return False
+    try:
+        status = _run_uip(["login", "status"])
+    except RuntimeError as exc:
+        print(f"✗ Could not read login status: {exc}")
+        return False
+    if status.get("Data", {}).get("Status") != "Logged in":
+        print("✗ Not logged in. Run `uip login` (staging / hackathon26_042 / DefaultTenant).")
+        return False
+    d = status["Data"]
+    print(f"✓ Logged in: {d.get('Organization')}/{d.get('Tenant')} @ {d.get('BaseUrl')}")
+    return True
+
+
+def _auto_complete(
+    bucket: list[Task],
+    *,
+    is_fiduciary: bool,
+    dry_run: bool,
+) -> dict[str, int]:
+    tally = {COMPLETED: 0, ORPHANED: 0, FAILED: 0}
+    label = "Fiduciary" if is_fiduciary else "Obligation"
+    for i, task in enumerate(bucket):
+        if is_fiduciary:
+            decision = auto_fiduciary_decision(i)
+            action = fiduciary_action(decision)
+            payload = build_fiduciary_payload(decision, i)
+        else:
+            disposition = auto_obligation_disposition(i)
+            action = obligation_action(disposition)
+            payload = build_obligation_payload(disposition, i)
+        if dry_run:
+            print(f"  [DRY] {label} #{task['Id']} → {action}")
+            continue
+        status, result = complete_task(task, action, payload)
+        tally[status] += 1
+        glyph = {COMPLETED: "✓", ORPHANED: "⊘", FAILED: "✗"}[status]
+        note = "" if status == COMPLETED else f"  ({result.get('Instructions') or result.get('Message')})"
+        print(f"  [{glyph}] {label} #{task['Id']} → {action}{note}")
+    return tally
 
 
 def run(dry_run: bool = False) -> None:
-    env_path = Path(__file__).parent.parent / ".env"
-    creds = UiPathCredentials.from_env(env_path if env_path.exists() else None)
-    token = get_access_token(creds, scopes=["OR.Tasks", "OR.Execution", "OR.Cases"])
+    if not _preflight():
+        sys.exit(1)
 
-    with _build_http_client(creds, token) as client:
-        tasks = list_pending_tasks(client, FOLDER_KEY)
+    folder_env = os.getenv("DEMO_FOLDER_ID")
+    folder_id = int(folder_env) if folder_env else None
 
+    tasks = list_actionable_tasks(folder_id)
     if not tasks:
-        print("No pending Action Center tasks found. Is the master crisis running?")
+        print("No pending Action Center tasks found. Is a master crisis running?")
         return
 
     fiduciary, obligation = classify_tasks(tasks)
@@ -175,32 +304,40 @@ def run(dry_run: bool = False) -> None:
     obl_auto, obl_keep = partition_tasks(obligation, keep=KEEP_OBLIGATION)
 
     print(f"\n{'DRY RUN — ' if dry_run else ''}Demo Autocomplete")
-    print(f"  Fiduciary tasks found   : {len(fiduciary)}  → auto: {len(fid_auto)}, keep: {len(fid_keep)}")
-    print(f"  Obligation tasks found  : {len(obligation)} → auto: {len(obl_auto)}, keep: {len(obl_keep)}")
+    print(f"  Fiduciary tasks   : {len(fiduciary):2d}  → auto {len(fid_auto)}, keep {len(fid_keep)}")
+    print(f"  Obligation tasks  : {len(obligation):2d}  → auto {len(obl_auto)}, keep {len(obl_keep)}")
+    print()
 
-    with _build_http_client(creds, token) as client:
-        for i, task in enumerate(fid_auto):
-            decision = auto_fiduciary_decision(i)
-            payload = build_fiduciary_payload(decision, i)
-            if not dry_run:
-                complete_task(client, FOLDER_KEY, task["Id"], payload)
-            print(f"  [AUTO] Fiduciary #{task['Id']} → {decision}")
+    fid_tally = _auto_complete(fid_auto, is_fiduciary=True, dry_run=dry_run)
+    obl_tally = _auto_complete(obl_auto, is_fiduciary=False, dry_run=dry_run)
 
-        for i, task in enumerate(obl_auto):
-            disposition = auto_obligation_disposition(i)
-            payload = build_obligation_payload(disposition, i)
-            if not dry_run:
-                complete_task(client, FOLDER_KEY, task["Id"], payload)
-            print(f"  [AUTO] Obligation #{task['Id']} → {disposition}")
+    completed = fid_tally[COMPLETED] + obl_tally[COMPLETED]
+    orphaned = fid_tally[ORPHANED] + obl_tally[ORPHANED]
+    failed = fid_tally[FAILED] + obl_tally[FAILED]
+    attempted = len(fid_auto) + len(obl_auto)
 
-    print("\n  ✓ Tasks remaining for YOU to action live:")
+    if not dry_run:
+        print(f"\n  Completed {completed} | orphaned {orphaned} | failed {failed} (of {attempted})")
+        if orphaned and completed == 0:
+            print(
+                "\n  ⚠ EVERY task is orphaned — their case instances were stopped.\n"
+                "    These are DEAD: they cannot be completed here OR actioned live on stage.\n"
+                "    Start a FRESH master crisis run before demoing."
+            )
+        elif orphaned:
+            print(f"  ⚠ {orphaned} orphaned task(s) skipped (dead — backing case instance stopped).")
+        if failed:
+            print(f"  ✗ {failed} failed for another reason — check the messages above.")
+
+    print("\n  Tasks remaining for YOU to action live:")
     for t in fid_keep:
         print(f"    → Fiduciary  #{t['Id']}  (Approve one, Deny one)")
     for t in obl_keep:
         print(f"    → Obligation #{t['Id']}  (File one, Withdraw one)")
+    if (fid_keep or obl_keep) and not dry_run and orphaned and completed == 0:
+        print("    (these are likely orphaned too — verify against a fresh run)")
     print()
 
 
 if __name__ == "__main__":
-    dry_run = "--dry-run" in sys.argv
-    run(dry_run=dry_run)
+    run(dry_run="--dry-run" in sys.argv)

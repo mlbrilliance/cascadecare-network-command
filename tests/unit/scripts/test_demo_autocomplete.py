@@ -1,20 +1,15 @@
-"""Tests for scripts/demo_autocomplete.py — demo pacing helper."""
+"""Tests for scripts/demo_autocomplete.py — demo pacing helper (uip CLI driven)."""
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
-from unittest.mock import MagicMock, call, patch
-
-import pytest
+from datetime import datetime
+from unittest.mock import patch
 
 import scripts.demo_autocomplete as da
 
 
-FOLDER_KEY = "de7b7c18-d743-4c8c-b555-9bd3b96fe524"
-
-
-def _task(task_id: int, title: str) -> dict:
-    return {"Id": task_id, "Title": title, "Status": "Pending"}
+def _task(task_id: int, title: str, folder_id: int = 3059530, status: str = "Pending", type_: str = "AppTask") -> dict:
+    return {"Id": task_id, "Title": title, "Status": status, "Type": type_, "FolderId": folder_id}
 
 
 FIDUCIARY_TASKS = [
@@ -118,50 +113,116 @@ class TestAutoDecision:
         assert dispositions == ["filed", "withdrawn", "filed", "withdrawn"]
 
 
+class TestActionMapping:
+    def test_fiduciary_action_is_decision(self):
+        assert da.fiduciary_action("Approve") == "Approve"
+        assert da.fiduciary_action("Deny") == "Deny"
+
+    def test_obligation_action_maps_disposition(self):
+        # Defaults are best-guess outcome names (env-overridable).
+        assert da.obligation_action("filed") == "File"
+        assert da.obligation_action("withdrawn") == "Withdraw"
+
+    def test_obligation_action_unknown_passthrough(self):
+        assert da.obligation_action("escalated") == "escalated"
+
+
+class TestParseTaskList:
+    def test_data_key(self):
+        raw = {"Result": "Success", "Data": FIDUCIARY_TASKS}
+        assert da.parse_task_list(raw) == FIDUCIARY_TASKS
+
+    def test_value_key_fallback(self):
+        raw = {"value": OBLIGATION_TASKS}
+        assert da.parse_task_list(raw) == OBLIGATION_TASKS
+
+    def test_empty(self):
+        assert da.parse_task_list({"Data": []}) == []
+        assert da.parse_task_list({}) == []
+
+
+class TestFilterActionable:
+    def test_keeps_pending_apptasks(self):
+        tasks = FIDUCIARY_TASKS + OBLIGATION_TASKS
+        assert da.filter_actionable(tasks) == tasks
+
+    def test_drops_completed(self):
+        tasks = [_task(1, "Tri-Party Fiduciary Conflict", status="Completed")]
+        assert da.filter_actionable(tasks) == []
+
+    def test_drops_non_apptask_type(self):
+        tasks = [_task(1, "Tri-Party Fiduciary Conflict", type_="FormTask")]
+        assert da.filter_actionable(tasks) == []
+
+    def test_folder_scope(self):
+        a = _task(1, "Tri-Party Fiduciary Conflict", folder_id=3059530)
+        b = _task(2, "Prepare & File Obligation Response", folder_id=999)
+        assert da.filter_actionable([a, b], folder_id=3059530) == [a]
+
+
+class TestBuildCompleteArgv:
+    def test_includes_id_type_folder_action_data(self):
+        argv = da.build_complete_argv(
+            FIDUCIARY_TASKS[0], action="Approve", data={"ReviewerDecision": "Approve"}
+        )
+        assert argv[:2] == ["tasks", "complete"]
+        assert "1001" in argv
+        assert "--type" in argv and "AppTask" in argv
+        assert "--folder-id" in argv and "3059530" in argv
+        assert "--action" in argv and "Approve" in argv
+        # --data is a JSON-encoded string
+        data_idx = argv.index("--data") + 1
+        assert '"ReviewerDecision": "Approve"' in argv[data_idx]
+
+
+class TestClassifyResult:
+    def test_success_is_completed(self):
+        assert da.classify_result({"Result": "Success"}) == da.COMPLETED
+
+    def test_already_deleted_is_orphaned(self):
+        result = {"Result": "Failure", "Instructions": "This action has been already deleted"}
+        assert da.classify_result(result) == da.ORPHANED
+
+    def test_other_failure_is_failed(self):
+        result = {"Result": "Failure", "Message": "Invalid action 'Approve'"}
+        assert da.classify_result(result) == da.FAILED
+
+
 class TestCompleteTask:
-    def test_complete_calls_post(self):
-        client = MagicMock()
-        resp = MagicMock()
-        resp.raise_for_status = MagicMock()
-        client.post.return_value = resp
+    def test_completes_via_run_uip(self):
+        with patch.object(da, "_run_uip", return_value={"Result": "Success"}) as m:
+            status, _ = da.complete_task(
+                FIDUCIARY_TASKS[0], action="Approve", data={"ReviewerDecision": "Approve"}
+            )
+        assert status == da.COMPLETED
+        m.assert_called_once()
+        argv = m.call_args[0][0]
+        assert argv[:2] == ["tasks", "complete"]
 
-        da.complete_task(client, FOLDER_KEY, task_id=1001, action_data={"ReviewerDecision": "Approve"})
-
-        client.post.assert_called_once()
-        url = client.post.call_args[0][0]
-        assert "1001" in url
-        assert "Complete" in url
-
-    def test_complete_includes_folder_key_header(self):
-        client = MagicMock()
-        resp = MagicMock()
-        resp.raise_for_status = MagicMock()
-        client.post.return_value = resp
-
-        da.complete_task(client, FOLDER_KEY, task_id=1001, action_data={})
-
-        _, kwargs = client.post.call_args
-        headers = kwargs.get("headers", {})
-        assert headers.get("X-UIPATH-OrganizationUnitId") == FOLDER_KEY
+    def test_orphan_classified(self):
+        orphan = {"Result": "Failure", "Instructions": "This action has been already deleted"}
+        with patch.object(da, "_run_uip", return_value=orphan):
+            status, _ = da.complete_task(OBLIGATION_TASKS[0], action="File", data={})
+        assert status == da.ORPHANED
 
 
-class TestListPendingTasks:
-    def test_returns_value_list(self):
-        client = MagicMock()
-        resp = MagicMock()
-        resp.raise_for_status = MagicMock()
-        resp.json.return_value = {"value": FIDUCIARY_TASKS + OBLIGATION_TASKS}
-        client.get.return_value = resp
+class TestRunUip:
+    def test_parses_json_stdout(self):
+        completed = type("P", (), {"stdout": '{"Result":"Success"}', "stderr": "", "returncode": 0})()
+        with patch.object(da.subprocess, "run", return_value=completed):
+            assert da._run_uip(["tasks", "list"]) == {"Result": "Success"}
 
-        result = da.list_pending_tasks(client, FOLDER_KEY)
-        assert len(result) == len(FIDUCIARY_TASKS) + len(OBLIGATION_TASKS)
+    def test_non_json_raises(self):
+        completed = type("P", (), {"stdout": "<html>nope</html>", "stderr": "", "returncode": 1})()
+        with patch.object(da.subprocess, "run", return_value=completed):
+            try:
+                da._run_uip(["tasks", "list"])
+            except RuntimeError as exc:
+                assert "did not return JSON" in str(exc)
+            else:
+                raise AssertionError("expected RuntimeError")
 
-    def test_empty_tenant_returns_empty_list(self):
-        client = MagicMock()
-        resp = MagicMock()
-        resp.raise_for_status = MagicMock()
-        resp.json.return_value = {"value": []}
-        client.get.return_value = resp
-
-        result = da.list_pending_tasks(client, FOLDER_KEY)
-        assert result == []
+    def test_non_dict_json_wrapped_in_data(self):
+        completed = type("P", (), {"stdout": "[1, 2, 3]", "stderr": "", "returncode": 0})()
+        with patch.object(da.subprocess, "run", return_value=completed):
+            assert da._run_uip(["x"]) == {"Data": [1, 2, 3]}
