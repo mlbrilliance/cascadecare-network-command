@@ -10,6 +10,21 @@ Usage (after master crisis has started and tasks have appeared in Action Center)
 Optional env override:
     DEMO_KEEP_FIDUCIARY=2   (default 2 — 1 to Approve + 1 to Deny)
     DEMO_KEEP_OBLIGATION=2  (default 2 — 1 to File  + 1 to Withdraw)
+
+DEMO FLOW (run this before going live to judges):
+    1. Start master crisis run(s) via Demo Driver or:
+           uip maestro case process run AC365BA5-C807-4DFC-A009-00F3EA61E497 de7b7c18-d743-4c8c-b555-9bd3b96fe524
+       For both Approve AND Deny live: trigger the master crisis TWICE.
+    2. Wait ~2 min for grandchild obligation cases to spawn and Action Center
+       tasks to appear (watch Orchestrator Jobs or the live dashboard).
+    3. Run this script:
+           uv run python scripts/demo_autocomplete.py
+       Use --dry-run first to preview what will be auto-completed without touching anything:
+           uv run python scripts/demo_autocomplete.py --dry-run
+    4. You are left with exactly 4 tasks in Action Center:
+           Fiduciary  ×2  → Approve one | Deny the other
+           Obligation ×2  → File one    | Withdraw the other
+       Total live actions: 4. Estimated time on stage: ~60 seconds.
 """
 
 from __future__ import annotations
