@@ -1,0 +1,169 @@
+{
+    "$schema": "https://cloud.uipath.com/draft/2024-12/entry-point",
+    "$id": "entry-points.json",
+    "entryPoints": [
+        {
+            "filePath": "agent",
+            "uniqueId": "708f40e4-8f1f-4c0e-aa40-565171d89cd7",
+            "type": "agent",
+            "input": {
+                "type": "object",
+                "properties": {
+                    "clearflow_indicators": {
+                        "title": "Clearflow Indicators",
+                        "type": "integer"
+                    },
+                    "nimbus_indicators": {
+                        "title": "Nimbus Indicators",
+                        "type": "integer"
+                    },
+                    "clearflow_self_victim": {
+                        "title": "Clearflow Self Victim",
+                        "type": "boolean"
+                    },
+                    "clearflow_clamped": {
+                        "title": "Clearflow Clamped",
+                        "type": "integer"
+                    },
+                    "nimbus_clamped": {
+                        "title": "Nimbus Clamped",
+                        "type": "integer"
+                    },
+                    "route_to": {
+                        "title": "Route To",
+                        "type": "string"
+                    },
+                    "clearflow_vector_status": {
+                        "title": "Clearflow Vector Status",
+                        "type": "string"
+                    },
+                    "rationale": {
+                        "title": "Rationale",
+                        "type": "string"
+                    },
+                    "error_type": {
+                        "title": "Error Type",
+                        "type": "string"
+                    },
+                    "error_message": {
+                        "title": "Error Message",
+                        "type": "string"
+                    }
+                },
+                "required": []
+            },
+            "output": {
+                "type": "object",
+                "properties": {
+                    "clearflow_indicators": {
+                        "title": "Clearflow Indicators",
+                        "type": "integer"
+                    },
+                    "nimbus_indicators": {
+                        "title": "Nimbus Indicators",
+                        "type": "integer"
+                    },
+                    "clearflow_self_victim": {
+                        "title": "Clearflow Self Victim",
+                        "type": "boolean"
+                    },
+                    "clearflow_clamped": {
+                        "title": "Clearflow Clamped",
+                        "type": "integer"
+                    },
+                    "nimbus_clamped": {
+                        "title": "Nimbus Clamped",
+                        "type": "integer"
+                    },
+                    "route_to": {
+                        "title": "Route To",
+                        "type": "string"
+                    },
+                    "clearflow_vector_status": {
+                        "title": "Clearflow Vector Status",
+                        "type": "string"
+                    },
+                    "rationale": {
+                        "title": "Rationale",
+                        "type": "string"
+                    },
+                    "error_type": {
+                        "title": "Error Type",
+                        "type": "string"
+                    },
+                    "error_message": {
+                        "title": "Error Message",
+                        "type": "string"
+                    }
+                },
+                "required": []
+            },
+            "graph": {
+                "nodes": [
+                    {
+                        "id": "__start__",
+                        "name": "__start__",
+                        "type": "__start__",
+                        "subgraph": null,
+                        "metadata": {}
+                    },
+                    {
+                        "id": "clamp_node",
+                        "name": "clamp_node",
+                        "type": "node",
+                        "subgraph": null,
+                        "metadata": {}
+                    },
+                    {
+                        "id": "route_node",
+                        "name": "route_node",
+                        "type": "node",
+                        "subgraph": null,
+                        "metadata": {}
+                    },
+                    {
+                        "id": "enrich_node",
+                        "name": "enrich_node",
+                        "type": "node",
+                        "subgraph": null,
+                        "metadata": {}
+                    },
+                    {
+                        "id": "__end__",
+                        "name": "__end__",
+                        "type": "__end__",
+                        "subgraph": null,
+                        "metadata": {}
+                    }
+                ],
+                "edges": [
+                    {
+                        "source": "__start__",
+                        "target": "clamp_node",
+                        "label": null
+                    },
+                    {
+                        "source": "clamp_node",
+                        "target": "route_node",
+                        "label": null
+                    },
+                    {
+                        "source": "route_node",
+                        "target": "__end__",
+                        "label": "skip"
+                    },
+                    {
+                        "source": "route_node",
+                        "target": "enrich_node",
+                        "label": "enrich"
+                    },
+                    {
+                        "source": "enrich_node",
+                        "target": "__end__",
+                        "label": null
+                    }
+                ]
+            }
+        }
+    ]
+}

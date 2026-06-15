@@ -41,7 +41,8 @@ fi
 #
 # Deployed SEPARATELY (NOT in this map, NOT solution-manifest projects):
 #   - Coded Agents (uip codedagent): agents/claim-flow-anomaly-detector,
-#       agents/forensic-self-exam-agent, agents/multi-customer-pattern-detector
+#       agents/forensic-self-exam-agent, agents/multi-customer-pattern-detector,
+#       agents/forensic-self-exam-agent-langgraph (LangGraph via uipath-langchain)
 #   - Coded App (uip codedapp): apps/clearflow-network-command
 #     (blocked on a tenant OAuth External Application — see tasks.md)
 #   - Integration Service API Workflows: api_workflows/* (14 mock external-system

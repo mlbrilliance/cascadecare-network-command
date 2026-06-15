@@ -1,0 +1,6 @@
+{
+  "ProjectType": "Agent",
+  "Name": "forensic-self-exam-agent-langgraph",
+  "Description": "LangGraph conversion of the Forensic Self-Exam agent \u2014 conditional routing graph under Maestro Case orchestration.",
+  "MainFile": null
+}

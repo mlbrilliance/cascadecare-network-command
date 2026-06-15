@@ -1,49 +1,15 @@
 {
-  "entryPoints": [
-    {
-      "filePath": "agent",
-      "type": "agent",
-      "input": {
-        "type": "object",
-        "properties": {
-          "clearflow_indicators": {
-            "type": "integer",
-            "default": 0,
-            "description": "Count of forensic indicators implicating ClearFlow's own systems."
-          },
-          "nimbus_indicators": {
-            "type": "integer",
-            "default": 0,
-            "description": "Count of forensic indicators pointing at the Nimbus vendor."
-          },
-          "clearflow_self_victim": {
-            "type": "boolean",
-            "default": false,
-            "description": "Whether ClearFlow's own systems were also compromised once cleared as vector."
-          }
-        },
-        "required": []
-      },
-      "output": {
-        "type": "object",
-        "properties": {
-          "route_to": {
-            "type": "string",
-            "description": "Routing destination: vector-hypothesis | baa-boundary | escalate"
-          },
-          "clearflow_vector_status": {
-            "type": "string",
-            "description": "ClearFlow's vector standing: unknown | cleared | co-victim"
-          },
-          "rationale": {
-            "type": "string",
-            "description": "LLM-generated plain-language rationale (empty on escalate or if LLM unavailable)."
-          },
-          "error_type": {"type": "string"},
-          "error_message": {"type": "string"}
-        },
-        "required": ["route_to", "clearflow_vector_status"]
-      }
-    }
-  ]
+  "$schema": "https://cloud.uipath.com/draft/2024-12/uipath",
+  "runtimeOptions": {
+    "isConversational": false
+  },
+  "packOptions": {
+    "fileExtensionsIncluded": [],
+    "filesIncluded": [],
+    "filesExcluded": [],
+    "directoriesExcluded": [],
+    "includeUvLock": true
+  },
+  "functions": {},
+  "agents": {}
 }

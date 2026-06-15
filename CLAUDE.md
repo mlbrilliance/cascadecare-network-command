@@ -21,16 +21,26 @@ commit — no exceptions.
 ## Architecture
 
 Pure-UiPath at runtime; Python is build-time tooling only. **The Maestro Case canvas IS
-the orchestrator** — no LangGraph, no Python harness. Agents invoke as `type: "agent"`
-tasks within stages; all LLM calls flow through the UiPath LLM Gateway so Trust Layer
-PHI/PII guardrails apply uniformly.
+the orchestrator.** Agents invoke as `type: "agent"` tasks within stages; all LLM calls
+flow through the UiPath LLM Gateway so Trust Layer PHI/PII guardrails apply uniformly.
+
+**LangGraph at the agent-SDK layer is permitted** — a Coded Agent may use a LangGraph
+`StateGraph` as its internal implementation, deployed via `uipath-langchain`
+(`langgraph.json` + `uipath init` codegen). What remains prohibited is a Python/LangGraph
+harness *replacing* the Maestro Case canvas as the orchestrator.
+
+LangGraph agent deploy pattern:
+```bash
+uip codedagent pack    -n <agent-name> -v <ver>
+uip codedagent publish -n <agent-name> -v <ver>
+```
 
 Three `caseplan.json` files wired via the native `case-management` task type give
 three-level nesting: `clearflow-master-crisis` (1) → `clearflow-stakeholder-parent` (~9)
 → `clearflow-obligation-grandchild` (~12). Hero moment: Reversal 3 (Day 30) fans 6
 grandchild spawns on the canvas.
 
-Agents: 3 Coded Agents (Python SDK, `uipath-coded-apps`, UiPath first-party LLM) + 4
+Agents: 4 Coded Agents (Python SDK; one uses LangGraph via `uipath-langchain`) + 4
 Agent Builder agents (low-code, `uipath-agents`, Claude BYO-LLM; BAA Boundary Reasoner
 uses Context Grounding on `BAA-corpus`). Prompts live in `agents/prompts/*.md` — NEVER
 inline a prompt in Python.
