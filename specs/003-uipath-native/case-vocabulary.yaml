@@ -38,6 +38,18 @@ variables:
       name: SimulatedDay
       type: integer
       notes: "Demo timeline day (0–90). Incremented by Demo Driver events."
+    - id: var_clearflow_indicators
+      name: ClearFlowIndicators
+      type: integer
+      notes: "Forensic evidence: count of indicators implicating ClearFlow as the breach vector. Wired into the LangGraph forensic agent (0 at Reversal 2)."
+    - id: var_nimbus_indicators
+      name: NimbusIndicators
+      type: integer
+      notes: "Forensic evidence: count of indicators implicating the Nimbus subcontractor as the breach vector. Wired into the LangGraph forensic agent (2 at Reversal 2)."
+    - id: var_clearflow_self_victim
+      name: ClearFlowSelfVictim
+      type: boolean
+      notes: "Forensic evidence: whether ClearFlow is itself a victim rather than the breach vector. Wired into the LangGraph forensic agent (false at Reversal 2)."
 
   stakeholder_parent:
     # These variables will be wired when clearflow-stakeholder-parent is authored in Slice 010.
