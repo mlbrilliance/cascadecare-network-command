@@ -33,3 +33,8 @@ failure) was authored test-first — a failing test proved the silent swallow be
   `de55974` (constellation), `4a3dd07` (Energy-Flow), each pack/publish/deployed live via `uip
   codedapp`. The redesign slice ran the mandatory `/thermo-nuclear-code-quality-review` +
   `/improve-codebase-architecture` loop, applying every Blocker before commit.
+
+These artifacts map to all five Track-1 scoring dimensions (originality, orchestration, exception
+handling, component variety, presentation) — see `CODING_AGENTS.md` § "How the build maps to the 5
+judging edges". The forensic **LangGraph** coded agent additionally qualifies for the **Specialist
+Coded Agent challenge**.

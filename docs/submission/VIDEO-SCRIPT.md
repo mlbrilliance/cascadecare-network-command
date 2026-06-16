@@ -37,10 +37,12 @@ keep agent runs and spawns at 1× so motion is visible.
 ### 0:55–1:25 — Reversal 2: vector isolation
 *Show: Vector Isolation stage; agent run trace (LLM Gateway / Trust Layer panel if quick).*
 
-> "The **Forensic Self-Exam Agent** coordinates the internal sweep, and the **Vector
-> Hypothesis Agent** — Claude, running through UiPath's LLM Gateway with Trust Layer PHI
-> policies on every call — clears ClearFlow and points at the Nimbus patient-engagement
-> vendor. Reversal 2: ClearFlow is a bystander with a strategic posture decision."
+> "The **Forensic Self-Exam Agent** — a **LangGraph** state graph on the UiPath Python SDK —
+> coordinates the internal sweep, and the **Vector Hypothesis Agent** — Claude, running through
+> UiPath's LLM Gateway with Trust Layer PHI policies on every call — clears ClearFlow and points
+> at the Nimbus patient-engagement vendor. And it fails safe: if the Gateway ever drops, the agent
+> surfaces the error and still routes correctly — the case never crashes. Reversal 2: ClearFlow is
+> a bystander with a strategic posture decision."
 
 ### 1:25–2:50 — **HERO: Reversal 3 — the cascade fan** (~2:30 per shot plan)
 *Show: split between master canvas (Regulatory Response stage) and Case Instances view.
@@ -77,10 +79,12 @@ job 77c506d8 quotes the corpus section-by-section and flags Alpha + Delta confli
 *Show: master pauses at Fiduciary Review; switch to Action Center; complete the form on camera.*
 
 > "Day 45. Payers demand data the BAAs forbid. The **Fiduciary Conflict Detector** maps the
-> three-way conflict and the case **stops for a human** — a tri-party approval in Action
-> Center. I'm approving as counsel… and the case resumes. Down at the grandchild level, the
-> **Classify Obligation agent** has already triaged each obligation, and its own file-or-
-> withdraw human gate works the same way."
+> three-way conflict and the case **stops for a human** — a tri-party ruling in Action Center.
+> I rule as counsel, with my rationale — and the case records *who* decided, *why*, and *when*.
+> This decision isn't cosmetic: it's read downstream, framing ClearFlow as cooperative or
+> contesting in the litigation stage. Down at the grandchild level, the **Classify Obligation
+> agent** has already triaged each obligation, and its own file-or-withdraw human gate works the
+> same way."
 
 ### 4:00–4:35 — Reversal 5 + closure proof
 *Show: Litigation Defense stage, then Case Instances view as everything drains to Completed.*
@@ -92,13 +96,14 @@ job 77c506d8 quotes the corpus section-by-section and flags Alpha + Delta confli
 > agent, the **Case Job Janitor**, sweeps platform job-state drift on an hourly trigger."
 
 ### 4:35–5:00 — Close (Case App / dashboard + repo)
-*Show: OOTB Case App summary + sections [VERIFY on 1.0.24]; fall back to the all-Completed
+*Show: OOTB Case App summary + sections [VERIFY on 1.0.32]; fall back to the all-Completed
 heatmap if Case App isn't live. End card with repo URL.*
 
-> "Three nested case levels, ten named agents, five goal reversals, two human gates, Trust
-> Layer on every LLM call — all UiPath-native, all live on Automation Cloud, and built
-> end-to-end with Claude Code. CascadeCare Network Command: the living case layer for
-> healthcare financial shockwaves."
+> "Three nested case levels, ten named agents, five goal reversals, two human gates, **thirteen
+> UiPath product surfaces**, Trust Layer on every LLM call — and when an agent's Gateway call
+> fails, it degrades gracefully instead of crashing the case. All UiPath-native, all live on
+> Automation Cloud, and built end-to-end with Claude Code. CascadeCare Network Command: the living
+> case layer for healthcare financial shockwaves."
 
 ---
 
@@ -124,6 +129,9 @@ heatmap if Case App isn't live. End card with repo URL.*
   index"; do NOT claim more than retrieval (e.g., no "fine-tuned" language).
 - If a transient LLM Gateway 520 faults an agent mid-recording: `uip maestro case instance
   retry <id>` resumes the run — cut the pause in post rather than restarting.
+- Both Approve and Deny **advance** the fiduciary gate the same way — the decision is data-driven
+  (`reviewerDecision` consumed downstream), NOT a stage rework. Never narrate Deny as "rewinding"
+  a stage.
 
 ## Post-production
 
@@ -131,3 +139,9 @@ heatmap if Case App isn't live. End card with repo URL.*
 - Lower-third captions at every agent beat (checklist above).
 - Separate 1-minute coding-agent reel: screen captures of Claude Code sessions
   (`docs/coding-agents/screenshots/`), narrated over the CLAUDE_CODE_USAGE.md highlights.
+- Separate **90-second Criterion-3 clip** (exception handling) per
+  `docs/submission/DEMO-criterion3-and-fanout.md`: in-agent graceful degradation (the agent
+  surfacing `error_type` and still routing) + the recorded/consumed HITL ruling + an `instance
+  retry` recovery with its Action-History audit trail. Submit as a supplemental video — it lets a
+  time-boxed judge score Criterion 3 at the top of the band in under two minutes, while most
+  submissions never show a single failure.

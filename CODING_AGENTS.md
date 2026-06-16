@@ -74,6 +74,21 @@ defense-in-depth layers in [README "Exception, Failure & Edge-Case Handling"](RE
 5. `/audit-ip-safety` (zero real-company tokens) + `uv run pytest` green before commit.
 6. `/thermo-nuclear-code-quality-review` ↔ `/improve-codebase-architecture` on the slice diff.
 
+## How the build maps to the 5 judging edges
+
+- **Criterion 1 (real-world applicability):** a regulated-vertical crisis — payment-intermediary
+  cyberattack with BAA/PHI boundaries and Trust-Layer guardrails — not a generic orchestration toy.
+- **Criterion 2 (orchestration & agents):** 11 agents across 3 nested case levels; the Reversal-3
+  6-way fan-out spawns 13 coordinated instances.
+- **Criterion 3 (exceptions):** four-layer defense-in-depth, authored test-first (see README
+  "Exception, Failure & Edge-Case Handling").
+- **Criterion 4 (component variety):** 13 UiPath product surfaces / 37 artifacts (table above).
+- **Criterion 5 (presentation):** live ≤5-min run + the Criterion-3 supplemental clip
+  (`docs/submission/DEMO-criterion3-and-fanout.md`).
+- **Coding-agent bonus (+2):** this document + `CLAUDE_CODE_USAGE.md` + `docs/coding-agents/` —
+  Claude Code authored every artifact and every test; the LangGraph coded agent also qualifies for
+  the Specialist Coded Agent challenge.
+
 ## IP safety
 
 Every artifact and every line of evidence uses only the fictional cast (ClearFlow, Northstar,
