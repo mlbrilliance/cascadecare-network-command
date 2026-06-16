@@ -10,9 +10,10 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from pathlib import Path
 from typing import IO
 
-from . import __version__, knowledge, validators
+from . import __version__, contribution, knowledge, validators
 
 
 def _print_human(entries: list[knowledge.KnowledgeEntry], stream: IO[str]) -> None:
@@ -76,6 +77,27 @@ def _cmd_check_df(args: argparse.Namespace) -> int:
     return _emit_findings(findings, args.json, f"no Data Fabric field-name traps in {args.spec}")
 
 
+def _cmd_validate_knowledge(args: argparse.Namespace) -> int:
+    denylist: list[str] = []
+    if args.denylist_file:
+        for line in Path(args.denylist_file).read_text(encoding="utf-8").splitlines():
+            token = line.strip()
+            if token and not token.startswith("#"):
+                denylist.append(token)
+    data: object = args.file or {"entries": [e.to_dict() for e in knowledge.load_entries()]}
+    problems = contribution.validate_knowledge(data, denylist)
+    if args.json:
+        print(json.dumps(problems, indent=2))
+        return 1 if problems else 0
+    if not problems:
+        print("OK — knowledge passes the contribution gate.")
+        return 0
+    for problem in problems:
+        print(f"[GATE] {problem}")
+    print(f"\n{len(problems)} problem(s).")
+    return 1
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="maestro-case",
@@ -126,6 +148,18 @@ def build_parser() -> argparse.ArgumentParser:
     check_df.add_argument("spec", help="Path to a JSON entity spec ({\"fields\": [...]}).")
     check_df.add_argument("--json", action="store_true", help="Emit structured JSON findings.")
     check_df.set_defaults(func=_cmd_check_df)
+
+    vk = sub.add_parser(
+        "validate-knowledge",
+        help="Validate a knowledge file against the schema + an optional IP-safety denylist.",
+    )
+    vk.add_argument("--file", help="Path to a knowledge JSON file (default: the bundled layer).")
+    vk.add_argument(
+        "--denylist-file",
+        help="Optional newline-delimited file of forbidden tokens (# comments allowed).",
+    )
+    vk.add_argument("--json", action="store_true", help="Emit structured JSON problems.")
+    vk.set_defaults(func=_cmd_validate_knowledge)
     return parser
 
 
