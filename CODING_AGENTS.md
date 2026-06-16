@@ -63,6 +63,35 @@ populated `error_type`/`error_message` while preserving deterministic routing �
 [`tests/agents/test_forensic_langgraph.py`](tests/agents/test_forensic_langgraph.py) and the
 defense-in-depth layers in [README "Exception, Failure & Edge-Case Handling"](README.md#exception-failure--edge-case-handling-criterion-3).
 
+## Above and beyond — open-source contribution (`Maestro Case Kit`)
+
+Claude Code didn't only build the demo — it extracted the project's hardest-won, **undocumented
+UiPath Maestro Case / Data Fabric / Action Center** discoveries into a standalone, installable,
+open-source toolkit at [`tooling/maestro-case-kit/`](tooling/maestro-case-kit/) that UiPath could
+dogfood directly. One define-once Python source ships as **four agent-native artifacts** over a
+shared tool registry — a `maestro-case` CLI, a dependency-free MCP server, a Claude Code skill, and
+an OpenClaw skill — all **offline and credential-free** (no UiPath login):
+
+| Footgun (hit live in this build) | Tool |
+|---|---|
+| Cryptic, un-Googleable error codes (`400300`, `160009`, …) | `maestro-case explain <code>` → proven cause + fix |
+| Inert caseplan edits (stale `.bpmn`, dropped start event) | `maestro-case lint <dir>` — validated clean on all 3 live caseplans |
+| `=datafabric.qem:` in spawn inputs → runtime `400300` | `maestro-case check-spawn <dir>` |
+| Data Fabric silent field-drop / reserved `id` | `maestro-case check-df <spec>` |
+
+Authored test-first like the rest of the build (59 toolkit tests wired into the repo
+`uv run pytest` gate; 742 total pass, `mypy` clean, IP-safe). Each knowledge entry is
+version-stamped and self-deprecates when UiPath ships a fix, behind an automated schema +
+IP-safety contribution gate. A companion **contribute-back PR is drafted**
+([`docs/submission/CONTRIBUTE-BACK-PR.md`](docs/submission/CONTRIBUTE-BACK-PR.md)) against UiPath's
+*own* official skills (the `uip maestro case` CLI namespace; issue #333 remains open, and UiPath
+closed the prior fix PR #399 unmerged). Built via `/ce-ideate → /ce-brainstorm → /ce-work`; a spike
+proved the `printing-press` generator only wraps external APIs, so it is a define-once Python source —
+**not** printing-press-generated — and the auth-requiring operators are a v2 roadmap, not shipped.
+
+This is the +2 coding-agent bonus made concrete: a coding agent producing **reusable tooling for the
+platform itself**, not just one submission.
+
 ## Build methodology (how a slice was driven)
 
 1. `/speckit.plan` → `/speckit.analyze` → `/speckit.tasks` from the slice in
@@ -87,7 +116,9 @@ defense-in-depth layers in [README "Exception, Failure & Edge-Case Handling"](RE
   (`docs/submission/DEMO-criterion3-and-fanout.md`).
 - **Coding-agent bonus (+2):** this document + `CLAUDE_CODE_USAGE.md` + `docs/coding-agents/` —
   Claude Code authored every artifact and every test, and the LangGraph coded agent is itself built
-  *with* a coding agent end-to-end — the +2 coding-agent bonus (max score 27) rewards exactly this.
+  *with* a coding agent end-to-end. It also went **beyond the project** to ship `Maestro Case Kit`
+  (see "Above and beyond" above) — reusable open-source tooling for the platform itself. The +2
+  coding-agent bonus (max score 27) rewards exactly this.
 
 ## IP safety
 
