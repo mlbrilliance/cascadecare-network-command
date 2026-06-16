@@ -17,6 +17,13 @@ of native case nesting** — while five master-level goal reversals reshape the 
 The hero moment: **Reversal 3** (a state DOI subpoena) fans out **six grandchild cases
 simultaneously** on the Maestro Case canvas.
 
+![CascadeCare Network Command — architecture](docs/images/architecture.png)
+
+*Three nested Maestro Case levels orchestrate the crisis end-to-end. Eleven agents plug into stages
+as `type:"agent"` tasks — every LLM call routed through the UiPath LLM Gateway + Trust Layer — while
+Data Fabric, Context Grounding, and 19 API Workflows feed the case. Authored end-to-end with Claude
+Code. ([editable SVG source](docs/images/architecture.svg))*
+
 > **Status (2026-06-15):** Every UiPath artifact below is authored, validated against its UiPath
 > contract (V20 / CNCF Serverless 1.0.0 / Agent Builder), and **running live on UiPath Automation
 > Cloud** — `clearflow-solution` **1.0.32** deployed to `Shared/CascadeCare-v110`, with a full

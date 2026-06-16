@@ -36,5 +36,6 @@ failure) was authored test-first — a failing test proved the silent swallow be
 
 These artifacts map to all five Track-1 scoring dimensions (originality, orchestration, exception
 handling, component variety, presentation) — see `CODING_AGENTS.md` § "How the build maps to the 5
-judging edges". The forensic **LangGraph** coded agent additionally qualifies for the **Specialist
-Coded Agent challenge**.
+judging edges". The forensic **LangGraph** coded agent — built end-to-end with Claude Code — is
+first-hand evidence for the **+2 coding-agent bonus** (it documents the tool used, how it
+contributed, and verifiable artifacts).

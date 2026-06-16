@@ -86,8 +86,8 @@ defense-in-depth layers in [README "Exception, Failure & Edge-Case Handling"](RE
 - **Criterion 5 (presentation):** live ≤5-min run + the Criterion-3 supplemental clip
   (`docs/submission/DEMO-criterion3-and-fanout.md`).
 - **Coding-agent bonus (+2):** this document + `CLAUDE_CODE_USAGE.md` + `docs/coding-agents/` —
-  Claude Code authored every artifact and every test; the LangGraph coded agent also qualifies for
-  the Specialist Coded Agent challenge.
+  Claude Code authored every artifact and every test, and the LangGraph coded agent is itself built
+  *with* a coding agent end-to-end — the +2 coding-agent bonus (max score 27) rewards exactly this.
 
 ## IP safety
 

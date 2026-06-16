@@ -39,7 +39,7 @@ Visibility into case status · Clear auditability · Meaningful human oversight.
 | Prize | Amount | Status | Effort |
 |---|---|---|---|
 | Track 1 main judging | ~$TBD | In progress | 14 days |
-| Specialist Coded Agent Challenge | $10,000 | Unverified eligibility | 1 day docs |
+| ~~Specialist Coded Agent Challenge ($10K)~~ | — | **Closed 2025 community event — NOT an AgentHack 2026 prize** (verified 2026-06-16). The 2026 coding-agent value is the +2 bonus below. | — |
 | Product feedback form | $1,500 | Not started | 15 min |
 | People's Choice (community vote, Jul 3–30) | $500 | Not started | Forum post |
 | Coding agent bonus | +2 pts | Not started | 4–6 hrs docs |
@@ -63,7 +63,7 @@ Ordered by impact × effort (see `docs/ideation/agentHack-judging-gaps-2026-06-1
 5. **Pre-answer gate-delete gotcha** — add "Known Edge Cases" section to Devpost: gate deletion → Faulted + ErrorCode 160009, intentional incident recording
 
 ### Tier 2 — This week (documentation & submission)
-6. **Coding agent bonus docs** — `CODING_AGENTS.md` + Devpost section with Claude Code screenshots → unlocks +2 pts AND feeds Specialist Challenge ($10K)
+6. **Coding agent bonus docs** — `CODING_AGENTS.md` + Devpost section with Claude Code screenshots → unlocks the **+2 coding-agent bonus** (max score 27; document the tool, its contribution, and verifiable evidence)
 7. **docs/evidence/ screenshot set** — 6+ annotated screenshots from live v1.0.32 runs (retry badge, forensic output, HITL gate, fan-out, closure, Faulted case)
 8. **Demo script rewrite (Crisis-First)** — open on Faulted case → CVR-frame Reversal-3 fan-out → WHO Surgical Timeout at HITL gate → completion
 9. **Rubric-mapping Devpost editorial** — label every Devpost paragraph with C1–C5 criterion; cut anything unmapped
@@ -73,7 +73,7 @@ Ordered by impact × effort (see `docs/ideation/agentHack-judging-gaps-2026-06-1
 
 ### Tier 3 — This week (prizes & completeness)
 13. **Forum community post** — UiPath Community Forum, before July 3, seeds People's Choice votes
-14. **Specialist Coded Agent submission** — verify requirements, submit 4-agent bundle
+14. ~~**Specialist Coded Agent submission**~~ — RESOLVED 2026-06-16: not a 2026 prize (closed 2025 event); the coding-agent value is the +2 bonus (item 6)
 15. **Prompt logs in Devpost** — include 2 `agents/prompts/*.md` files as Trust Layer architecture evidence
 16. **90-second Criterion-3 exhibit video** — standalone clip: Faulted → forensic agent → recovery
 

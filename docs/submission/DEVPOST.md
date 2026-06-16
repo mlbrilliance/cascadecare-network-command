@@ -53,6 +53,8 @@ workflows for its provider — the crisis orchestrator for the agents UiPath alr
 
 ## How we built it (UiPath component inventory)
 
+![CascadeCare Network Command — architecture](../images/architecture.png)
+
 All running live on UiPath Automation Cloud (`clearflow-solution` 1.0.32, folder
 `Shared/CascadeCare-v110`); full cascade proven end-to-end — master + 6 children +
 6 grandchildren all reach **Completed**. **13 UiPath product surfaces, 37 runtime artifacts.**
@@ -129,8 +131,8 @@ under a test-gated spec-kit workflow. Diagnoses were empirical, not guessed (e.g
 Error 2005 root-caused by inspecting the offline-packed `package-descriptor.json`). The Criterion-3
 exception handling above was authored test-first: a failing test proved the forensic agent was
 silently swallowing an LLM-Gateway failure *before* the fix landed. One of the five Coded Agents is
-a **LangGraph `StateGraph`** (via `uipath-langchain`) — a standalone specialist coded agent in its
-own right.
+a **LangGraph `StateGraph`** (via `uipath-langchain`) — a self-contained, specialized coded agent
+that anchors our coding-agent bonus evidence.
 
 Evidence: `CODING_AGENTS.md` (full 37-artifact authorship table), `CLAUDE_CODE_USAGE.md`,
 `docs/coding-agents/` (per-type evidence pages + prompt logs + screenshots
