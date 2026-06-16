@@ -2,8 +2,10 @@
 name = "maestro-case-kit"
 version = "0.1.0"
 description = "Agent-native knowledge layer + offline, credential-free static validators for UiPath Maestro Case footguns."
+readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "MIT" }
+keywords = ["uipath", "maestro", "case-management", "linter", "mcp", "agent-skills"]
 dependencies = []
 
 [project.scripts]
