@@ -1,22 +1,39 @@
-<div align="center">
+<h1 align="center">CascadeCare Network Command</h1>
 
-# 🌊 CascadeCare Network Command
+<p align="center"><b>The living case layer for healthcare financial shockwaves</b></p>
 
-### The living case layer for healthcare financial shockwaves
+<p align="center">
+A <b>UiPath Maestro Case</b> command center that manages a multi-hospital cyber-payment crisis as <b>one evolving, three-level case</b><br/>
+— built for <b>UiPath AgentHack 2026 · Track 1</b>, running live on Automation Cloud.
+</p>
 
-A **UiPath Maestro Case** command center that manages a multi-hospital cyber-payment crisis as **one evolving, three-level case** — built for **UiPath AgentHack 2026 · Track 1**, running live on Automation Cloud.
+<p align="center">
+  <img src="https://img.shields.io/badge/status-live%20on%20Automation%20Cloud-FF6A3D?style=for-the-badge" alt="Status: live on Automation Cloud" />
+  <img src="https://img.shields.io/badge/tests-683%20passing-2FBE7C?style=for-the-badge" alt="683 tests passing" />
+  <img src="https://img.shields.io/badge/license-MIT-3B82F6?style=for-the-badge" alt="License: MIT" />
+</p>
 
-![Status](https://img.shields.io/badge/status-live%20on%20Automation%20Cloud-FF6A3D?style=for-the-badge) &nbsp; ![Tests](https://img.shields.io/badge/tests-683%20passing-2FBE7C?style=for-the-badge) &nbsp; ![License](https://img.shields.io/badge/license-MIT-3B82F6?style=for-the-badge)
+<p align="center">
+  <a href="https://www.uipath.com/"><img src="https://img.shields.io/badge/UiPath-Maestro%20Case%20V20-FA4616?style=for-the-badge&logo=uipath&logoColor=white" alt="UiPath Maestro Case V20" /></a>
+  <a href="https://github.com/langchain-ai/langgraph"><img src="https://img.shields.io/badge/agent-LangGraph%20StateGraph-1C3C3C?style=for-the-badge" alt="LangGraph StateGraph" /></a>
+  <a href="https://www.anthropic.com/"><img src="https://img.shields.io/badge/LLM-Claude%20Sonnet%204.6%20BYO-D97757?style=for-the-badge&logo=anthropic&logoColor=white" alt="Claude Sonnet 4.6 BYO-LLM" /></a>
+  <a href="https://claude.com/claude-code"><img src="https://img.shields.io/badge/built%20with-Claude%20Code-7C3AED?style=for-the-badge&logo=anthropic&logoColor=white" alt="Built with Claude Code" /></a>
+</p>
 
-[![UiPath Maestro Case V20](https://img.shields.io/badge/UiPath-Maestro%20Case%20V20-FA4616?logo=uipath&logoColor=white)](https://www.uipath.com/) [![LangGraph StateGraph](https://img.shields.io/badge/agent-LangGraph%20StateGraph-1C3C3C)](https://github.com/langchain-ai/langgraph) [![Claude Sonnet 4.6 BYO-LLM](https://img.shields.io/badge/LLM-Claude%20Sonnet%204.6%20BYO-D97757?logo=anthropic&logoColor=white)](https://www.anthropic.com/) [![Python 3.12](https://img.shields.io/badge/python-3.12-3776AB?logo=python&logoColor=white)](https://www.python.org/) [![Built with Claude Code](https://img.shields.io/badge/built%20with-Claude%20Code-D97757?logo=anthropic&logoColor=white)](https://claude.com/claude-code)
+<p align="center">
+  <a href="#what-this-is"><b>What it does</b></a> &nbsp;·&nbsp;
+  <a href="#demo-five-reversals"><b>Five reversals</b></a> &nbsp;·&nbsp;
+  <a href="#exception-failure--edge-case-handling-criterion-3"><b>Exception handling</b></a> &nbsp;·&nbsp;
+  <a href="#uipath-component-inventory"><b>Component inventory</b></a> &nbsp;·&nbsp;
+  <a href="#built-with-coding-agents"><b>Built with Claude Code</b></a>
+</p>
 
-**[What it does](#what-this-is)** · **[Five reversals](#demo-five-reversals)** · **[Exception handling](#exception-failure--edge-case-handling-criterion-3)** · **[Component inventory](#uipath-component-inventory)** · **[Built with Claude Code](#built-with-coding-agents)**
+<p align="center">
+  <img src="docs/images/architecture.png" width="900" alt="CascadeCare architecture — three nested Maestro Case levels, 11 agents under their stages, Trust Layer, and platform foundation" />
+</p>
 
-<br/>
+<!-- TODO(human, high-impact): drop a ~6s live-run GIF here (Reversal-3 fan-out / forensic agent firing / HITL gate). Per README research this is the single biggest visual win for judges. -->
 
-<img src="docs/images/architecture.png" width="100%" alt="CascadeCare architecture — three nested Maestro Case levels, 11 agents under their stages, Trust Layer, and platform foundation" />
-
-</div>
 
 > Three nested Maestro Case levels orchestrate the crisis end-to-end. Eleven agents plug into stages as `type:"agent"` tasks — every LLM call routed through the UiPath LLM Gateway + Trust Layer — while Data Fabric, Context Grounding, and 19 API Workflows feed the case. Authored end-to-end with Claude Code. ([editable SVG source](docs/images/architecture.svg))
 
@@ -59,6 +76,19 @@ simultaneously** on the Maestro Case canvas.
 
 ---
 
+## Judging Criteria — Track 1 at a glance
+
+| Criterion | How CascadeCare addresses it | Jump to |
+|---|---|---|
+| **1 · Real-world applicability** | A regulated-vertical crisis — a healthcare payment-network cyberattack with BAA/PHI boundaries — orchestrating UiPath's own ViVE-2026 healthcare agents under fire | [Why this matters](#why-this-matters--healthcare-is-uipaths-2026-vertical) |
+| **2 · Orchestration & multi-agent** | 11 agents across 3 nested case levels; the case progresses *itself*; Reversal 3 fans out 13 coordinated instances | [Component inventory](#uipath-component-inventory) |
+| **3 · Exception & edge-case handling** | 4-layer defense-in-depth, authored test-first — agents degrade, the case never crashes | [Exception handling](#exception-failure--edge-case-handling-criterion-3) |
+| **4 · Component variety** | 13 UiPath product surfaces · 37 runtime artifacts | [13 surfaces](#uipath-component-inventory) |
+| **5 · Presentation** | Live ≤5-min run + a Criterion-3 supplemental clip; this README + architecture diagram | [Demo video](#demo-video) |
+| **Bonus · Coding agents (+2)** | Claude Code authored 100% — every artifact and every test, test-first | [Built with Claude Code](#built-with-coding-agents) |
+
+---
+
 ## Why This Matters — Healthcare Is UiPath's 2026 Vertical
 
 Healthcare is UiPath's **#1 vertical push for 2026**. At **ViVE 2026**, UiPath launched its
@@ -78,6 +108,11 @@ consequential healthcare cyber events on record. CascadeCare demonstrates how an
 Maestro Case would manage exactly that, end to end.
 
 ## How CascadeCare Detects a Crisis — Production Trigger Architecture
+
+> [!TIP]
+> **The whole system in one line:** the anomaly detector is the smoke alarm, the BPMN is the 911 call,
+> the master crisis case is the incident command, and the healthcare agents are the specialists on
+> scene. You need all four — and CascadeCare is what makes them work together instead of independently.
 
 <details>
 <summary><b>▶ Expand — the production detection → orchestration → execution pipeline (zero human in the loop)</b></summary>
@@ -143,11 +178,6 @@ each handle one clinical job for one provider. Without CascadeCare coordinating 
 need to run each of 3 agents for each of 6 providers = **18 manual invocations with no shared
 state, no SLA tracking, no legal layer, no human approval gates, and no case record.** CascadeCare
 tells those agents when to run, for which provider, under which legal constraints, in what order.
-
-> [!TIP]
-> **The whole system in one line:** the anomaly detector is the smoke alarm, the BPMN is the 911 call,
-> the master crisis case is the incident command, and the healthcare agents are the specialists on
-> scene. You need all four — and CascadeCare is what makes them work together instead of independently.
 
 ### The four real-world signals — all live in this project
 
