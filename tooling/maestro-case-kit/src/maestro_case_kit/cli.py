@@ -12,7 +12,7 @@ import json
 import sys
 from typing import IO
 
-from . import __version__, knowledge
+from . import __version__, knowledge, validators
 
 
 def _print_human(entries: list[knowledge.KnowledgeEntry], stream: IO[str]) -> None:
@@ -46,6 +46,22 @@ def _cmd_explain(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_lint(args: argparse.Namespace) -> int:
+    findings = validators.lint_caseplan(args.caseplan_dir)
+    if args.json:
+        print(json.dumps([f.to_dict() for f in findings], indent=2))
+        return 1 if findings else 0
+    if not findings:
+        print(f"OK — no Maestro Case footguns found in {args.caseplan_dir}")
+        return 0
+    for f in findings:
+        suffix = f"  (explain: {f.entry_id})" if f.entry_id else ""
+        where = f"  @ {f.location}" if f.location else ""
+        print(f"[{f.severity.upper()}] {f.rule_id}: {f.message}{where}{suffix}")
+    print(f"\n{len(findings)} finding(s).")
+    return 1
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="maestro-case",
@@ -69,6 +85,17 @@ def build_parser() -> argparse.ArgumentParser:
         help="Include entries marked resolved in a later platform version.",
     )
     explain.set_defaults(func=_cmd_explain)
+
+    lint = sub.add_parser(
+        "lint",
+        help="Statically lint a caseplan directory for known footguns (offline, no login).",
+    )
+    lint.add_argument(
+        "caseplan_dir",
+        help="Path to a directory containing caseplan.json (and ideally caseplan.json.bpmn).",
+    )
+    lint.add_argument("--json", action="store_true", help="Emit structured JSON findings.")
+    lint.set_defaults(func=_cmd_lint)
     return parser
 
 
