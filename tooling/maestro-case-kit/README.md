@@ -1,5 +1,9 @@
 # Maestro Case Kit
 
+[![PyPI](https://img.shields.io/pypi/v/maestro-case-kit.svg)](https://pypi.org/project/maestro-case-kit/)
+[![Python](https://img.shields.io/pypi/pyversions/maestro-case-kit.svg)](https://pypi.org/project/maestro-case-kit/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
 Offline, credential-free **knowledge + static validators** for UiPath **Maestro Case /
 Data Fabric / Action Center** footguns. One define-once source, four artifacts: a Go-free
 Python **CLI**, an **MCP server**, a Claude Code **skill**, and an OpenClaw **skill**.

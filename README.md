@@ -470,6 +470,8 @@ skills, under a test-gated spec-kit workflow. The AgentHack coding-agent bonus e
 
 ## Open-Source Tooling — Contributing Back
 
+[![PyPI — maestro-case-kit](https://img.shields.io/pypi/v/maestro-case-kit.svg?label=PyPI%20%C2%B7%20maestro-case-kit)](https://pypi.org/project/maestro-case-kit/)
+
 Beyond the demo, this project extracted its hardest-won, **undocumented UiPath Maestro Case
 knowledge** into a standalone, open-source toolkit any UiPath developer can install — something
 UiPath could dogfood directly. [**Maestro Case Kit**](tooling/maestro-case-kit/) is a define-once
