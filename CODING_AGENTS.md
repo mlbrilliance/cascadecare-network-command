@@ -22,36 +22,46 @@ offline `uip solution pack` probes). Diagnoses were empirical, not guessed — e
 
 **(c) Verifiable evidence** —
 - [`docs/changelog.md`](docs/changelog.md) — the durable per-slice build narrative.
-- [`agents/prompts/*.md`](agents/prompts/) — 7 committed agent prompt templates (never inlined).
+- [`agents/prompts/*.md`](agents/prompts/) — 9 committed agent prompt templates (never inlined).
 - [`specs/003-uipath-native/`](specs/003-uipath-native/) — the spec-kit authoring trail
   (`plan.md`, `research.md`, `slice-0NN-tasks.md`).
 - The 27 UiPath artifacts themselves + their offline test gates under [`tests/`](tests/).
 - [`docs/prompt-logs/`](docs/prompt-logs/) and [`docs/coding-agents/screenshots/`](docs/coding-agents/screenshots/)
   — session-capture channels (status tracked per their READMEs).
 
-## Authorship table — 27 UiPath artifacts
+## Authorship table — 37 UiPath artifacts
 
-| # | Artifact | Type | Slice | Authoring agent | Evidence |
-|---|---|---|---|---|---|
-| 1 | `clearflow-master-crisis` | Maestro **Case** (V20) | 010 | Claude Code + `uipath-maestro-case` | [cases](docs/coding-agents/cases.md) |
-| 2 | `clearflow-stakeholder-parent` | Maestro Case (V20) | 010 | Claude Code + `uipath-maestro-case` | [cases](docs/coding-agents/cases.md) |
-| 3 | `clearflow-obligation-grandchild` | Maestro Case (V20) | 010 | Claude Code + `uipath-maestro-case` | [cases](docs/coding-agents/cases.md) |
-| 4 | `vector-hypothesis-agent` | **Agent Builder** (low-code, Claude BYO-LLM) | 008 | Claude Code + `uipath-agents` | [agents-lowcode](docs/coding-agents/agents-lowcode.md) |
-| 5 | `baa-boundary-reasoner` | Agent Builder (+ Context Grounding) | 008 | Claude Code + `uipath-agents` | [agents-lowcode](docs/coding-agents/agents-lowcode.md) |
-| 6 | `fiduciary-conflict-detector` | Agent Builder | 008 | Claude Code + `uipath-agents` | [agents-lowcode](docs/coding-agents/agents-lowcode.md) |
-| 7 | `negligent-monitoring-risk-agent` | Agent Builder | 008 | Claude Code + `uipath-agents` | [agents-lowcode](docs/coding-agents/agents-lowcode.md) |
-| 8 | `claim-flow-anomaly-detector` | **Coded Agent** (Python SDK) | 009 | Claude Code + `uipath-coded-apps` (TDD) | [agents-coded](docs/coding-agents/agents-coded.md) |
-| 9 | `multi-customer-pattern-detector` | Coded Agent | 009 | Claude Code + `uipath-coded-apps` (TDD) | [agents-coded](docs/coding-agents/agents-coded.md) |
-| 10 | `forensic-self-exam-agent` | Coded Agent | 009 | Claude Code + `uipath-coded-apps` (TDD) | [agents-coded](docs/coding-agents/agents-coded.md) |
-| 11–24 | `api_workflows/*` (14 slugs) | **API Workflow** (`Type:"Api"`, CNCF Serverless 1.0.0) | 006 / 015 | Claude Code + `uipath-api-workflow` | [api-workflows](docs/coding-agents/api-workflows.md) |
-| 25 | `clearflow-ideal-incident-response` | Maestro **BPMN** | 011 | Claude Code + `uipath-maestro-bpmn` | [bpmn](docs/coding-agents/bpmn.md) |
-| 26 | `clearflow-demo-driver` | Maestro **Flow** (Demo Driver) | 012 | Claude Code + `uipath-maestro-flow` | [flow](docs/coding-agents/flow.md) |
-| 27 | `clearflow-network-command` | UiPath **Apps** (narrative dashboard) | 013 / 015 | Claude Code + `uipath-coded-apps` | [apps](docs/coding-agents/apps.md) |
+| # | Artifact(s) | Type | Authoring agent + skill | Evidence |
+|---|---|---|---|---|
+| 1–3 | `clearflow-master-crisis`, `clearflow-stakeholder-parent`, `clearflow-obligation-grandchild` | Maestro **Case** (V20, 3-level nesting) | Claude Code + `uipath-maestro-case` | [cases](docs/coding-agents/cases.md) |
+| 4 | `baa-boundary-reasoner` (+ Context Grounding `BAA-corpus`) | **Agent Builder** (Claude Sonnet 4.6 BYO-LLM) | Claude Code + `uipath-agents` | [agents-lowcode](docs/coding-agents/agents-lowcode.md) |
+| 5 | `vector-hypothesis-agent` | Agent Builder | Claude Code + `uipath-agents` | [agents-lowcode](docs/coding-agents/agents-lowcode.md) |
+| 6 | `fiduciary-conflict-detector` | Agent Builder | Claude Code + `uipath-agents` | [agents-lowcode](docs/coding-agents/agents-lowcode.md) |
+| 7 | `negligent-monitoring-risk-agent` | Agent Builder | Claude Code + `uipath-agents` | [agents-lowcode](docs/coding-agents/agents-lowcode.md) |
+| 8 | `assess-claim-disruption` | Agent Builder | Claude Code + `uipath-agents` | [agents-lowcode](docs/coding-agents/agents-lowcode.md) |
+| 9 | `classify-obligation` | Agent Builder | Claude Code + `uipath-agents` | [agents-lowcode](docs/coding-agents/agents-lowcode.md) |
+| 10 | `forensic-self-exam-agent-langgraph` (**LIVE**) | **Coded · LangGraph** `StateGraph` (`uipath-langchain`) | Claude Code + `uipath-agents` (TDD) | [agents-coded](docs/coding-agents/agents-coded.md) |
+| 11 | `claim-flow-anomaly-detector` | **Coded Agent** (Python SDK) | Claude Code + `uipath-agents` (TDD) | [agents-coded](docs/coding-agents/agents-coded.md) |
+| 12 | `multi-customer-pattern-detector` | Coded Agent | Claude Code + `uipath-agents` (TDD) | [agents-coded](docs/coding-agents/agents-coded.md) |
+| 13 | `forensic-self-exam-agent` (original; superseded by #10) | Coded Agent | Claude Code + `uipath-agents` (TDD) | [agents-coded](docs/coding-agents/agents-coded.md) |
+| 14 | `case-job-janitor` (ops; hourly Orchestrator trigger) | Coded Agent | Claude Code + `uipath-agents` (TDD) | [agents-coded](docs/coding-agents/agents-coded.md) |
+| 15–33 | `api_workflows/*` (**19 slugs**, incl. 3 ViVE Healthcare bridges) | **API Workflow** (`Type:"Api"`, CNCF Serverless 1.0.0) | Claude Code + `uipath-api-workflow` | [api-workflows](docs/coding-agents/api-workflows.md) |
+| 34 | `clearflow-ideal-incident-response` | Maestro **BPMN** | Claude Code + `uipath-maestro-bpmn` | [bpmn](docs/coding-agents/bpmn.md) |
+| 35 | `case-closed-notification` | Maestro BPMN | Claude Code + `uipath-maestro-bpmn` | [bpmn](docs/coding-agents/bpmn.md) |
+| 36 | `clearflow-demo-driver` | Maestro **Flow** (Demo Driver) | Claude Code + `uipath-maestro-flow` | [flow](docs/coding-agents/flow.md) |
+| 37 | `clearflow-network-command` | UiPath **Apps** (Coded Web App dashboard) | Claude Code + `uipath-coded-apps` | [apps](docs/coding-agents/apps.md) |
 
 Plus the connective tissue Claude Code authored: the `clearflow-solution` `.uipx` packaging
-(`scripts/pack-solution.sh`), Data Fabric entity schemas (specified in
-`specs/003-uipath-native/data-model.md`), Context Grounding index resources, the 470+ offline
-test gates, and this evidence set.
+(`scripts/pack-solution.sh`), Data Fabric entity schemas + seeding (`scripts/seed_data_fabric.py`),
+Context Grounding index resources + corpus generation (`scripts/gen_cg_corpus.py`), the **680**
+offline test gates, and this evidence set.
+
+**Criterion-3 evidence (exception handling, authored test-first).** The forensic agent's
+`enrich_node` was hardened by Claude Code under a red→green TDD cycle: a failing test was written
+first (forcing the LLM-Gateway call to raise) proving the error was silently swallowed, then the fix
+populated `error_type`/`error_message` while preserving deterministic routing — see
+[`tests/agents/test_forensic_langgraph.py`](tests/agents/test_forensic_langgraph.py) and the
+defense-in-depth layers in [README "Exception, Failure & Edge-Case Handling"](README.md#exception-failure--edge-case-handling-criterion-3).
 
 ## Build methodology (how a slice was driven)
 

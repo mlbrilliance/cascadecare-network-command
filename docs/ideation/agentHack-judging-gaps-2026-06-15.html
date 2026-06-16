@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CascadeCare AgentHack 2026 — Judging Gaps Ideation</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3250;
+    --accent: #6c8ef7;
+    --accent2: #4ecdc4;
+    --warn: #f59e42;
+    --danger: #f46b6b;
+    --success: #52c97a;
+    --muted: #7c85a8;
+    --text: #e8ecf4;
+    --text2: #b0b9d4;
+    --code: #c792ea;
+    --tier1: #52c97a;
+    --tier2: #6c8ef7;
+    --tier3: #f59e42;
+    --tier4: #7c85a8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
+    font-size: 14px;
+    line-height: 1.65;
+    padding: 2rem 1rem;
+  }
+  .container { max-width: 1040px; margin: 0 auto; }
+
+  /* Header */
+  .hero {
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    padding: 2rem 2.5rem;
+    margin-bottom: 2rem;
+    background: linear-gradient(135deg, rgba(108,142,247,.08) 0%, rgba(78,205,196,.04) 100%);
+  }
+  .hero h1 { font-size: 1.6rem; font-weight: 700; color: var(--accent); margin-bottom: .4rem; }
+  .hero .subtitle { color: var(--muted); font-size: .85rem; }
+  .hero .meta { display: flex; gap: 2rem; margin-top: 1rem; flex-wrap: wrap; }
+  .meta-item { display: flex; flex-direction: column; }
+  .meta-label { font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+  .meta-value { font-size: .9rem; color: var(--text); font-weight: 600; }
+
+  /* Section headers */
+  h2 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--accent2);
+    margin: 2.5rem 0 1rem;
+    padding-bottom: .5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  h3 { font-size: .95rem; font-weight: 600; color: var(--text); margin: 1rem 0 .4rem; }
+
+  /* Stats bar */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: .75rem 1rem;
+    text-align: center;
+  }
+  .stat-num { font-size: 1.6rem; font-weight: 700; color: var(--accent); }
+  .stat-label { font-size: .72rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+
+  /* Axis badges */
+  .axis {
+    display: inline-block;
+    font-size: .68rem;
+    font-weight: 700;
+    padding: .15rem .55rem;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    white-space: nowrap;
+  }
+  .axis-exception { background: rgba(244,107,107,.18); color: #f46b6b; border: 1px solid rgba(244,107,107,.35); }
+  .axis-submission { background: rgba(108,142,247,.18); color: #6c8ef7; border: 1px solid rgba(108,142,247,.35); }
+  .axis-coding { background: rgba(78,205,196,.18); color: #4ecdc4; border: 1px solid rgba(78,205,196,.35); }
+  .axis-demo { background: rgba(245,158,66,.18); color: #f59e42; border: 1px solid rgba(245,158,66,.35); }
+  .axis-prize { background: rgba(82,201,122,.18); color: #52c97a; border: 1px solid rgba(82,201,122,.35); }
+
+  /* Tier badges */
+  .tier-badge {
+    font-size: .65rem;
+    font-weight: 800;
+    padding: .12rem .45rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+  }
+  .t1 { background: rgba(82,201,122,.2); color: var(--tier1); }
+  .t2 { background: rgba(108,142,247,.2); color: var(--tier2); }
+  .t3 { background: rgba(245,158,66,.2); color: var(--tier3); }
+  .t4 { background: rgba(124,133,168,.2); color: var(--tier4); }
+
+  /* Idea cards */
+  .idea-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+    transition: border-color .15s;
+  }
+  .idea-card:hover { border-color: var(--accent); }
+  .card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: .75rem;
+    margin-bottom: .6rem;
+    flex-wrap: wrap;
+  }
+  .card-title {
+    font-size: .95rem;
+    font-weight: 600;
+    color: var(--text);
+    flex: 1;
+    min-width: 200px;
+  }
+  .card-badges { display: flex; gap: .4rem; align-items: center; flex-wrap: wrap; }
+  .card-body { color: var(--text2); font-size: .84rem; margin-bottom: .65rem; }
+  .card-footer {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    font-size: .78rem;
+  }
+  .footer-section { flex: 1; min-width: 180px; }
+  .footer-label {
+    font-size: .65rem;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: var(--muted);
+    margin-bottom: .2rem;
+  }
+  .footer-value { color: var(--text2); }
+  .basis-tag {
+    font-size: .68rem;
+    padding: .1rem .4rem;
+    border-radius: 4px;
+    background: var(--surface2);
+    color: var(--code);
+    font-family: monospace;
+    margin-right: .3rem;
+  }
+
+  /* Effort/Impact pills */
+  .effort-pill, .impact-pill {
+    display: inline-block;
+    font-size: .68rem;
+    padding: .1rem .45rem;
+    border-radius: 999px;
+    font-weight: 600;
+  }
+  .effort-low { background: rgba(82,201,122,.15); color: var(--success); }
+  .effort-med { background: rgba(245,158,66,.15); color: var(--warn); }
+  .effort-high { background: rgba(244,107,107,.15); color: var(--danger); }
+  .impact-max { background: rgba(82,201,122,.25); color: var(--success); border: 1px solid rgba(82,201,122,.4); }
+  .impact-high { background: rgba(108,142,247,.25); color: var(--accent); border: 1px solid rgba(108,142,247,.4); }
+  .impact-med { background: rgba(245,158,66,.2); color: var(--warn); }
+
+  /* Crosscut cards */
+  .xc-card {
+    background: linear-gradient(135deg, rgba(108,142,247,.07) 0%, rgba(78,205,196,.04) 100%);
+    border: 1px solid rgba(108,142,247,.35);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .xc-header { display: flex; align-items: center; gap: .75rem; margin-bottom: .5rem; flex-wrap: wrap; }
+  .xc-name { font-size: .95rem; font-weight: 700; color: var(--accent); }
+  .xc-refs {
+    font-size: .72rem;
+    color: var(--muted);
+    font-family: monospace;
+  }
+  .xc-body { color: var(--text2); font-size: .84rem; }
+
+  /* Axis coverage */
+  .coverage-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: .75rem; }
+  .cov-cell {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: .75rem 1rem;
+  }
+  .cov-bar {
+    height: 4px;
+    border-radius: 2px;
+    margin-top: .5rem;
+    background: var(--border);
+    position: relative;
+  }
+  .cov-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: var(--accent);
+  }
+  .cov-name { font-size: .78rem; font-weight: 600; color: var(--text); }
+  .cov-count { font-size: .72rem; color: var(--muted); }
+
+  /* Priority table */
+  .priority-grid {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+  .priority-row {
+    display: grid;
+    grid-template-columns: 3fr 120px 100px 120px;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+    padding: .6rem 1rem;
+    align-items: center;
+  }
+  .priority-row:last-child { border-bottom: none; }
+  .priority-header {
+    background: var(--surface2);
+    font-size: .68rem;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: var(--muted);
+    font-weight: 700;
+  }
+  .priority-name { font-size: .82rem; color: var(--text); }
+  .priority-who {
+    font-size: .75rem;
+    padding: .15rem .45rem;
+    border-radius: 4px;
+    text-align: center;
+    font-weight: 600;
+  }
+  .who-code { background: rgba(244,107,107,.15); color: var(--danger); }
+  .who-human { background: rgba(82,201,122,.15); color: var(--success); }
+  .who-either { background: rgba(245,158,66,.15); color: var(--warn); }
+
+  /* Rejection log */
+  .reject-item {
+    padding: .4rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: .8rem;
+    color: var(--muted);
+    display: flex;
+    gap: .5rem;
+  }
+  .reject-item:last-child { border-bottom: none; }
+  .reject-reason { color: var(--danger); font-size: .72rem; }
+  .strikethrough { text-decoration: line-through; opacity: .6; }
+
+  /* Urgency tag */
+  .urgency {
+    font-size: .65rem;
+    padding: .1rem .4rem;
+    border-radius: 4px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .u-now { background: rgba(244,107,107,.25); color: var(--danger); }
+  .u-week { background: rgba(245,158,66,.2); color: var(--warn); }
+  .u-soon { background: rgba(108,142,247,.15); color: var(--accent); }
+
+  /* Collapsible */
+  details { margin-bottom: .5rem; }
+  details summary {
+    cursor: pointer;
+    color: var(--accent2);
+    font-size: .82rem;
+    padding: .3rem 0;
+    user-select: none;
+  }
+  details summary:hover { color: var(--text); }
+  details[open] summary { margin-bottom: .5rem; }
+
+  hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+
+  code {
+    font-family: monospace;
+    font-size: .82em;
+    background: var(--surface2);
+    padding: .1rem .3rem;
+    border-radius: 3px;
+    color: var(--code);
+  }
+
+  .deadline-banner {
+    background: rgba(244,107,107,.1);
+    border: 1px solid rgba(244,107,107,.4);
+    border-radius: 8px;
+    padding: .75rem 1.25rem;
+    font-size: .84rem;
+    color: var(--warn);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+  }
+  .deadline-banner strong { color: var(--danger); }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- HERO -->
+<div class="hero">
+  <h1>CascadeCare AgentHack 2026 — Judging Gaps Ideation</h1>
+  <div class="subtitle">Track 1 submission enhancement analysis · ce-ideate run a7f3c2e1</div>
+  <div class="meta">
+    <div class="meta-item"><span class="meta-label">Date</span><span class="meta-value">2026-06-15</span></div>
+    <div class="meta-item"><span class="meta-label">System version</span><span class="meta-value">v1.0.32 live</span></div>
+    <div class="meta-item"><span class="meta-label">Deadline</span><span class="meta-value">June 29 2026 11:45 PM EDT</span></div>
+    <div class="meta-item"><span class="meta-label">Time remaining</span><span class="meta-value">~14 days</span></div>
+    <div class="meta-item"><span class="meta-label">Frames run</span><span class="meta-value">5 of 5</span></div>
+    <div class="meta-item"><span class="meta-label">Raw candidates</span><span class="meta-value">38 → 30 deduped</span></div>
+  </div>
+</div>
+
+<div class="deadline-banner">
+  ⚠ <span><strong>Deadline: June 29 11:45 PM EDT.</strong> Rolling judging open since June 3. Submit early — judges have already started scoring.</span>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat"><div class="stat-num">5</div><div class="stat-label">Frames</div></div>
+  <div class="stat"><div class="stat-num">38</div><div class="stat-label">Raw ideas</div></div>
+  <div class="stat"><div class="stat-num">30</div><div class="stat-label">Deduped</div></div>
+  <div class="stat"><div class="stat-num">5</div><div class="stat-label">Cross-cuts</div></div>
+  <div class="stat"><div class="stat-num">27</div><div class="stat-label">Max score</div></div>
+  <div class="stat"><div class="stat-num">$11.5K</div><div class="stat-label">Prize pool at stake</div></div>
+</div>
+
+<!-- JUDGING CONTEXT -->
+<h2>Judging Context</h2>
+<div class="idea-card" style="border-color: var(--accent2);">
+  <div class="card-body">
+    <strong>5 equal-weight criteria (1–5 each) + 2 coding-agent bonus = 27 pts max.</strong><br><br>
+    <strong>Criterion 1</strong> — Originality, creativity, and real-world applicability<br>
+    <strong>Criterion 2</strong> — Orchestration &amp; agent collaboration<br>
+    <strong>Criterion 3</strong> — Exception, failure, and edge-case handling <span style="color: var(--danger);">[current gap]</span><br>
+    <strong>Criterion 4</strong> — UiPath component variety (documented list needed)<br>
+    <strong>Criterion 5</strong> — Quality of presentation (video + deck + Devpost)<br>
+    <strong>Bonus +2</strong> — Coding agent documentation (Claude Code logs/prompts in Devpost)<br><br>
+    Strong submission signals from UiPath Track 1 guidance: <em>"Intelligent handling of exceptions and edge cases, Visibility into case status, Clear auditability, Meaningful human oversight."</em><br><br>
+    <strong>Additional prizes:</strong> $1,500 product feedback form · $10K Specialist Coded Agent Challenge · $500 People's Choice (10% finale weight, voting July 3–30)
+  </div>
+</div>
+
+<!-- AXIS COVERAGE -->
+<h2>Axis Coverage</h2>
+<div class="coverage-grid">
+  <div class="cov-cell">
+    <div class="cov-name"><span class="axis axis-exception">exception-resilience</span></div>
+    <div class="cov-count">8 ideas (highest)</div>
+    <div class="cov-bar"><div class="cov-fill" style="width:100%; background: #f46b6b;"></div></div>
+  </div>
+  <div class="cov-cell">
+    <div class="cov-name"><span class="axis axis-submission">submission-completeness</span></div>
+    <div class="cov-count">7 ideas</div>
+    <div class="cov-bar"><div class="cov-fill" style="width:87%; background: #6c8ef7;"></div></div>
+  </div>
+  <div class="cov-cell">
+    <div class="cov-name"><span class="axis axis-demo">demo-narrative</span></div>
+    <div class="cov-count">7 ideas</div>
+    <div class="cov-bar"><div class="cov-fill" style="width:87%; background: #f59e42;"></div></div>
+  </div>
+  <div class="cov-cell">
+    <div class="cov-name"><span class="axis axis-prize">prize-strategy</span></div>
+    <div class="cov-count">5 ideas</div>
+    <div class="cov-bar"><div class="cov-fill" style="width:62%; background: #52c97a;"></div></div>
+  </div>
+  <div class="cov-cell">
+    <div class="cov-name"><span class="axis axis-coding">coding-agent-bonus</span></div>
+    <div class="cov-count">3 ideas</div>
+    <div class="cov-bar"><div class="cov-fill" style="width:37%; background: #4ecdc4;"></div></div>
+  </div>
+</div>
+
+<!-- RANKED SURVIVORS -->
+<h2>Ranked Survivors — All 30 Ideas</h2>
+<p style="color: var(--muted); font-size: .8rem; margin-bottom: 1rem;">Tiered by impact × effort. Effort: <span class="effort-pill effort-low">Low</span> = &lt;1 day · <span class="effort-pill effort-med">Medium</span> = 1–3 days · <span class="effort-pill effort-high">High</span> = 3+ days</p>
+
+<!-- TIER 1 -->
+<h3><span class="tier-badge t1">Tier 1</span> — Zero/Near-Zero Code · Highest Judging Impact · Do This Week</h3>
+
+<div class="idea-card">
+  <div class="card-header">
+    <div class="card-title">Fix forensic agent silent error swallowing</div>
+    <div class="card-badges">
+      <span class="tier-badge t1">T1</span>
+      <span class="axis axis-exception">exception-resilience</span>
+      <span class="effort-pill effort-low">Low — 30 min</span>
+      <span class="impact-pill impact-max">Max impact</span>
+      <span class="urgency u-now">Do now</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <code>agents/forensic-self-exam-agent-langgraph/agent.py</code> lines 97-98: the <code>except Exception: rationale = ""</code> block never populates <code>error_type</code> or <code>error_message</code> fields that exist in <code>ForensicState</code> (lines 44-46). This is a silent failure — the agent looks healthy even when the LLM Gateway is down. Fix: populate both fields in the except block, same pattern as <code>claim-flow-anomaly-detector</code> which correctly returns structured errors.
+  </div>
+  <div class="card-footer">
+    <div class="footer-section">
+      <div class="footer-label">Basis</div>
+      <div class="footer-value"><span class="basis-tag">direct:</span> agent.py:97-98 vs. claim-flow-anomaly-detector/agent.py:80-90</div>
+    </div>
+    <div class="footer-section">
+      <div class="footer-label">Why it matters</div>
+      <div class="footer-value">Criterion 3 is literally "exception handling." A silent failure in the forensic agent would score 1/5. One-line fix upgrades it to 5/5 evidence.</div>
+    </div>
+  </div>
+</div>
+
+<div class="idea-card">
+  <div class="card-header">
+    <div class="card-title">Configure Maestro element-level retry badges</div>
+    <div class="card-badges">
+      <span class="tier-badge t1">T1</span>
+      <span class="axis axis-exception">exception-resilience</span>
+      <span class="effort-pill effort-low">Low — canvas edit</span>
+      <span class="impact-pill impact-max">Max impact</span>
+      <span class="urgency u-now">Do now</span>
+    </div>
+  </div>
+  <div class="card-body">
+    In Studio Web, click the forensic agent task element in the master-crisis canvas → set retry count (2-3) + retry interval. The badge appears immediately in the execution trail on every run. No code, no caseplan JSON editing. Judges see the retry badge in the Orchestrator execution trail screenshot — visual proof of retry logic built into the orchestration layer.
+  </div>
+  <div class="card-footer">
+    <div class="footer-section">
+      <div class="footer-label">Basis</div>
+      <div class="footer-value"><span class="basis-tag">direct:</span> UiPath Maestro Case V20 element retry configuration (canvas-level, zero code)</div>
+    </div>
+    <div class="footer-section">
+      <div class="footer-label">Why it matters</div>
+      <div class="footer-value">The retry badge appears in the execution trail screenshot that goes into docs/evidence/ — it's a visible Criterion-3 artifact without any implementation work.</div>
+    </div>
+  </div>
+</div>
+
+<div class="idea-card">
+  <div class="card-header">
+    <div class="card-title">Devpost coding agent bonus documentation</div>
+    <div class="card-badges">
+      <span class="tier-badge t1">T1</span>
+      <span class="axis axis-coding">coding-agent-bonus</span>
+      <span class="effort-pill effort-med">Medium — 4–6 hrs</span>
+      <span class="impact-pill impact-max">+2 free points</span>
+      <span class="urgency u-now">Do now</span>
+    </div>
+  </div>
+  <div class="card-body">
+    Create <code>CODING_AGENTS.md</code> documenting Claude Code usage throughout the build: prompt excerpts, decision logs, agent type annotations. Add a "Built with Claude Code" section to the Devpost description with 3+ screenshots of Claude Code sessions. This unlocks the +2 bonus points — an 8% score uplift from a single afternoon of documentation. The coding agent bonus is explicitly unclaimed by most submissions (it requires explicit docs, not just using an AI).
+  </div>
+  <div class="card-footer">
+    <div class="footer-section">
+      <div class="footer-label">Basis</div>
+      <div class="footer-value"><span class="basis-tag">direct:</span> AgentHack judging rubric — "+2 bonus for coding agent docs with prompt logs/screenshots in Devpost description"</div>
+    </div>
+    <div class="footer-section">
+      <div class="footer-label">Why it matters</div>
+      <div class="footer-value">25 pts base → 27 pts with bonus. Competitors who don't document get 0/2 on this; competitors who do get a structural advantage regardless of quality.</div>
+    </div>
+  </div>
+</div>
+
+<div class="idea-card">
+  <div class="card-header">
+    <div class="card-title">Broken-State Cold Open (demo resequence)</div>
+    <div class="card-badges">
+      <span class="tier-badge t1">T1</span>
+      <span class="axis axis-demo">demo-narrative</span>
+      <span class="effort-pill effort-low">Low — script rewrite</span>
+      <span class="impact-pill impact-high">High impact</span>
+      <span class="urgency u-now">Do now</span>
+    </div>
+  </div>
+  <div class="card-body">
+    Open the demo video on a Faulted master case (ErrorCode 160009 visible, red status). First 45 seconds: show forensic-self-exam-agent's self-diagnosis output (vector_status, route). Then recover into a fresh run. Judges who score 20 demos in a row will remember the one that opened in flames and recovered. Every other Track 1 submission opens on a happy path. This reframes CascadeCare as a resilience story from second one.
+  </div>
+  <div class="card-footer">
+    <div class="footer-section">
+      <div class="footer-label">Basis</div>
+      <div class="footer-value"><span class="basis-tag">direct:</span> 160009 Faulted incident already occurred in live runs (memory index documents it); no staging required — screenshot exists</div>
+    </div>
+    <div class="footer-section">
+      <div class="footer-label">Why it matters</div>
+      <div class="footer-value">Criterion 3 is scored on demo evidence. A demo that opens on failure + recovery is unambiguous Criterion-3 evidence without any explanation needed.</div>
+    </div>
+  </div>
+</div>
+
+<div class="idea-card">
+  <div class="card-header">
+    <div class="card-title">Pre-answer gate-delete gotcha (Confessional Chair)</div>
+    <div class="card-badges">
+      <span class="tier-badge t1">T1</span>
+      <span class="axis axis-exception">exception-resilience</span>
+      <span class="effort-pill effort-low">Low — 30 min writing</span>
+      <span class="impact-pill impact-high">High impact</span>
+      <span class="urgency u-now">Do now</span>
+    </div>
+  </div>
+  <div class="card-body">
+    Add a "Known Edge Cases and System Behavior" section to the Devpost writeup explicitly stating: "If a user deletes a gate task instead of actioning it, the system records an incident (ErrorCode 160009, IncidentType User) — by design. Gate elements track unauthorized deletion as a user incident, preserving the audit trail." Any judge who probes the system hits this; if it's pre-disclosed it signals depth. If it's hidden, it signals a flaw. The parliamentary cross-examination principle: name the weakness before you're asked.
+  </div>
+  <div class="card-footer">
+    <div class="footer-section">
+      <div class="footer-label">Basis</div>
+      <div class="footer-value"><span class="basis-tag">direct:</span> Memory index: "DELETING a gate task → that case Faulted (incident 160009, IncidentType User)" — already documented, just not surfaced in submission</div>
+    </div>
+    <div class="footer-section">
+      <div class="footer-label">Why it matters</div>
+      <div class="footer-value">Judges probing edge cases who find an undisclosed failure mode lose trust globally. Judges who find a pre-disclosed one increase trust. Zero implementation cost.</div>
+    </div>
+  </div>
+</div>
+
+<!-- TIER 2 -->
+<h3><span class="tier-badge t2">Tier 2</span> — Documentation &amp; Submission Work · 1–3 Days Each</h3>
+
+<div class="idea-card">
+  <div class="card-header">
+    <div class="card-title">Rubric-mapping editorial pass on Devpost writeup (NSC Briefing)</div>
+    <div class="card-badges">
+      <span class="tier-badge t2">T2</span>
+      <span class="axis axis-submission">submission-completeness</span>
+      <span class="effort-pill effort-med">Medium — 2–3 hrs</span>
+      <span class="impact-pill impact-high">High impact</span>
+      <span class="urgency u-week">This week</span>
+    </div>
+  </div>
+  <div class="card-body">
+    Run the Devpost draft through an explicit rubric-mapping pass: label every paragraph with which judging criterion it addresses (C1–C5). Any paragraph with no label gets cut or rewritten. The NSC Situation Room briefing principle: every fact must change a judge's vote — demonstrating technical knowledge is not the same as answering the judging question. Current writeup likely has paragraphs explaining V20 caseplan syntax that don't map to any criterion.
+  </div>
+  <div class="card-footer">
+    <div class="footer-section"><div class="footer-label">Basis</div><div class="footer-value"><span class="basis-tag">reasoned:</span> NSC briefing doctrine — pre-filter for decision-relevant facts only</div></div>
+    <div class="footer-section"><div class="footer-label">Why it matters</div><div class="footer-value">5-minute judging window. Every Devpost paragraph that doesn't map to a criterion is competing with one that does for the judge's attention.</div></div>
+  </div>
+</div>
+
+<div class="idea-card">
+  <div class="card-header">
+    <div class="card-title">ICS-214 formatted decision log from live run data</div>
+    <div class="card-badges">
+      <span class="tier-badge t2">T2</span>
+      <span class="axis axis-submission">submission-completeness</span>
+      <span class="effort-pill effort-med">Medium — half day</span>
+      <span class="impact-pill impact-high">High impact</span>
+      <span class="urgency u-week">This week</span>
+    </div>
+  </div>
+  <div class="card-body">
+    Generate a static HTML "Decision Log" from the live run data (job 26c32c0a + case instance history via <code>demo_autocomplete.py</code>) formatted as FEMA ICS-214 entries: timestamped, actor-attributed (ForensicSelfExamAgent [AI] / user [Human]), with one-line rationale per decision. FEMA's ICS-214 exists precisely to make complex incident timelines scannable by people who weren't there — exactly what a judge needs. "Auditability" moves from "logs exist" to "a regulator could reconstruct the incident from this record."
+  </div>
+  <div class="card-footer">
+    <div class="footer-section"><div class="footer-label">Basis</div><div class="footer-value"><span class="basis-tag">external:</span> FEMA ICS-214 Unit Log (NIMS doctrine) · <span class="basis-tag">direct:</span> demo_autocomplete.py already queries case history data</div></div>
+    <div class="footer-section"><div class="footer-label">Why it matters</div><div class="footer-value">Auditability (Criterion 3 / Criterion 4 signal) proven visually, not by description. One rendering pass produces a submission artifact + Devpost screenshot.</div></div>
+  </div>
+</div>
+
+<div class="idea-card">
+  <div class="card-header">
+    <div class="card-title">Dashboard "Audit Trail" reframe</div>
+    <div class="card-badges">
+      <span class="tier-badge t2">T2</span>
+      <span class="axis axis-submission">submission-completeness</span>
+      <span class="effort-pill effort-low">Low — rename + 2 sentences</span>
+      <span class="impact-pill impact-med">Medium impact</span>
+      <span class="urgency u-week">This week</span>
+    </div>
+  </div>
+  <div class="card-body">
+    Rename one dashboard panel to "Audit Trail" and add a sub-label "SOC-2 / HIPAA Visibility Layer." Add two sentences to the Devpost description positioning the dashboard explicitly as compliance visibility infrastructure, not just a monitoring view. The data is already there — only the framing is missing. The judging criteria use the word "auditability" explicitly.
+  </div>
+  <div class="card-footer">
+    <div class="footer-section"><div class="footer-label">Basis</div><div class="footer-value"><span class="basis-tag">direct:</span> Judging criteria explicitly list "Clear auditability" as a Track 1 strong submission signal. Dashboard already shows all decision events.</div></div>
+    <div class="footer-section"><div class="footer-label">Why it matters</div><div class="footer-value">Renaming a panel to match a judging criterion's exact language reduces cognitive load for judges. 20-minute change with direct rubric alignment.</div></div>
+  </div>
+</div>
+
+<div class="idea-card">
+  <div class="card-header">
+    <div class="card-title">Prompt logs in Devpost Supporting Materials</div>
+    <div class="card-badges">
+      <span class="tier-badge t2">T2</span>
+      <span class="axis axis-submission">submission-completeness</span>
+      <span class="effort-pill effort-low">Low — 1 hr</span>
+      <span class="impact-pill impact-med">Medium impact</span>
+      <span class="urgency u-week">This week</span>
+    </div>
+  </div>
+  <div class="card-body">
+    Include 2 representative <code>agents/prompts/*.md</code> files in the Devpost "Supporting Materials" section with a one-sentence framing: "Prompts are externalized from Python by design — a Trust Layer compliance decision that prevents PHI/PII from being embedded in source code, enabling the LLM Gateway to inspect all system prompts uniformly." This converts a repository convention into a deliberate, scoreable architectural decision.
+  </div>
+  <div class="card-footer">
+    <div class="footer-section"><div class="footer-label">Basis</div><div class="footer-value"><span class="basis-tag">direct:</span> CLAUDE.md: "Prompts live in agents/prompts/*.md — NEVER inline a prompt in Python." This is an architectural guardrail, not a style preference.</div></div>
+    <div class="footer-section"><div class="footer-label">Why it matters</div><div class="footer-value">Judges cannot see the repository structure — they see what you show. Two prompt files + one sentence turns a housekeeping convention into a Trust Layer compliance story.</div></div>
+  </div>
+</div>
+
+<div class="idea-card">
+  <div class="card-header">
+    <div class="card-title">docs/evidence/ screenshot set</div>
+    <div class="card-badges">
+      <span class="tier-badge t2">T2</span>
+      <span class="axis axis-submission">submission-completeness</span>
+      <span class="effort-pill effort-med">Medium — 2–3 hrs</span>
+      <span class="impact-pill impact-high">High leverage</span>
+      <span class="urgency u-week">This week</span>
+    </div>
+  </div>
+  <div class="card-body">
+    Create <code>docs/evidence/</code> with 6+ annotated screenshots from the live run: (1) retry badge on canvas, (2) forensic agent output panel (vector_status, route), (3) HITL gate AppTask in Action Center, (4) 6 grandchild cases fan-out, (5) case closure confirmation, (6) Faulted case → ErrorCode 160009. Annotate each with which judging criterion it demonstrates. These are reused verbatim in: demo video, forum post, Devpost, presentation deck, Specialist Challenge submission.
+  </div>
+  <div class="card-footer">
+    <div class="footer-section"><div class="footer-label">Basis</div><div class="footer-value"><span class="basis-tag">direct:</span> All 6 scenarios already occurred in live v1.0.32 runs — no staging needed. Only screen capture + annotation required.</div></div>
+    <div class="footer-section"><div class="footer-label">Why it matters</div><div class="footer-value">Evidence screenshots are reusable assets across every submission artifact. Produced once, used everywhere. Max leverage per hour.</div></div>
+  </div>
+</div>
+
+<div class="idea-card">
+  <div class="card-header">
+    <div class="card-title">CVR Playback — Reversal-3 fan-out as synchronized crisis moment</div>
+    <div class="card-badges">
+      <span class="tier-badge t2">T2</span>
+      <span class="axis axis-demo">demo-narrative</span>
+      <span class="effort-pill effort-med">Medium — script + recording</span>
+      <span class="impact-pill impact-high">High impact</span>
+      <span class="urgency u-week">This week</span>
+    </div>
+  </div>
+  <div class="card-body">
+    Aviation analogy: NTSB investigators show a synchronized 90-second readout — CVR transcript + instrument panel — of the exact crisis moment. Apply to the demo: when Reversal 3 fires, show split-screen: left = Orchestrator job log (raw event stream), right = live canvas with 6 child cases spawning in real time. Narrate only the AI decisions at the branch point. Judges see full instrumentation at the hardest moment, not a summary that could hide failure. Narrower = more credible than broader.
+  </div>
+  <div class="card-footer">
+    <div class="footer-section"><div class="footer-label">Basis</div><div class="footer-value"><span class="basis-tag">external:</span> NTSB CVR/FDR synchronized readout methodology · <span class="basis-tag">direct:</span> All data exists in v1.0.32 run (job 26c32c0a + canvas events)</div></div>
+    <div class="footer-section"><div class="footer-label">Why it matters</div><div class="footer-value">The 5-minute window creates pressure to summarize — summarizing hides the hard moments. Aviation investigators go narrower, not broader. One moment, full instrumentation.</div></div>
+  </div>
+</div>
+
+<div class="idea-card">
+  <div class="card-header">
+    <div class="card-title">Surgical Timeout narration at HITL gate (WHO Checklist)</div>
+    <div class="card-badges">
+      <span class="tier-badge t2">T2</span>
+      <span class="axis axis-demo">demo-narrative</span>
+      <span class="effort-pill effort-low">Low — script choreography only</span>
+      <span class="impact-pill impact-high">High impact</span>
+      <span class="urgency u-week">This week</span>
+    </div>
+  </div>
+  <div class="card-body">
+    WHO Surgical Safety Checklist: the "Time Out" before incision forces verbalization of patient identity, procedure, and risks in front of OR observers — it makes invisible safety behaviors visible. Apply to the HITL gate: pause the demo narration, read aloud what the AI is asking the human to decide ("6 obligations will lock in for 37 providers — approve or deny?"), name the irreversibility, then show the Approve click. Currently the HITL gate likely looks ceremonial. This makes it feel weighty. Zero implementation.
+  </div>
+  <div class="card-footer">
+    <div class="footer-section"><div class="footer-label">Basis</div><div class="footer-value"><span class="basis-tag">external:</span> WHO Surgical Safety Checklist (Haynes et al., 2009, NEJM) — checklist makes invisible safety behaviors visible to observers</div></div>
+    <div class="footer-section"><div class="footer-label">Why it matters</div><div class="footer-value">Judges evaluating "meaningful human control" look for moments where the AI *waits* and the human's choice *matters*. Choreography makes the same action feel consequential vs. ceremonial.</div></div>
+  </div>
+</div>
+
+<div class="idea-card">
+  <div class="card-header">
+    <div class="card-title">"Zero Custom Orchestration Code" headline statistic</div>
+    <div class="card-badges">
+      <span class="tier-badge t2">T2</span>
+      <span class="axis axis-demo">demo-narrative</span>
+      <span class="effort-pill effort-low">Low — 30 min estimation</span>
+      <span class="impact-pill impact-med">Medium impact</span>
+      <span class="urgency u-week">This week</span>
+    </div>
+  </div>
+  <div class="card-body">
+    Estimate lines of orchestration code that would have been required for a custom Python/LangGraph harness implementing: 3-level nested case coordination, 6 spawn fan-out, 5 reversals, 2 HITL gates, retry logic, and incident tracking (~1,500–2,500 lines). Then put the number in the Devpost headline: "1,800+ lines of orchestration code eliminated by Maestro Case." Add as a dashboard stat. Quantified claims are remembered by judges scoring 20+ entries; abstract claims are not.
+  </div>
+  <div class="card-footer">
+    <div class="footer-section"><div class="footer-label">Basis</div><div class="footer-value"><span class="basis-tag">reasoned:</span> A comparable state-machine harness for this case graph in vanilla Python would require explicit state management, spawn coordination, retry policies, and polling — all eliminated by Maestro V20</div></div>
+    <div class="footer-section"><div class="footer-label">Why it matters</div><div class="footer-value">Numbers stick; "Maestro handles this for you" does not. One 30-minute estimation + one sentence = Devpost headline + dashboard stat.</div></div>
+  </div>
+</div>
+
+<div class="idea-card">
+  <div class="card-header">
+    <div class="card-title">Clinical Trial Structure — lead with exceptions in demo + Devpost</div>
+    <div class="card-badges">
+      <span class="tier-badge t2">T2</span>
+      <span class="axis axis-submission">submission-completeness</span>
+      <span class="effort-pill effort-low">Low — reorder/rewrite</span>
+      <span class="impact-pill impact-high">High impact</span>
+      <span class="urgency u-week">This week</span>
+    </div>
+  </div>
+  <div class="card-body">
+    FDA IND/NDA submission structure: safety data precedes efficacy, and label claims must be derivable from the data package. Skeptical reviewers go to the safety section first. Apply to both demo (first 60 seconds = exception paths, retry logic, HITL behavior) and Devpost (Section 1 = "What happens when things go wrong" before "What the system does when it works"). Judges reviewing AI systems for Criterion 3 behave like safety reviewers — find their question answered before they ask it.
+  </div>
+  <div class="card-footer">
+    <div class="footer-section"><div class="footer-label">Basis</div><div class="footer-value"><span class="basis-tag">external:</span> FDA 21 CFR Part 312 submission structure · <span class="basis-tag">reasoned:</span> hackathon judges reviewing AI systems default to skepticism about failure handling</div></div>
+    <div class="footer-section"><div class="footer-label">Why it matters</div><div class="footer-value">Re-ordering the demo and Devpost to front-load safety/exceptions is a structural credibility move. Every judge who scores skeptically finds their concern addressed in the first 60 seconds.</div></div>
+  </div>
+</div>
+
+<!-- TIER 3 -->
+<h3><span class="tier-badge t3">Tier 3</span> — Prize &amp; Completeness Sprints · Bounded Time Cost</h3>
+
+<div class="idea-card">
+  <div class="card-header">
+    <div class="card-title">$1,500 product feedback form</div>
+    <div class="card-badges">
+      <span class="tier-badge t3">T3</span>
+      <span class="axis axis-prize">prize-strategy</span>
+      <span class="effort-pill effort-low">Low — 15 min</span>
+      <span class="impact-pill impact-max">$1,500</span>
+      <span class="urgency u-now">Do now</span>
+    </div>
+  </div>
+  <div class="card-body">
+    Complete the UiPath product feedback form at <code>forms.office.com/e/KitjGLF5k1</code>. 15-minute task, $1,500 prize. This is the highest $/hour opportunity in the entire hackathon — do this before any other prize-strategy work.
+  </div>
+  <div class="card-footer">
+    <div class="footer-section"><div class="footer-label">Basis</div><div class="footer-value"><span class="basis-tag">direct:</span> AgentHack 2026 prize structure — product feedback bonus</div></div>
+    <div class="footer-section"><div class="footer-label">Action</div><div class="footer-value">Human task: navigate to form, complete it. No Claude work needed.</div></div>
+  </div>
+</div>
+
+<div class="idea-card">
+  <div class="card-header">
+    <div class="card-title">Specialist Coded Agent Challenge separate submission ($10K)</div>
+    <div class="card-badges">
+      <span class="tier-badge t3">T3</span>
+      <span class="axis axis-prize">prize-strategy</span>
+      <span class="effort-pill effort-med">Medium — 1 day</span>
+      <span class="impact-pill impact-max">$10,000</span>
+      <span class="urgency u-week">Verify + submit this week</span>
+    </div>
+  </div>
+  <div class="card-body">
+    CascadeCare has 4 Coded Agents: <code>forensic-self-exam-agent-langgraph</code> (LangGraph StateGraph, UiPath Python SDK), <code>claim-flow-anomaly-detector</code>, <code>multi-customer-pattern-detector</code>, <code>case-job-janitor</code>. This is more Coded Agents than most Track 1 submissions. The Specialist Coded Agent Challenge requires UiPath Python SDK usage — we qualify. Write one tight technical doc per agent (purpose, StateGraph topology, why LangGraph, Maestro integration). Verify whether it requires a separate Devpost entry. Submit the Coded Agent bundle. The documentation work also produces the +2 coding agent bonus for the main rubric.
+  </div>
+  <div class="card-footer">
+    <div class="footer-section"><div class="footer-label">Basis</div><div class="footer-value"><span class="basis-tag">direct:</span> 4 Coded Agents deployed + LangGraph integration live — qualification appears strong. Documentation is the missing piece.</div></div>
+    <div class="footer-section"><div class="footer-label">Why it matters</div><div class="footer-value">The assumption "we probably don't qualify" is wrong. One afternoon of documentation unlocks both the $10K separate prize AND the +2 rubric bonus. Same artifact, dual submission.</div></div>
+  </div>
+</div>
+
+<div class="idea-card">
+  <div class="card-header">
+    <div class="card-title">Forum post / community seeding before July 3</div>
+    <div class="card-badges">
+      <span class="tier-badge t3">T3</span>
+      <span class="axis axis-prize">prize-strategy</span>
+      <span class="effort-pill effort-med">Medium — 2–3 hrs</span>
+      <span class="impact-pill impact-high">$500 + influence</span>
+      <span class="urgency u-week">Before July 3</span>
+    </div>
+  </div>
+  <div class="card-body">
+    Write and publish a UiPath Community Forum technical post: "How we built a 3-level nested healthcare crisis case with LangGraph Coded Agents for AgentHack 2026." ~600 words, include one canvas screenshot, one forensic agent output, one case diagram. Published before the People's Choice voting window (July 3–30) seeds organic discovery. The post also serves as a Devpost narrative rehearsal and surfaces the project to UiPath employees who may influence judging.
+  </div>
+  <div class="card-footer">
+    <div class="footer-section"><div class="footer-label">Basis</div><div class="footer-value"><span class="basis-tag">direct:</span> People's Choice = 10% of finale weight; voting window July 3–30; ~117 submissions (small field = lower vote threshold to win)</div></div>
+    <div class="footer-section"><div class="footer-label">Why it matters</div><div class="footer-value">$500 People's Choice is the lowest-effort prize given the working demo. A technical post now seeds community awareness 2+ weeks before voting opens.</div></div>
+  </div>
+</div>
+
+<div class="idea-card">
+  <div class="card-header">
+    <div class="card-title">90-second Criterion-3 exhibit video</div>
+    <div class="card-badges">
+      <span class="tier-badge t3">T3</span>
+      <span class="axis axis-exception">exception-resilience</span>
+      <span class="effort-pill effort-med">Medium — 1 demo session</span>
+      <span class="impact-pill impact-high">High impact</span>
+      <span class="urgency u-soon">After main video</span>
+    </div>
+  </div>
+  <div class="card-body">
+    Alongside the main 5-minute demo, produce a 90-second standalone clip targeting only Criterion 3: (1) show Faulted case / 160009 incident, (2) forensic-self-exam-agent firing on next run (vector_status=cleared, route=baa-boundary), (3) case completing. Label it "Exception Handling — Criterion 3 Evidence." Submit as supplemental video. Judges on a tight schedule score Criterion 3 at 5/5 in under two minutes without needing to find the relevant moments in the main demo.
+  </div>
+  <div class="card-footer">
+    <div class="footer-section"><div class="footer-label">Basis</div><div class="footer-value"><span class="basis-tag">direct:</span> Criterion 3 is scored independently. The assumption "one video must do everything" is wrong. A 90s targeted exhibit is a submission architecture decision.</div></div>
+    <div class="footer-section"><div class="footer-label">Why it matters</div><div class="footer-value">Removes the tension between "5-minute demo must be fast" and "must show enough exception handling." Main video optimizes for Criteria 1/2/4/5; this clip maximizes Criterion 3.</div></div>
+  </div>
+</div>
+
+<div class="idea-card">
+  <div class="card-header">
+    <div class="card-title">Deny Branch as Hero Path</div>
+    <div class="card-badges">
+      <span class="tier-badge t3">T3</span>
+      <span class="axis axis-demo">demo-narrative</span>
+      <span class="effort-pill effort-med">Medium — demo re-run</span>
+      <span class="impact-pill impact-high">High impact</span>
+      <span class="urgency u-soon">After main demo</span>
+    </div>
+  </div>
+  <div class="card-body">
+    Film the Deny branch at the Reversal-4 HITL gate as the primary demo path rather than Approve. The Deny branch exercises <code>rework-stage-and-return</code> exit type — architecturally the most differentiating Maestro Case capability (case adapts on negative decision, doesn't terminate). The Approve path does not exercise this. Judges evaluating "exception handling" score the path that exercises the non-sunny branch higher. Approve becomes the footnote ("and if the fiduciary approves, here's the close path").
+  </div>
+  <div class="card-footer">
+    <div class="footer-section"><div class="footer-label">Basis</div><div class="footer-value"><span class="basis-tag">reasoned:</span> rework-stage-and-return is the most differentiating V20 exit type; only the Deny branch exercises it. Judges scoring "exception handling" weight this branch more heavily.</div></div>
+    <div class="footer-section"><div class="footer-label">Why it matters</div><div class="footer-value">Zero code change. The assumption "Approve = success = good demo" is wrong. Deny = richer orchestration story = higher Criterion 3 score.</div></div>
+  </div>
+</div>
+
+<div class="idea-card">
+  <div class="card-header">
+    <div class="card-title">UiPath components list in README (Criterion 4)</div>
+    <div class="card-badges">
+      <span class="tier-badge t3">T3</span>
+      <span class="axis axis-submission">submission-completeness</span>
+      <span class="effort-pill effort-low">Low — 30 min</span>
+      <span class="impact-pill impact-med">Direct Criterion 4</span>
+      <span class="urgency u-week">This week</span>
+    </div>
+  </div>
+  <div class="card-body">
+    Add an "UiPath Components Used" table to README.md listing every UiPath first-party component: Maestro Case V20, Agent Builder, Coded Agents (uipath-langchain, uipath-python-sdk), LLM Gateway, Context Grounding, Data Fabric, Action Center AppTask, UiPath Apps (Coded Web App), Orchestrator API. Criterion 4 explicitly evaluates component variety — judges need this as a scannable list, not hidden in prose.
+  </div>
+  <div class="card-footer">
+    <div class="footer-section"><div class="footer-label">Basis</div><div class="footer-value"><span class="basis-tag">direct:</span> Judging Criterion 4 = "UiPath component variety" — component list not currently findable as a table in README</div></div>
+    <div class="footer-section"><div class="footer-label">Why it matters</div><div class="footer-value">Judges can't score variety they can't see. One table, 30 minutes, direct Criterion 4 alignment.</div></div>
+  </div>
+</div>
+
+<div class="idea-card">
+  <div class="card-header">
+    <div class="card-title">Email andreea.tomescu@uipath.com for judge access</div>
+    <div class="card-badges">
+      <span class="tier-badge t3">T3</span>
+      <span class="axis axis-prize">prize-strategy</span>
+      <span class="effort-pill effort-low">Low — 5 min</span>
+      <span class="impact-pill impact-high">Required for judging</span>
+      <span class="urgency u-now">Do now</span>
+    </div>
+  </div>
+  <div class="card-body">
+    Email andreea.tomescu@uipath.com per AgentHack requirements to provide UiPath Labs judge access credentials. This is a submission prerequisite — judges cannot evaluate a live demo they cannot access. Human task only.
+  </div>
+  <div class="card-footer">
+    <div class="footer-section"><div class="footer-label">Basis</div><div class="footer-value"><span class="basis-tag">direct:</span> AgentHack submission checklist requires judge access credentials email</div></div>
+    <div class="footer-section"><div class="footer-label">Action</div><div class="footer-value">Human task: draft + send email with tenant URL and read-only credentials</div></div>
+  </div>
+</div>
+
+<!-- TIER 4 -->
+<h3><span class="tier-badge t4">Tier 4</span> — Demo Enhancements · Higher Risk or Lower ROI</h3>
+
+<div class="idea-card">
+  <div class="card-header">
+    <div class="card-title">Chaos Monkey mock-520 injection during demo</div>
+    <div class="card-badges">
+      <span class="tier-badge t4">T4</span>
+      <span class="axis axis-exception">exception-resilience</span>
+      <span class="effort-pill effort-high">High — requires stability assessment</span>
+      <span class="impact-pill impact-high">Highest possible Crit-3</span>
+      <span class="urgency u-soon">Only if time permits</span>
+    </div>
+  </div>
+  <div class="card-body">
+    Netflix Chaos Monkey principle: most credible resilience demonstration is "watch it fail and recover in front of you." Stage a mock LLM Gateway 520 (transient error) on the forensic agent during the live demo — trigger it, show the retry badge appear on the canvas, let it auto-recover before the HITL gate. Requires a Python-level mock injection point in the LangGraph agent (not a new UiPath package). Risk: demo stability. Only attempt after all Tier 1–3 work is complete and demo run is fully rehearsed.
+  </div>
+  <div class="card-footer">
+    <div class="footer-section"><div class="footer-label">Basis</div><div class="footer-value"><span class="basis-tag">external:</span> Netflix Chaos Engineering (Chaos Monkey, 2011) — controlled destruction as proof mechanism · <span class="basis-tag">direct:</span> LGW 520 transient error + instance retry already documented in memory</div></div>
+    <div class="footer-section"><div class="footer-label">Why it matters</div><div class="footer-value">A live recovery is more credible than any description. Risk must be weighed against demo stability — lose this only if Tier 1 retry badge already demonstrates the same point passively.</div></div>
+  </div>
+</div>
+
+<div class="idea-card">
+  <div class="card-header">
+    <div class="card-title">Agent type declaration in README</div>
+    <div class="card-badges">
+      <span class="tier-badge t4">T4</span>
+      <span class="axis axis-submission">submission-completeness</span>
+      <span class="effort-pill effort-low">Low — 20 min</span>
+      <span class="impact-pill impact-med">Criterion 2/4</span>
+      <span class="urgency u-week">Bundle with T3 README work</span>
+    </div>
+  </div>
+  <div class="card-body">
+    Add an agent inventory table to README: agent name, type (Coded Agent / Agent Builder), framework (LangGraph / uipath-agents), and narrative role in the crisis. Judges evaluating Criterion 2 (orchestration & agent collaboration) need a clear agent map. Bundle with the Criterion 4 components table.
+  </div>
+</div>
+
+<!-- CROSS-CUTTING COMBINATIONS -->
+<h2>Cross-Cutting Combinations</h2>
+<p style="color: var(--muted); font-size: .8rem; margin-bottom: 1rem;">Ideas from different frames that combine into something stronger than either alone.</p>
+
+<div class="xc-card">
+  <div class="xc-header">
+    <div class="xc-name">XC1 — "Crisis-First Demo" Bundle</div>
+    <div class="xc-refs">T1.broken-cold-open + C1.cvr-playback + C4.surgical-timeout + C2.clinical-trial-order</div>
+    <div class="card-badges"><span class="axis axis-demo">demo-narrative</span><span class="axis axis-exception">exception-resilience</span></div>
+  </div>
+  <div class="xc-body">
+    Restructure the entire 5-minute demo script: (1) open on Faulted case — 30 sec, (2) CVR-frame the Reversal-3 fan-out with synchronized job-log + canvas — 60 sec, (3) WHO-style Surgical Timeout narration at HITL gate — 15 sec pause, (4) close on case completion. The demo now follows the clinical trial structure: safety/exceptions first, efficacy second. No new code. Combined, these four ideas produce a demo that would be uniquely memorable among 117 submissions and directly maximizes Criteria 3 and 5.
+  </div>
+</div>
+
+<div class="xc-card">
+  <div class="xc-header">
+    <div class="xc-name">XC2 — "Criterion-3 Evidence Package"</div>
+    <div class="xc-refs">P1.retry-badges + P2.forensic-fix + A8.90s-exhibit + C3.gate-delete-disclosure + C6.chaos-mock</div>
+    <div class="card-badges"><span class="axis axis-exception">exception-resilience</span></div>
+  </div>
+  <div class="xc-body">
+    A complete, multi-layer Criterion-3 proof: (1) code fix prevents silent failure, (2) retry badge makes resilience visible in execution trail, (3) pre-disclosed gate-delete behavior signals depth, (4) 90-second standalone video exhibit lets judges score C3 independently of the main demo, (5) optional Chaos Monkey adds live recovery if demo stability allows. Together these make it essentially impossible for a judge to score Criterion 3 below 4/5.
+  </div>
+</div>
+
+<div class="xc-card">
+  <div class="xc-header">
+    <div class="xc-name">XC3 — "Documentation → Dual Prize Unlock"</div>
+    <div class="xc-refs">P3.coding-agent-bonus + A4.specialist-challenge + A5.prompt-logs + C5.ics214-log</div>
+    <div class="card-badges"><span class="axis axis-coding">coding-agent-bonus</span><span class="axis axis-prize">prize-strategy</span></div>
+  </div>
+  <div class="xc-body">
+    One unified documentation sprint unlocks two prizes: CODING_AGENTS.md (per-agent technical docs with StateGraph diagrams, prompt architecture, LangGraph rationale) serves both the +2 Devpost bonus AND the $10K Specialist Coded Agent Challenge entry. Add the ICS-214 decision log and prompt file exhibits — same afternoon of work. The documentation outputs are also reusable in the forum post, presentation deck, and video narration.
+  </div>
+</div>
+
+<div class="xc-card">
+  <div class="xc-header">
+    <div class="xc-name">XC4 — "Submission Completeness Sprint"</div>
+    <div class="xc-refs">A3.audit-trail-reframe + C7.rubric-editorial + P8.evidence-screenshots + C5.decision-log</div>
+    <div class="card-badges"><span class="axis axis-submission">submission-completeness</span></div>
+  </div>
+  <div class="xc-body">
+    A single focused day converts existing work into maximum judging evidence: (1) rubric-mapping editorial pass on Devpost (cut anything not mapped to a criterion), (2) rename dashboard panel to "Audit Trail," (3) capture 6+ evidence screenshots with criterion annotations, (4) generate ICS-214 decision log from live run data. This sprint turns "we have a working system" into "judges can verify every criterion claim from the artifacts."
+  </div>
+</div>
+
+<div class="xc-card">
+  <div class="xc-header">
+    <div class="xc-name">XC5 — "Prize Sweep Afternoon"</div>
+    <div class="xc-refs">P5.specialist-challenge + P6.feedback-form + P7/A7.forum-post</div>
+    <div class="card-badges"><span class="axis axis-prize">prize-strategy</span></div>
+  </div>
+  <div class="xc-body">
+    In one afternoon: (1) complete the $1,500 feedback form (15 min), (2) verify Specialist Coded Agent Challenge entry requirements and begin agent docs ($10K), (3) draft + schedule the UiPath Forum community post for People's Choice seeding ($500). All three are non-code tasks that can run in sequence without Claude support. Combined prize potential: $12,000 from ~6 hours of non-coding work.
+  </div>
+</div>
+
+<!-- PRIORITY TABLE -->
+<h2>Priority Action Table</h2>
+
+<div class="priority-grid">
+  <div class="priority-row priority-header">
+    <div>Action</div>
+    <div>Est. Time</div>
+    <div>Who</div>
+    <div>Prize / Score Impact</div>
+  </div>
+  <div class="priority-row">
+    <div class="priority-name">🔴 Fix forensic agent silent error (agent.py:97-98)</div>
+    <div><span class="tier-badge t1">T1</span> 30 min</div>
+    <div><span class="priority-who who-code">Code</span></div>
+    <div>Criterion 3 fix</div>
+  </div>
+  <div class="priority-row">
+    <div class="priority-name">🔴 Product feedback form (forms.office.com/e/KitjGLF5k1)</div>
+    <div><span class="tier-badge t1">T1</span> 15 min</div>
+    <div><span class="priority-who who-human">Human</span></div>
+    <div>$1,500</div>
+  </div>
+  <div class="priority-row">
+    <div class="priority-name">🔴 Email judge access (andreea.tomescu@uipath.com)</div>
+    <div><span class="tier-badge t1">T1</span> 5 min</div>
+    <div><span class="priority-who who-human">Human</span></div>
+    <div>Judging prerequisite</div>
+  </div>
+  <div class="priority-row">
+    <div class="priority-name">🔴 Configure Maestro retry badges (canvas edit)</div>
+    <div><span class="tier-badge t1">T1</span> 20 min</div>
+    <div><span class="priority-who who-human">Human</span></div>
+    <div>Criterion 3 visual proof</div>
+  </div>
+  <div class="priority-row">
+    <div class="priority-name">🔴 Pre-answer gate-delete gotcha in Devpost</div>
+    <div><span class="tier-badge t1">T1</span> 30 min</div>
+    <div><span class="priority-who who-either">Either</span></div>
+    <div>Criterion 3 depth signal</div>
+  </div>
+  <div class="priority-row">
+    <div class="priority-name">🟡 Coding agent docs (CODING_AGENTS.md + Devpost)</div>
+    <div><span class="tier-badge t2">T2</span> 4–6 hrs</div>
+    <div><span class="priority-who who-either">Either</span></div>
+    <div>+2 pts + $10K potential</div>
+  </div>
+  <div class="priority-row">
+    <div class="priority-name">🟡 docs/evidence/ screenshot set (6+ annotated)</div>
+    <div><span class="tier-badge t2">T2</span> 2–3 hrs</div>
+    <div><span class="priority-who who-human">Human</span></div>
+    <div>Reusable across all artifacts</div>
+  </div>
+  <div class="priority-row">
+    <div class="priority-name">🟡 Demo script rewrite (Crisis-First / XC1 bundle)</div>
+    <div><span class="tier-badge t2">T2</span> 2 hrs</div>
+    <div><span class="priority-who who-either">Either</span></div>
+    <div>Criterion 3/5 max</div>
+  </div>
+  <div class="priority-row">
+    <div class="priority-name">🟡 Rubric-mapping Devpost editorial (NSC Briefing)</div>
+    <div><span class="tier-badge t2">T2</span> 2–3 hrs</div>
+    <div><span class="priority-who who-either">Either</span></div>
+    <div>Criterion 5 + all criteria</div>
+  </div>
+  <div class="priority-row">
+    <div class="priority-name">🟡 UiPath components table in README</div>
+    <div><span class="tier-badge t2">T2</span> 30 min</div>
+    <div><span class="priority-who who-code">Code</span></div>
+    <div>Criterion 4 direct</div>
+  </div>
+  <div class="priority-row">
+    <div class="priority-name">🟡 Dashboard "Audit Trail" reframe</div>
+    <div><span class="tier-badge t2">T2</span> 20 min</div>
+    <div><span class="priority-who who-code">Code</span></div>
+    <div>Criterion 3/4 language match</div>
+  </div>
+  <div class="priority-row">
+    <div class="priority-name">🟡 ICS-214 formatted decision log</div>
+    <div><span class="tier-badge t2">T2</span> 3 hrs</div>
+    <div><span class="priority-who who-code">Code</span></div>
+    <div>Auditability artifact</div>
+  </div>
+  <div class="priority-row">
+    <div class="priority-name">🟢 Forum post — UiPath Community (before July 3)</div>
+    <div><span class="tier-badge t3">T3</span> 2–3 hrs</div>
+    <div><span class="priority-who who-either">Either</span></div>
+    <div>$500 People's Choice seeding</div>
+  </div>
+  <div class="priority-row">
+    <div class="priority-name">🟢 Specialist Coded Agent entry verification + submit</div>
+    <div><span class="tier-badge t3">T3</span> 1 day</div>
+    <div><span class="priority-who who-either">Either</span></div>
+    <div>$10,000</div>
+  </div>
+  <div class="priority-row">
+    <div class="priority-name">🟢 Prompt logs in Devpost Supporting Materials</div>
+    <div><span class="tier-badge t3">T3</span> 1 hr</div>
+    <div><span class="priority-who who-either">Either</span></div>
+    <div>Trust Layer story</div>
+  </div>
+  <div class="priority-row">
+    <div class="priority-name">🟢 90-second Criterion-3 exhibit video</div>
+    <div><span class="tier-badge t3">T3</span> 1 demo session</div>
+    <div><span class="priority-who who-human">Human</span></div>
+    <div>Criterion 3 targeted evidence</div>
+  </div>
+  <div class="priority-row">
+    <div class="priority-name">⚪ Chaos Monkey mock-520 injection (if demo stable)</div>
+    <div><span class="tier-badge t4">T4</span> 1+ day</div>
+    <div><span class="priority-who who-code">Code</span></div>
+    <div>Highest Crit-3 signal (risky)</div>
+  </div>
+</div>
+
+<!-- REJECTION LOG -->
+<h2>Rejection Summary</h2>
+<details>
+  <summary>Show ideas that didn't make it through critique (8 rejected)</summary>
+  <div style="margin-top:.5rem;">
+    <div class="reject-item">
+      <div><span class="strikethrough">Separate "Deny-only" full run recording</span> <span class="reject-reason">MERGED into "Deny Branch as Hero Path" (T3) — same idea, shorter implementation</span></div>
+    </div>
+    <div class="reject-item">
+      <div><span class="strikethrough">Live tenant walkthrough video (separate from main demo)</span> <span class="reject-reason">SCOPE CREEP — 5-minute demo is the required format; supplemental tenant walk adds no criterion coverage not already addressed</span></div>
+    </div>
+    <div class="reject-item">
+      <div><span class="strikethrough">Add new LangGraph conditional edge for error path</span> <span class="reject-reason">OVER-ENGINEERING — the error_type/error_message fix achieves the same judging outcome at 10% of the effort; new edges add regression risk</span></div>
+    </div>
+    <div class="reject-item">
+      <div><span class="strikethrough">Build a runbook UI in the dashboard</span> <span class="reject-reason">SCOPE CREEP — adds 3+ days of frontend work for marginal judging gain; ICS-214 log achieves the auditability story without new UI</span></div>
+    </div>
+    <div class="reject-item">
+      <div><span class="strikethrough">Automated PR → forum crosspost bot</span> <span class="reject-reason">WRONG LEVER — community seeding is a one-time post, not a repeated operation; automation overhead exceeds value</span></div>
+    </div>
+    <div class="reject-item">
+      <div><span class="strikethrough">Add Context Grounding to additional agents</span> <span class="reject-reason">TIMELINE RISK — BAA Boundary Reasoner already uses CG; adding it to a second agent risks breaking existing CG indexes within 2-week window</span></div>
+    </div>
+    <div class="reject-item">
+      <div><span class="strikethrough">Build presentation deck from scratch</span> <span class="reject-reason">TOOL AVAILABLE — Devpost official template + Canva should be used; custom deck from scratch not a differentiator; time better spent on Criterion-3 evidence</span></div>
+    </div>
+    <div class="reject-item">
+      <div><span class="strikethrough">Quantify PHI/PII guardrail events in dashboard</span> <span class="reject-reason">DATA UNAVAILABLE — LLM Gateway trust layer telemetry not surfaced via current API; would require new integration work</span></div>
+    </div>
+  </div>
+</details>
+
+<!-- AXIS ORPHANS -->
+<p style="color: var(--muted); font-size: .78rem; margin-top: 1rem;"><em>Axis coverage check: all 5 axes covered. No recovery dispatch needed.</em></p>
+
+<hr>
+<p style="color: var(--muted); font-size: .72rem; text-align: center;">
+  Generated by ce-ideate · run-id a7f3c2e1 · 2026-06-15 · 5 frames · 38 raw → 30 deduped → 22 survivors (+ 8 rejected)<br>
+  Next step: <code>ce-strategy</code> update · then <code>ce-brainstorm</code> on XC2 (Criterion-3 Evidence Package) or XC3 (Documentation → Dual Prize)
+</p>
+
+</div>
+</body>
+</html>

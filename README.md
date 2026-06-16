@@ -17,12 +17,14 @@ of native case nesting** — while five master-level goal reversals reshape the 
 The hero moment: **Reversal 3** (a state DOI subpoena) fans out **six grandchild cases
 simultaneously** on the Maestro Case canvas.
 
-> **Status (2026-06-13):** Every UiPath artifact below is authored, validated against its UiPath
+> **Status (2026-06-15):** Every UiPath artifact below is authored, validated against its UiPath
 > contract (V20 / CNCF Serverless 1.0.0 / Agent Builder), and **running live on UiPath Automation
-> Cloud** — `clearflow-solution` 1.0.23 deployed to `Shared/CascadeCare-v110`, with a full
-> cascade run proven end-to-end (master + 6 child + 6 grandchild cases all Completed). The
-> operator dashboard is live as the `clearflow-network-command` **Coded Web App (v1.0.7)** at
-> [`…/clearflow-network-command`](https://hackathon26_042.staging.uipath.host/clearflow-network-command).
+> Cloud** — `clearflow-solution` **1.0.32** deployed to `Shared/CascadeCare-v110`, with a full
+> cascade run proven end-to-end (master auto-walks all agent stages → 6 child + 6 grandchild cases →
+> two HITL gates → master **Completed**). The **LangGraph** Forensic Self-Exam agent fires in-case at
+> Vector Isolation and surfaces structured errors on LLM-Gateway failure without faulting (Criterion-3
+> defense-in-depth). The operator dashboard is live as the `clearflow-network-command` **Coded Web
+> App** at [`…/clearflow-network-command`](https://hackathon26_042.staging.uipath.host/clearflow-network-command).
 > Live run procedure: [`docs/DEMO-RUNBOOK.md`](docs/DEMO-RUNBOOK.md). Historical deviations:
 > [`DEVIATIONS.md`](DEVIATIONS.md).
 
@@ -189,10 +191,54 @@ keeps moving as new information arrives, while parallel specialist teams handle 
 obligations independently. HITL gates pause only the specific case that needs human input, not
 the entire network."
 
+## Exception, Failure & Edge-Case Handling (Criterion 3)
+
+Crisis software is judged by what it does when things break. CascadeCare handles failure in **four
+complementary layers**, plus deliberate edge-case guards — and the demo shows them live
+([`docs/submission/DEMO-criterion3-and-fanout.md`](docs/submission/DEMO-criterion3-and-fanout.md)).
+
+| Layer | Failure handled | Mechanism |
+|-------|-----------------|-----------|
+| **1 — In-agent graceful degradation** | LLM Gateway failure (520 / auth / offline) during the forensic agent's advisory enrichment | `enrich_node` catches it, surfaces `error_type` / `error_message` as case variables, and **still returns the correct route** — the agent never faults and the case keeps moving (routing is deterministic). Covered by `tests/agents/test_forensic_langgraph.py`. |
+| **2 — Structured coded-agent errors** | Any failure inside a Coded Agent | Agents return `error_type` / `error_message` in their Output contract and **never raise** — e.g. `claim-flow-anomaly-detector` returns a structured `CLASSIFICATION_FAILED` instead of crashing the job. |
+| **3 — Case-native resilience** | SLA breaches; goal reversals needing re-investigation | Case + stage **SLA rules → escalation notifications** (on-track / at-risk / breached) across all three nesting levels; **targeted stage re-entry** (`return-to-origin`) re-opens *only* the Multi-Customer Investigation stage at Reversal 5 while skipping settled work (`shouldRunOnlyOnce`). |
+| **4 — Operator recovery + audit** | A persistently faulted case instance | `uip maestro case instance retry` recovers a faulted instance; `… incidents` surfaces the incident (e.g. `ErrorCode 160009`); the **Action History** records the fault and the retry as a timestamped, compliance-grade audit trail. |
+
+**Edge cases handled by design:**
+- **Negative / missing indicators** → clamped to zero in the forensic agent (`clamp_node`); empty input routes to `escalate` rather than mis-routing.
+- **No-signal path** → the forensic agent skips LLM enrichment entirely on the escalate route (no evidence → no rationale → no wasted Gateway call).
+- **Spawn fan-out** uses **literal stakeholder slugs**, not runtime `=datafabric.qem:` expressions (which fail `400300` in spawn inputs) — a proven platform edge case, avoided.
+- **Unauthorized HITL action** (deleting a gate task instead of actioning it) is recorded as a `User` incident (`160009`) on the gate element — the case captures the deviation rather than silently losing it.
+
+**Meaningful human oversight:** at the Reversal-4 fiduciary gate the human's **Approve / Deny** is
+recorded as an auditable ruling (reviewerId + rationale + timestamp) and **consumed downstream** —
+`reviewerDecision` reshapes ClearFlow's Reversal-5 litigation posture (cooperative vs. contesting).
+The human decision changes the response, and the case records who decided, why, and when.
+
 ## UiPath Component Inventory
 
-Every runtime asset is a UiPath artifact. **27 core artifacts** plus the Data Fabric, Context
+Every runtime asset is a UiPath artifact. **37 core artifacts** plus the Data Fabric, Context
 Grounding, and Trust Layer surfaces below.
+
+**At a glance — 13 UiPath product surfaces:**
+
+| UiPath component | In CascadeCare |
+|------------------|----------------|
+| **Maestro Case** (V20, 3-level) | The runtime orchestrator — master → stakeholder-parent → obligation-grandchild |
+| **Maestro BPMN** | 2 process models (incident-response playbook, case-closed notification) |
+| **Maestro Flow** | Demo Driver — paces the 90-day timeline to wall-clock |
+| **Agent Builder** | 6 low-code Claude Sonnet 4.6 (BYO-LLM) reasoning agents |
+| **Coded Agents** (Python SDK) | 5 agents — 1 via **LangGraph** (`uipath-langchain`) |
+| **LLM Gateway → Trust Layer** | Every LLM call; PHI/PII + content guardrails |
+| **Context Grounding** | 2 indexes (`BAA-corpus` bound to the BAA Boundary Reasoner) |
+| **Data Fabric** | 9 entities (~4,320 claim-telemetry rows) |
+| **Action Center** (AppTask) | 2 HITL gates (fiduciary review + obligation response) |
+| **UiPath Apps** (Coded Web App) | Live operator command-center dashboard |
+| **Orchestrator** | Case/agent jobs, hourly janitor trigger, bulk job sweep |
+| **Integration Service API Workflows** | 19 mock-front + ViVE-bridge workflows |
+| **Solution** (`.uipx`) | One deployable bundle of all projects |
+
+Detail by surface below.
 
 ### Maestro Case — three-level nesting (3 case definitions, V20)
 
@@ -209,30 +255,30 @@ Wired with the native `case-management` task type — no Postgres mirror, no lev
 - **SLA + escalation → Maestro Notification**, at case and stage level across all three nesting levels — on-track / at-risk / breached, firing notification actions on breach and at-risk.
 - **Agent-driven progression** — the master advances itself: the **LangGraph** Forensic Self-Exam agent (`forensic-self-exam-agent-langgraph`, wired into the Vector Isolation stage task `tFSEXam01`) drives the Vector Isolation → Regulatory Response exit when ClearFlow's vector status clears (`=js:vars.var_clearflow_vector_status === 'cleared'`). Proven live end-to-end (v1.0.32): the agent fires in-case and returns `vector_status="cleared"`, `route_to="baa-boundary"`, the master auto-walks all agent stages, fans out 6 children + 6 grandchildren (three levels), and closes after the HITL gates.
 - **Targeted re-entry** — at Reversal 5 (ClearFlow → co-defendant), the master re-opens the Multi-Customer Investigation stage via an interrupting entry condition (`=js:vars.var_reversal_number >= 5`) and a `return-to-origin` exit, re-running **only** the cross-provider correlation while the settled anomaly classification is skipped (`shouldRunOnlyOnce`).
-- **Agent Evaluations** — eval sets for all seven agents (low-code under `agents/<name>/evals/`, coded under `agents/<name>/evaluations/`).
+- **Agent Evaluations** — eval sets for the reasoning agents (low-code under `agents/<name>/evals/`, coded under `agents/<name>/evaluations/`).
 
 Per-agent Agent Memory is a deploy-time toggle, not fabricated offline config; cross-timeline state is carried by the master's root variables + Data Fabric (see `docs/adr/0004-agent-memory-is-deploy-time-not-fabricated-config.md`).
 
-### Agent Builder agents (6, low-code, Claude BYO-LLM)
+### Agent inventory (11 — 6 Agent Builder low-code + 5 Coded)
 
-| Agent | Role |
-|-------|------|
-| `vector-hypothesis-agent` | Determines the attack vector (ClearFlow vs. Nimbus) |
-| `baa-boundary-reasoner` | Analyzes BAA terms (+ Context Grounding on `BAA-corpus`); finds cross-BAA conflicts |
-| `fiduciary-conflict-detector` | Multi-party obligation conflicts; builds the HITL form payload (Reversal 4) |
-| `negligent-monitoring-risk-agent` | Co-defendant exposure analysis (Reversal 5) |
-| `assess-claim-disruption` | Quantifies per-stakeholder claim disruption and liquidity impact (parent Impact Assessment) |
-| `classify-obligation` | Classifies the raised obligation (subpoena / breach-notification / BAA-disclosure / audit) for the grandchild intake |
+| Agent | Type | Framework / model | Grounding | Wired into (case · stage) | Role |
+|-------|------|-------------------|-----------|---------------------------|------|
+| `baa-boundary-reasoner` | Agent Builder | Claude `sonnet-4-6` BYO (LLM Gateway) | **`BAA-corpus`** | master + stakeholder-parent | Per-provider BAA-vs-subpoena disclosure position — the "six-answer problem" (Reversal 3) |
+| `vector-hypothesis-agent` | Agent Builder | Claude `sonnet-4-6` BYO | — | master · Vector Isolation | Determines the attack vector (ClearFlow vs. Nimbus) |
+| `fiduciary-conflict-detector` | Agent Builder | Claude `sonnet-4-6` BYO | — | master · Fiduciary Review | Tri-party obligation conflict → builds the HITL gate payload (Reversal 4) |
+| `negligent-monitoring-risk-agent` | Agent Builder | Claude `sonnet-4-6` BYO | — | master · Litigation Defense | Co-defendant exposure analysis (Reversal 5) |
+| `assess-claim-disruption` | Agent Builder | Claude `sonnet-4-6` BYO | — | stakeholder-parent · Impact Assessment | Per-provider claim disruption + liquidity impact |
+| `classify-obligation` | Agent Builder | Claude `sonnet-4-6` BYO | — | obligation-grandchild · Intake | Classifies the raised obligation (subpoena / breach-notification / BAA-disclosure / audit) |
+| `forensic-self-exam-agent-langgraph` | **Coded · LangGraph** | LangGraph `StateGraph` via `uipath-langchain`; advisory enrich via LLM Gateway | — | **master · Vector Isolation (`tFSEXam01`) — LIVE** | Clears ClearFlow / identifies Nimbus → vector status (Reversal 2); framework-agnostic agent layer |
+| `claim-flow-anomaly-detector` | Coded | UiPath Python SDK — deterministic core + advisory LLM-Gateway enrich | — | master · detection (Phase 1) | Scores one provider's claim-volume drop → `anomaly_score` / severity |
+| `multi-customer-pattern-detector` | Coded | UiPath Python SDK — deterministic | — | master · detection (Phase 1) | Cross-provider correlation → cascade signal (Reversal 1) |
+| `forensic-self-exam-agent` | Coded | UiPath Python SDK — deterministic | — | superseded by the LangGraph version | Original forensic routing agent — kept as a documented reference implementation |
+| `case-job-janitor` | Coded · ops | UiPath Python SDK — no LLM | — | standalone · hourly Orchestrator trigger | Sweeps zombie "Running" Maestro job rows the platform never flips to Successful |
 
-### Coded Agents (5, Python SDK)
-
-| Agent | Role |
-|-------|------|
-| `claim-flow-anomaly-detector` | Classifies an anomaly score on claim telemetry |
-| `multi-customer-pattern-detector` | Cross-provider correlation; emits the cascade signal |
-| `forensic-self-exam-agent` | Original Python-SDK forensic routing agent — superseded at runtime by the LangGraph version below |
-| `forensic-self-exam-agent-langgraph` | **LIVE** — the forensic agent bound to the master-crisis Vector Isolation stage (`tFSEXam01`). LangGraph `StateGraph` (clamp → route → conditional LLM enrich) deployed via `uipath-langchain`, demonstrating a framework-agnostic agent layer under the Maestro Case orchestrator. Proven end-to-end in production (v1.0.32) |
-| `case-job-janitor` | Ops utility on an hourly time trigger: sweeps zombie "Running" Orchestrator job rows left behind by completed case instances (the platform never flips them to Successful) |
+> **Models & governance.** The 6 Agent Builder agents run **Claude Sonnet 4.6 (BYO-LLM)**; the Coded
+> agents are deterministic Python whose *optional* advisory enrichment calls the UiPath LLM Gateway
+> (first-party OpenAI). Only `forensic-self-exam-agent-langgraph` is a true LangGraph agent. **Every**
+> LLM call — Claude or OpenAI — flows through the **LLM Gateway → Trust Layer** PHI/PII guardrails.
 
 ### Integration Service API Workflows (19, `Type:"Api"`)
 
@@ -299,7 +345,7 @@ cascade_command/
   api_workflows/        # 19 Integration Service API Workflows
   apps/                 # clearflow-network-command UiPath App
   src/cascadecare/      # build-time Python wrappers (auth, maestro_client) — dev only
-  tests/                # 470+ offline structure/contract gates
+  tests/                # 680 offline structure/contract gates
   specs/                # active spec: specs/003-uipath-native/
   scripts/              # pack-solution.sh, gen_api_entry_points.py (build-time)
   knowledge/            # immutable source-of-truth documents
@@ -310,7 +356,7 @@ cascade_command/
 
 - **UiPath Automation Cloud** tenant with Maestro, Agent Builder, Integration Service, Data Fabric,
   Context Grounding, Trust Layer, Action Center, and Apps enabled.
-- **Anthropic (Claude) BYO-LLM** registered in the UiPath LLM Gateway for the four low-code agents.
+- **Anthropic (Claude) BYO-LLM** registered in the UiPath LLM Gateway for the six low-code agents.
 - **Python 3.12+ (LTS)** and [`uv`](https://docs.astral.sh/uv/) for the build-time tooling. (Python 3.13 available but 3.12 LTS recommended)
 - The UiPath **`uip` CLI v1.1.0+** (installed via `uipath>=2.10.79` in project dependencies).
 
@@ -320,7 +366,7 @@ cascade_command/
 # Install the build tooling (no runtime Python service exists)
 uv sync --extra dev
 
-# Run the offline gate suite (470+ structure/contract tests)
+# Run the offline gate suite (680 structure/contract tests)
 uv run pytest
 
 # Authenticate against the UiPath tenant
