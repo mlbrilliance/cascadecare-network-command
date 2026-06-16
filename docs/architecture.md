@@ -8,11 +8,11 @@
 
 ## System Layers
 
-The diagram below is the target end-state. Several layers are planned, not yet built — see
-the per-section "(planned — Slice NNN)" annotations: Demo Driver (Maestro Flow, Slice 012/013),
-Maestro BPMN (Slice 011), Agent Builder agents (Slice 008), Coded Agents (Slice 009),
-Integration Service API Workflows (Slice 006), Data Fabric + Context Grounding (Slice 005),
-UiPath Apps narrative dashboard (later slice). Only the master `caseplan.json` exists today.
+> **Status (2026-06):** every layer below is **built and live** on UiPath Automation Cloud
+> (`clearflow-solution` 1.0.32, full cascade proven end-to-end). The polished current architecture
+> diagram is [`docs/images/architecture.svg`](images/architecture.svg) (embedded in the README); the
+> ASCII views here are the engineering reference. Any remaining "(planned — Slice NNN)" markers below
+> are historical build annotations, not current gaps.
 
 ```
 +------------------------------------------------------------------+
@@ -27,8 +27,8 @@ UiPath Apps narrative dashboard (later slice). Only the master `caseplan.json` e
 |    (happy path → gateway → Maestro Case spawn at R1)             |
 +------------------------------------------------------------------+
 |                    INTELLIGENCE LAYER                             |
-|  UiPath Agent Builder × 4  (Claude BYO-LLM via LLM Gateway)    |
-|  UiPath Coded Agents × 3  (Python SDK, UiPath first-party LLM)  |
+|  UiPath Agent Builder × 6  (Claude BYO-LLM via LLM Gateway)    |
+|  UiPath Coded Agents × 5  (Python SDK, UiPath first-party LLM)  |
 |  UiPath Trust Layer  (PHI/PII detection on every LLM call)       |
 +------------------------------------------------------------------+
 |                    DATA LAYER                                     |
@@ -37,7 +37,7 @@ UiPath Apps narrative dashboard (later slice). Only the master `caseplan.json` e
 |  UiPath Context Grounding  (BAA corpus + ClaimTelemetry corpus)  |
 +------------------------------------------------------------------+
 |                    MOCK EXTERNAL SYSTEMS                          |
-|  Integration Service API Workflows × 13                          |
+|  Integration Service API Workflows × 19                          |
 |  (one per: Northstar, Alpha-Epsilon, Apex, SummitBlue,           |
 |   Union Prairie, Lakeshore, Nimbus, TN DOI, Aurora, Hawthorne)   |
 +------------------------------------------------------------------+
@@ -52,14 +52,13 @@ UiPath Apps narrative dashboard (later slice). Only the master `caseplan.json` e
 ## Maestro Case: Three-Level Nesting
 
 ```
-clearflow-master-crisis (master case)
-  └─ Stage: Multi-Customer Investigation
-  └─ Stage: Regulatory Response
-       └─ [case-management task] → clearflow-stakeholder-parent (×6 providers)
-            └─ Stage: Subpoena Response
-                 └─ [case-management task] → clearflow-obligation-grandchild (×1–2 per provider)
-  └─ Stage: Litigation Defense
-  └─ Stage: Closure
+clearflow-master-crisis (master case) — 7 stages:
+  Initial Response → Multi-Customer Investigation → Vector Isolation →
+  Regulatory Response → Fiduciary Review → Litigation Defense → Closed
+       └─ at Regulatory Response: 6× [case-management task] → clearflow-stakeholder-parent (one per provider)
+            stages: Stakeholder Onboarding → Impact Assessment → Obligation Determination → Stakeholder Resolved
+                 └─ [case-management task] → clearflow-obligation-grandchild (×6)
+                      stages: Obligation Intake → Obligation Response → Obligation Discharged
 ```
 
 ### Case Definitions
@@ -98,7 +97,12 @@ Role in demo: cold-open cut (0–20s). Shows the expected happy path. When Rever
 
 ## Agents (planned — Agent Builder agents Slice 008, Coded Agents Slice 009)
 
-### Agent Builder (4 agents — UiPath Agent Builder, low-code LLM + tools) (planned — Slice 008)
+> **Current count: 6 Agent Builder + 5 Coded.** The tables below are the original design (4 + 3).
+> The shipped system adds `assess-claim-disruption` + `classify-obligation` (Agent Builder) and
+> `forensic-self-exam-agent-langgraph` (a **LangGraph `StateGraph`**, LIVE) + `case-job-janitor`
+> (Coded). The README "Agent inventory" table is the authoritative current list.
+
+### Agent Builder (original design: 4 agents — UiPath Agent Builder, low-code LLM + tools)
 
 | Agent | Trigger | LLM | Context source |
 |---|---|---|---|
