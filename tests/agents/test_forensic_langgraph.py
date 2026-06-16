@@ -95,11 +95,14 @@ class TestLLMEnrichment:
         assert result["rationale"] == ""
 
     def test_llm_unavailable_returns_empty_rationale(self, agent):
-        """LLM import failure → graceful empty rationale, no exception propagated."""
+        """LLM import failure → graceful empty rationale, error surfaced, no exception propagated."""
         with patch.dict("sys.modules", {"uipath.llm_gateway": None}):
             result = invoke(agent, {"clearflow_indicators": 0, "nimbus_indicators": 2, "clearflow_self_victim": False})
         assert result["route_to"] == "baa-boundary"
         assert result["rationale"] == ""
+        # The import failure must NOT be swallowed silently — it is surfaced.
+        assert result["error_type"] != ""
+        assert result["error_message"] != ""
 
     def test_llm_called_on_non_escalate_path(self, agent):
         """Non-escalate path attempts LLM enrichment (mocked to return a string)."""
@@ -114,6 +117,55 @@ class TestLLMEnrichment:
 
         assert result["route_to"] == "baa-boundary"
         assert "ClearFlow" in result["rationale"]
+
+
+# ── Exception surfacing (Criterion-3: enrichment failures are not silent) ────
+
+class TestLLMErrorSurfacing:
+    def test_llm_runtime_failure_surfaces_error_metadata(self, agent):
+        """LLM Gateway failure (e.g. 520) → routing intact, rationale empty, error surfaced.
+
+        The enrichment is advisory: a Gateway failure must NOT fail the graph or
+        change the route, but it must NOT be swallowed silently either.
+        """
+        mock_service = MagicMock()
+        mock_service.chat_completions.side_effect = RuntimeError("LLM Gateway 520")
+
+        mock_module = types.ModuleType("uipath.llm_gateway")
+        mock_module.UiPathOpenAIService = MagicMock(return_value=mock_service)
+
+        with patch.dict("sys.modules", {"uipath.llm_gateway": mock_module}):
+            result = invoke(agent, {"clearflow_indicators": 0, "nimbus_indicators": 1, "clearflow_self_victim": False})
+
+        # Routing is authoritative and untouched by the enrichment failure.
+        assert result["route_to"] == "baa-boundary"
+        assert result["clearflow_vector_status"] == "cleared"
+        # Advisory rationale failed → empty, but the error is surfaced structurally.
+        assert result["rationale"] == ""
+        assert result["error_type"] == "RuntimeError"
+        assert "520" in result["error_message"]
+
+    def test_happy_path_has_empty_error_metadata(self, agent):
+        """Successful enrichment → no false-positive error surfaced."""
+        mock_service = MagicMock()
+        mock_service.chat_completions.return_value = "Nimbus is the vector."
+
+        mock_module = types.ModuleType("uipath.llm_gateway")
+        mock_module.UiPathOpenAIService = MagicMock(return_value=mock_service)
+
+        with patch.dict("sys.modules", {"uipath.llm_gateway": mock_module}):
+            result = invoke(agent, {"clearflow_indicators": 0, "nimbus_indicators": 1, "clearflow_self_victim": False})
+
+        assert result["rationale"] != ""
+        assert result["error_type"] == ""
+        assert result["error_message"] == ""
+
+    def test_escalate_path_has_empty_error_metadata(self, agent):
+        """escalate skips enrich_node entirely → error fields stay empty (no false error)."""
+        result = invoke(agent, {"clearflow_indicators": 0, "nimbus_indicators": 0, "clearflow_self_victim": False})
+        assert result["route_to"] == "escalate"
+        assert result["error_type"] == ""
+        assert result["error_message"] == ""
 
 
 # ── Graph structure ──────────────────────────────────────────────────────────

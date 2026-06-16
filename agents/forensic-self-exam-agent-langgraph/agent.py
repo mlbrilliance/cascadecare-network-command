@@ -8,8 +8,9 @@ Graph topology:
                                       └─(vector-hypothesis/baa-boundary)→ enrich_node → END
 
 The LLM enrichment node is skipped on the escalate path (no evidence → no
-rationale worth generating). Auth errors in enrich_node are caught so the graph
-is runnable offline in tests.
+rationale worth generating). Enrichment failures (auth/offline/Gateway 520/
+missing SDK) are caught and surfaced into error_type/error_message — never
+swallowed silently, and never allowed to fail the graph or change the route.
 """
 
 from __future__ import annotations
@@ -73,7 +74,13 @@ def route_node(state: ForensicState) -> dict:
 
 
 def enrich_node(state: ForensicState) -> dict:
-    """Call the UiPath LLM Gateway for a plain-language rationale. Advisory only."""
+    """Call the UiPath LLM Gateway for a plain-language rationale. Advisory only.
+
+    On any failure the rationale is left empty and the error is surfaced in
+    error_type/error_message (matching the Coded-agent structured-error
+    convention). Routing — route_to and clearflow_vector_status set by
+    route_node — is authoritative and is never touched here.
+    """
     try:
         from uipath.llm_gateway import UiPathOpenAIService  # noqa: PLC0415
 
@@ -94,10 +101,10 @@ def enrich_node(state: ForensicState) -> dict:
                 },
             ],
         ))
-    except Exception:
-        rationale = ""
+    except Exception as exc:  # advisory enrichment must never fail the graph.
+        return {"rationale": "", "error_type": type(exc).__name__, "error_message": str(exc)}
 
-    return {"rationale": rationale}
+    return {"rationale": rationale, "error_type": "", "error_message": ""}
 
 
 def _should_enrich(state: ForensicState) -> str:
