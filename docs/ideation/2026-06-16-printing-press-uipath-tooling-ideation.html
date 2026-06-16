@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ideation: Printing-Press UiPath Tooling</title>
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link rel="stylesheet" href="https://fonts.bunny.net/css?family=inter:400,500,600,700|jetbrains-mono:400,500">
+<style>
+  :root{
+    --bg:#f7f5f2; --canvas:#fffdfb; --ink:#23211e; --ink-soft:#5b564f;
+    --line:#e4ded6; --accent:#e8590c; --accent-soft:#fdebdd; --accent-text:#9a3d08;
+    --charcoal:#2b2925; --charcoal-soft:#efece7;
+    --good:#2f7d4f; --good-soft:#e3f3e8; --good-text:#1f5e39;
+    --warn:#b5701a; --warn-soft:#f8ecd9; --warn-text:#8a560f;
+    --info:#2563a8; --info-soft:#e3edf8; --info-text:#1c4a80;
+    --radius:10px;
+    --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#1b1916; --canvas:#23211d; --ink:#ece8e1; --ink-soft:#b3aca1;
+      --line:#3a352f; --accent:#ff8b3d; --accent-soft:#3a2516; --accent-text:#ffb27d;
+      --charcoal:#100f0d; --charcoal-soft:#2c2925;
+      --good:#6cc48a; --good-soft:#1f3326; --good-text:#9bd9b2;
+      --warn:#e0a653; --warn-soft:#352a18; --warn-text:#eec48a;
+      --info:#6fa8e0; --info-soft:#182838; --info-text:#a6cbef;
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:920px;margin-inline:auto;padding:48px 24px 80px;}
+  header.doc{border-bottom:2px solid var(--accent);padding-bottom:22px;margin-bottom:8px;}
+  .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-text);font-weight:600;}
+  h1{font-size:30px;line-height:1.18;margin:.32em 0 .2em;font-weight:700;letter-spacing:-.01em;}
+  .sub{color:var(--ink-soft);font-size:16px;max-width:72ch;}
+  .meta{display:flex;flex-wrap:wrap;gap:8px 10px;margin-top:16px;font-size:13px;}
+  .meta .m{background:var(--charcoal-soft);color:var(--ink-soft);border:1px solid var(--line);
+    padding:3px 10px;border-radius:999px;}
+  .meta .m b{color:var(--ink);font-weight:600;}
+  .stats{display:flex;flex-wrap:wrap;gap:12px;margin:24px 0 8px;}
+  .stat{flex:1 1 130px;background:var(--canvas);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;}
+  .stat .n{font-size:24px;font-weight:700;color:var(--accent-text);font-variant-numeric:tabular-nums;}
+  .stat .l{font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
+  h2{font-size:21px;margin:42px 0 6px;font-weight:700;letter-spacing:-.01em;
+    padding-top:12px;border-top:1px solid var(--line);}
+  h2 .h2note{font-size:13px;font-weight:400;color:var(--ink-soft);letter-spacing:0;text-transform:none;}
+  section>p{max-width:74ch;}
+  .grounding{background:var(--canvas);border:1px solid var(--line);border-radius:var(--radius);padding:4px 22px 8px;margin-top:14px;}
+  .grounding h3{font-size:14px;text-transform:uppercase;letter-spacing:.08em;color:var(--accent-text);margin:18px 0 6px;font-weight:600;}
+  .grounding ul{margin:0 0 6px;padding-left:20px;}
+  .grounding li{margin:4px 0;}
+  .axes{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:10px;}
+  .axes li{background:var(--canvas);border:1px solid var(--line);border-left:3px solid var(--accent);
+    border-radius:8px;padding:11px 15px;}
+  .axes b{font-weight:600;}
+  code{font-family:var(--mono);font-size:.88em;background:var(--charcoal-soft);padding:1px 5px;border-radius:5px;}
+  a{color:var(--accent-text);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--accent-text) 35%,transparent);}
+  a:hover{border-bottom-color:var(--accent-text);}
+  .jump{background:var(--canvas);border:1px solid var(--line);border-radius:var(--radius);padding:14px 18px;margin:16px 0 26px;}
+  .jump .jt{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-soft);font-weight:600;margin-bottom:8px;}
+  .jump ol{margin:0;padding-left:20px;columns:2;column-gap:32px;}
+  .jump li{margin:3px 0;break-inside:avoid;}
+  @media(max-width:620px){.jump ol{columns:1;}}
+  article.idea{background:var(--canvas);border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px 24px;margin:18px 0;scroll-margin-top:16px;}
+  article.idea>.head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;}
+  .rank{font-family:var(--mono);font-weight:600;color:var(--accent-text);font-size:15px;}
+  article.idea h3{font-size:19px;margin:0;font-weight:700;letter-spacing:-.01em;flex:1 1 auto;min-width:200px;}
+  .chips{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0 4px;}
+  .chip{font-size:12px;padding:3px 10px;border-radius:999px;border:1px solid var(--line);font-weight:500;white-space:nowrap;}
+  .chip.axis{background:var(--accent-soft);color:var(--accent-text);border-color:transparent;}
+  .chip.conf{background:var(--good-soft);color:var(--good-text);border-color:transparent;}
+  .chip.conf.med{background:var(--warn-soft);color:var(--warn-text);}
+  .chip.cx{background:var(--charcoal-soft);color:var(--ink-soft);}
+  .field{margin:13px 0;}
+  .field .lab{font-size:11.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-soft);font-weight:600;margin-bottom:2px;}
+  .field p{margin:0;max-width:76ch;}
+  .basis{border-left:3px solid var(--line);padding:2px 0 2px 13px;}
+  .basis.direct{border-left-color:var(--good);}
+  .basis.external{border-left-color:var(--info);}
+  .basis.reasoned{border-left-color:var(--warn);}
+  .btag{font-family:var(--mono);font-size:11.5px;font-weight:500;padding:1px 7px;border-radius:5px;margin-right:6px;}
+  .btag.direct{background:var(--good-soft);color:var(--good-text);}
+  .btag.external{background:var(--info-soft);color:var(--info-text);}
+  .btag.reasoned{background:var(--warn-soft);color:var(--warn-text);}
+  .down{background:var(--warn-soft);border-radius:8px;padding:10px 14px;}
+  .down .lab{color:var(--warn-text);}
+  figure{margin:18px 0 6px;}
+  figure svg{width:100%;height:auto;display:block;background:var(--canvas);border:1px solid var(--line);border-radius:8px;}
+  figcaption{font-size:12.5px;color:var(--ink-soft);margin-top:7px;text-align:center;}
+  table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top;}
+  th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);font-weight:600;}
+  td code{font-size:.85em;}
+  tr:last-child td{border-bottom:none;}
+  .reject td:first-child{font-family:var(--mono);color:var(--ink-soft);white-space:nowrap;}
+  footer.composition-signal{margin-top:48px;padding-top:18px;border-top:1px solid var(--line);
+    font-size:12.5px;color:var(--ink-soft);}
+  footer.composition-signal code{font-size:.92em;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="doc">
+  <div class="eyebrow">Compound Engineering · Ideation</div>
+  <h1>Printing-Press UiPath Tooling: turning CascadeCare's hard-won discoveries into a public toolkit</h1>
+  <p class="sub">Ranked directions for generating Go CLIs, a Claude Code skill, an OpenClaw skill, and an MCP server — via the <a href="https://printingpress.dev/">printing-press</a> generator — that expose the undocumented UiPath behaviors this project uncovered, positioned as an open-source contribution UiPath could dogfood and a durable "above-and-beyond" judge story.</p>
+  <div class="meta">
+    <span class="m"><b>Date</b> 2026-06-16</span>
+    <span class="m"><b>Topic</b> printing-press-uipath-tooling</span>
+    <span class="m"><b>Mode</b> repo-grounded</span>
+    <span class="m"><b>Focus</b> OSS dev-tooling from discovered UiPath functionality</span>
+  </div>
+</header>
+
+<div class="stats">
+  <div class="stat"><div class="n">36</div><div class="l">raw ideas (5 frames)</div></div>
+  <div class="stat"><div class="n">13</div><div class="l">deduped candidates</div></div>
+  <div class="stat"><div class="n">7</div><div class="l">ranked survivors</div></div>
+  <div class="stat"><div class="n">5 / 5</div><div class="l">axes covered</div></div>
+  <div class="stat"><div class="n">7</div><div class="l">confirmed UiPath gaps (G1–G7)</div></div>
+</div>
+
+<section>
+<h2>Grounding Context <span class="h2note">— what the ideas were qualified against</span></h2>
+<div class="grounding">
+  <h3>The opportunity (verified)</h3>
+  <ul>
+    <li><b>printing-press fits the ask exactly.</b> One prompt emits four artifacts — a token-efficient <b>Go CLI</b> (Cobra, <code>&lt;tool&gt;-pp-cli</code>), a <b>Go MCP server</b> (<code>&lt;tool&gt;-pp-mcp</code>), a <b>Claude Code skill</b> (<code>SKILL.md</code>), and an <b>OpenClaw skill</b> (same <code>SKILL.md</code>, ClawHub). Skills also install to Codex/Cursor/Gemini/Copilot/Hermes. Both repos are public &amp; MIT (<a href="https://github.com/mvanhorn/cli-printing-press">generator</a> ~3.4k★, <a href="https://github.com/mvanhorn/printing-press-library">catalog</a> ~1.6k★ / 261 CLIs). No OpenAPI required; every binary bakes in a local SQLite mirror + FTS.</li>
+    <li><b>The gap is real and sits in UiPath's own tracker.</b> The official Orchestrator MCP exposes only a catch-all <code>run_command</code>, not a typed surface. UiPath's own skills are broken in our exact domain: <a href="https://github.com/UiPath/skills/issues/333">#333</a> (<code>uip case</code> vs <code>uip maestro case</code>, ~20 broken invocations), <a href="https://github.com/UiPath/skills/issues/337">#337</a> (same in maestro-flow), <a href="https://github.com/UiPath/skills/issues/334">#334</a> (coded-apps tells agents to bypass <code>uip</code> with raw curl because no subcommands exist).</li>
+    <li><b>Seven confirmed gaps (G1–G7)</b> cluster in the Maestro-Case + Data-Fabric-safety layer, all <i>above</i> the canvas, none served by the official CLI / four SDKs / invocation-only MCP: caseplan authoring &amp; <code>.bpmn</code> validation (G1/G2), spawn fan-out lint (G3), job↔case reconciliation (G4), Data Fabric field-drop traps (G5), AppTask completion (G6), gate-deletion safety (G7).</li>
+  </ul>
+  <h3>The raw material (this repo)</h3>
+  <ul>
+    <li><b>The discoveries are documented and the wrappers already exist.</b> <a href="https://github.com/mlbrilliance/cascadecare-network-command/blob/master/docs/submission/PRODUCT-FEEDBACK.md"><code>PRODUCT-FEEDBACK.md</code></a> is the source-of-truth inventory; <a href="https://github.com/mlbrilliance/cascadecare-network-command/blob/master/scripts/merge-canvas-download.py"><code>merge-canvas-download.py</code></a> (5 canvas-drop fixes), <code>demo_autocomplete.py</code> (AppTask completion, 33 tests), <code>seed_data_fabric.py</code>, <code>maestro_client.py</code>, and the live <code>case-job-janitor</code> agent already perform the operations — they just lack a consistent, installable UX.</li>
+    <li><b>Constraints that shaped the cut.</b> MIT license → distribution is clean; no prior ADR on extracting tooling (net-new). <b>IP-safety is ZERO TOLERANCE</b> — any shipped tool/example data must pass <code>/audit-ip-safety</code>. <b>Freshness</b> is the standing risk: several quirks are platform bugs UiPath may fix (#333 already has fix PR #399), so recipes need a version check before being baked in. <code>/polyskill</code> already exists for skill-runtime conversion — borrow its <code>targets → dist/&lt;adapter&gt;</code> shape, not its name.</li>
+  </ul>
+</div>
+</section>
+
+<section>
+<h2>Topic Axes <span class="h2note">— the surface the ideas spread across</span></h2>
+<ul class="axes">
+  <li><b>Capability selection</b> — which discovered behaviors / gaps (G1–G7 + the 18 quirks) to expose; freshness &amp; IP constraints.</li>
+  <li><b>Generation &amp; authoring pipeline</b> — how printing-press emits the four artifacts (define-once source, the 9-phase pipeline, <code>SKILL.md</code> as source of truth, the borrowed polyskill adapter shape).</li>
+  <li><b>Tool &amp; MCP surface design</b> — what the CLI/MCP exposes and how an agent drives it (typed validators/operators vs. the catch-all <code>run_command</code>, safety guards, the local SQLite mirror).</li>
+  <li><b>Distribution &amp; dogfooding</b> — catalog entry, ClawHub/npm, contributing fixes back to UiPath's broken skills, OSS positioning, naming, ADR.</li>
+  <li><b>Judge-facing narrative</b> — the README + presentation callout; the "above-and-beyond" wow and its proof.</li>
+</ul>
+</section>
+
+<section>
+<h2>Ranked Ideas</h2>
+<div class="jump">
+  <div class="jt">Jump to a direction</div>
+  <ol>
+    <li><a href="#idea1">The <code>pp-uipath-maestro</code> umbrella (define-once → four artifacts)</a></li>
+    <li><a href="#idea2"><code>validate_caseplan</code> — the offline caseplan linter UiPath never shipped</a></li>
+    <li><a href="#idea3">Contribute the fixes back — PRs to UiPath's broken skills</a></li>
+    <li><a href="#idea4"><code>safe_gate_action</code> + <code>complete_apptask</code> — the HITL safety guard</a></li>
+    <li><a href="#idea5"><code>explain_error</code> — the UiPath error-code oracle</a></li>
+    <li><a href="#idea6"><code>reconcile_case_jobs</code> — the job↔case reconciler</a></li>
+    <li><a href="#idea7">The judge-facing "Open-Source Tooling / Contributing Back" callout</a></li>
+  </ol>
+</div>
+
+<!-- IDEA 1 -->
+<article class="idea" id="idea1">
+  <div class="head"><span class="rank">1.</span><h3>The <code>pp-uipath-maestro</code> umbrella — one define-once source emitting all four artifacts</h3></div>
+  <div class="chips">
+    <span class="chip axis">Generation &amp; authoring pipeline</span>
+    <span class="chip conf">Confidence 80%</span>
+    <span class="chip cx">Complexity High</span>
+  </div>
+  <figure>
+    <svg viewBox="0 0 760 320" role="img" aria-label="One SKILL.md source flows through the printing-press pipeline and fans out into four artifacts: a Go CLI, an MCP server, a Claude Code skill, and an OpenClaw skill.">
+      <defs>
+        <marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+          <path d="M0,0 L9,4.5 L0,9 Z" fill="#9a3d08"></path>
+        </marker>
+      </defs>
+      <!-- source -->
+      <rect x="18" y="128" width="150" height="64" rx="9" fill="#fdebdd" stroke="#e8590c"></rect>
+      <text x="93" y="152" text-anchor="middle" font-family="Inter,sans-serif" font-size="13" font-weight="600" fill="#23211e">SKILL.md</text>
+      <text x="93" y="170" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#5b564f">define-once source</text>
+      <text x="93" y="184" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#5b564f">+ .printing-press.json</text>
+      <!-- pipeline -->
+      <rect x="216" y="128" width="164" height="64" rx="9" fill="#efece7" stroke="#2b2925"></rect>
+      <text x="298" y="152" text-anchor="middle" font-family="Inter,sans-serif" font-size="13" font-weight="600" fill="#23211e">printing-press</text>
+      <text x="298" y="170" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#5b564f">9-phase pipeline</text>
+      <text x="298" y="184" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#5b564f">research → … → publish</text>
+      <line x1="168" y1="160" x2="212" y2="160" stroke="#9a3d08" stroke-width="2" marker-end="url(#ah)"></line>
+      <!-- artifacts -->
+      <rect x="468" y="20" width="274" height="48" rx="8" fill="#fffdfb" stroke="#e8590c"></rect>
+      <text x="605" y="40" text-anchor="middle" font-family="Inter,sans-serif" font-size="12.5" font-weight="600" fill="#23211e">Go CLI · uipath-maestro-pp-cli</text>
+      <text x="605" y="56" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#5b564f">Cobra · local SQLite + FTS</text>
+      <rect x="468" y="92" width="274" height="48" rx="8" fill="#fffdfb" stroke="#e8590c"></rect>
+      <text x="605" y="112" text-anchor="middle" font-family="Inter,sans-serif" font-size="12.5" font-weight="600" fill="#23211e">MCP server · uipath-maestro-pp-mcp</text>
+      <text x="605" y="128" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#5b564f">typed tools · same client/store</text>
+      <rect x="468" y="164" width="274" height="48" rx="8" fill="#fffdfb" stroke="#e8590c"></rect>
+      <text x="605" y="184" text-anchor="middle" font-family="Inter,sans-serif" font-size="12.5" font-weight="600" fill="#23211e">Claude Code skill</text>
+      <text x="605" y="200" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#5b564f">/pp-uipath-maestro</text>
+      <rect x="468" y="236" width="274" height="48" rx="8" fill="#fffdfb" stroke="#e8590c"></rect>
+      <text x="605" y="256" text-anchor="middle" font-family="Inter,sans-serif" font-size="12.5" font-weight="600" fill="#23211e">OpenClaw skill</text>
+      <text x="605" y="272" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#5b564f">ClawHub · + Hermes/Codex/Cursor</text>
+      <!-- fan lines -->
+      <line x1="380" y1="160" x2="464" y2="44"  stroke="#9a3d08" stroke-width="1.6" marker-end="url(#ah)"></line>
+      <line x1="380" y1="160" x2="464" y2="116" stroke="#9a3d08" stroke-width="1.6" marker-end="url(#ah)"></line>
+      <line x1="380" y1="160" x2="464" y2="188" stroke="#9a3d08" stroke-width="1.6" marker-end="url(#ah)"></line>
+      <line x1="380" y1="160" x2="464" y2="260" stroke="#9a3d08" stroke-width="1.6" marker-end="url(#ah)"></line>
+    </svg>
+    <figcaption>One authored source → four artifacts in one run. Fix a gap once in the source; all four re-emit and every harness inherits the correction.</figcaption>
+  </figure>
+  <div class="field">
+    <div class="lab">Description</div>
+    <p>Instead of four hand-built tools, author <b>one</b> printing-press source that maps the seven confirmed gaps to a typed tool surface, and let the 9-phase pipeline emit the Go CLI + MCP server + Claude Code skill + OpenClaw skill together. The six tools below become subcommands of one binary / tools of one MCP server. This is the literal shape of the request — "create Go CLIs, a Claude Code skill, an OpenClaw skill, and an MCP server" — delivered as a single maintainable artifact rather than four drifting ones.</p>
+  </div>
+  <table>
+    <thead><tr><th>Gap</th><th>Tool</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td>G1/G2</td><td><code>validate_caseplan</code></td><td>Static V20 lint + <code>.bpmn</code> staleness + <code>--restore</code> the 5 canvas drops</td></tr>
+      <tr><td>G3</td><td><code>check_spawn_fanout</code></td><td>Flag <code>=datafabric.qem:</code> in spawn inputs (400300) before deploy</td></tr>
+      <tr><td>G4</td><td><code>reconcile_case_jobs</code></td><td>Join case-instance + jobs views; surface zombie Running jobs</td></tr>
+      <tr><td>G5</td><td><code>validate_df_entity</code></td><td>Catch underscore silent-drop &amp; reserved <code>id</code>; suggest camelCase</td></tr>
+      <tr><td>G6</td><td><code>complete_apptask</code></td><td>Wrap the undocumented AppTask completion endpoint, assign-first</td></tr>
+      <tr><td>G7</td><td><code>safe_gate_action</code></td><td>Approve/Deny/File/Withdraw only — no <code>delete</code> verb (no 160009 fault)</td></tr>
+    </tbody>
+  </table>
+  <div class="field">
+    <div class="lab">Basis</div>
+    <div class="basis direct"><span class="btag direct">direct</span>printing-press's define-once → four-artifact model is verified (homepage + generator README: "one prompt prints a Go CLI, a Claude Code skill, an OpenClaw skill, and an MCP server"). The six tools each map to a confirmed gap in <a href="https://github.com/mlbrilliance/cascadecare-network-command/blob/master/docs/submission/PRODUCT-FEEDBACK.md"><code>PRODUCT-FEEDBACK.md</code></a>; <code>/polyskill</code>'s <code>targets → dist/&lt;adapter&gt;</code> shape is reusable.</div>
+  </div>
+  <div class="field">
+    <div class="lab">Rationale</div>
+    <p>Today the discovered behaviors live in five disjoint Python/Bash scripts with no shared UX, no <code>--json</code>/<code>--agent</code> flags, no SQLite mirror, and no cross-harness installability. The umbrella converts them into one positioned product whose define-once source means a UiPath fix is a one-edit change — directly answering the "but these are temporary bugs" objection.</p>
+  </div>
+  <div class="field down">
+    <div class="lab">Downsides</div>
+    <p>Largest single bet here: building all six tools well before Jun 29 is ambitious. Mitigate by shipping the umbrella with a thin first tool (see #2) and growing the surface — the define-once source makes later tools cheap, but the v1 still needs at least one tool implemented to be real.</p>
+  </div>
+</article>
+
+<!-- IDEA 2 -->
+<article class="idea" id="idea2">
+  <div class="head"><span class="rank">2.</span><h3><code>validate_caseplan</code> — the offline caseplan linter UiPath never shipped <span style="font-size:12px;color:var(--accent-text);font-weight:600;">· recommended first build</span></h3></div>
+  <div class="chips">
+    <span class="chip axis">Tool &amp; MCP surface design</span>
+    <span class="chip conf">Confidence 90%</span>
+    <span class="chip cx">Complexity Medium</span>
+  </div>
+  <div class="field">
+    <div class="lab">Description</div>
+    <p>A zero-credential static linter (CLI + <code>validate_caseplan</code> MCP tool) that catches the inert-edit failure class <i>before</i> deploy: stale <code>.bpmn</code> (mtime newer than <code>caseplan.json</code>), missing mainline start event (count = 0 → case never auto-walks), <code>=datafabric.qem:</code> in spawn JobArguments (400300), duplicate auto-added <code>error</code> outputs, dropped HITL bindings, and V20 expression-prefix errors. A <code>--restore</code> subcommand re-applies the five deterministic canvas drops; <code>--json</code> makes it an agent-drivable CI gate. The strongest confirmed white space (G1/G2) and the safest to ship — no UiPath login needed to lint a JSON shape.</p>
+  </div>
+  <div class="field">
+    <div class="lab">Basis</div>
+    <div class="basis direct"><span class="btag direct">direct</span><a href="https://github.com/mlbrilliance/cascadecare-network-command/blob/master/scripts/merge-canvas-download.py"><code>merge-canvas-download.py</code></a> enumerates the exact five canvas drops (start event → "case never auto-walks"; dup <code>error</code> outputs → V20 dup-var error; <code>=datafabric.qem:…</code> → "incident 400300, Syntax error at index 4, proven live 2026-06-10"). The verifier spot-checked the script and confirmed every cited invariant exists.</div>
+  </div>
+  <div class="field">
+    <div class="lab">Rationale</div>
+    <p>Every pre-2026-06-15 master deploy ran stale logic with <i>no error surfaced</i> — the canvas is the only validator and it's silent. A build-time linter that fails loudly converts the project's single most painful gotcha into the public tool the official surface entirely lacks. It's also the cleanest printing-press exemplar: typed Go validators, no auth, no sniffing.</p>
+  </div>
+  <div class="field down">
+    <div class="lab">Downsides</div>
+    <p>V20 schema is undocumented and may evolve, so the lint rules need a version stamp (see the deferred CVE-style sidecar). Restore logic is currently tuned to one master caseplan; generalizing it to arbitrary caseplans is the real work beyond the lint checks.</p>
+  </div>
+</article>
+
+<!-- IDEA 3 -->
+<article class="idea" id="idea3">
+  <div class="head"><span class="rank">3.</span><h3>Contribute the fixes back — PRs to UiPath's own broken skills</h3></div>
+  <div class="chips">
+    <span class="chip axis">Distribution &amp; dogfooding</span>
+    <span class="chip conf">Confidence 85%</span>
+    <span class="chip cx">Complexity Low</span>
+  </div>
+  <div class="field">
+    <div class="lab">Description</div>
+    <p>Reframe part of the deliverable from "our new catalog entry" to "we fixed UiPath's shipped skills." Open PRs against <a href="https://github.com/UiPath/skills">github.com/UiPath/skills</a> for <a href="https://github.com/UiPath/skills/issues/333">#333</a>/<a href="https://github.com/UiPath/skills/issues/337">#337</a> (the <code>uip case</code> → <code>uip maestro case</code> namespace bug, ~20 broken invocations) and <a href="https://github.com/UiPath/skills/issues/334">#334</a> (coded-apps' raw-curl bypass), and generate <code>pp-uipath</code> from the corrected, verified recipes. The "DefinitelyTyped for UiPath" move: the community ships the corrections the vendor's own skills are missing.</p>
+  </div>
+  <div class="field">
+    <div class="lab">Basis</div>
+    <div class="basis direct"><span class="btag direct">direct</span>Issues #333/#337/#334 are real and in UiPath's tracker; #333 already has fix PR #399. <code>PRODUCT-FEEDBACK.md</code> and the distribution dossier confirm there is currently <b>zero</b> contribute-back narrative anywhere in the submission — pure white space.</div>
+  </div>
+  <div class="field">
+    <div class="lab">Rationale</div>
+    <p>A merged PR to UiPath's own repo is unforgeable "above-and-beyond" proof and the strongest possible dogfooding signal for a UiPath-judged hackathon. It's nearly IP-free — correcting public CLI namespaces, not shipping case data — and it directly feeds C1 (originality) and the +2 coding-agent bonus.</p>
+  </div>
+  <div class="field down">
+    <div class="lab">Downsides</div>
+    <p><b>Freshness-critical:</b> #333 already has PR #399 open — if it merges before Jun 29, this narrows to extending coverage / adding tests rather than being the original fix. Act early. This step is a Markdown/skill PR, not a printing-press generation — a clear "justify the exception" case under the printing-press constraint.</p>
+  </div>
+</article>
+
+<!-- IDEA 4 -->
+<article class="idea" id="idea4">
+  <div class="head"><span class="rank">4.</span><h3><code>safe_gate_action</code> + <code>complete_apptask</code> — the HITL safety guard a catch-all can't be</h3></div>
+  <div class="chips">
+    <span class="chip axis">Tool &amp; MCP surface design</span>
+    <span class="chip conf">Confidence 88%</span>
+    <span class="chip cx">Complexity Medium</span>
+  </div>
+  <div class="field">
+    <div class="lab">Description</div>
+    <p>Expose the Action Center HITL footguns as typed, safe tools an agent can call without learning the lore. <code>safe_gate_action</code> physically <i>omits</i> a delete verb (deleting a pending gate faults the case, 160009) and forces Approve/Deny/File/Withdraw; <code>complete_apptask</code> wraps the undocumented <code>POST /tasks/AppTasks/CompleteAppTask</code>, auto-assigns first, and classifies orphaned tasks. The sharp contrast with the official invocation-only <code>run_command</code>: an agent driving our tool gets refusal-with-reason instead of a raw fault.</p>
+  </div>
+  <div class="field">
+    <div class="lab">Basis</div>
+    <div class="basis direct"><span class="btag direct">direct</span><code>demo_autocomplete.py</code> (33 tests) documents the correct endpoint, the 405s on the obvious routes, the assign-before-complete requirement, and orphan detection; <code>PRODUCT-FEEDBACK.md</code> records the live-proven delete→fault (160009, IncidentType "User"; 5 deleted gates Faulted, 1 actioned Completed, 2026-06-15).</div>
+  </div>
+  <div class="field">
+    <div class="lab">Rationale</div>
+    <p>It's the cleanest demonstration of why a typed, safety-guarded surface beats invocation-only MCP — an agent literally <i>cannot</i> fault the case through this tool. That's a concrete, demoable argument in the live "MCP vs CLI vs Skills" debate, and it maps directly to judging criterion C3 (exception/edge-case handling).</p>
+  </div>
+  <div class="field down">
+    <div class="lab">Downsides</div>
+    <p>This tool <i>does</i> need live UiPath auth (unlike the offline linters), so it can't be the credential-free first ship. The completion endpoint is undocumented and could change; the freshness stamp matters here too.</p>
+  </div>
+</article>
+
+<!-- IDEA 5 -->
+<article class="idea" id="idea5">
+  <div class="head"><span class="rank">5.</span><h3><code>explain_error</code> — the UiPath error-code oracle (a <code>tldr</code> for un-Googleable codes)</h3></div>
+  <div class="chips">
+    <span class="chip axis">Capability selection</span>
+    <span class="chip conf">Confidence 85%</span>
+    <span class="chip cx">Complexity Low</span>
+  </div>
+  <div class="field">
+    <div class="lab">Description</div>
+    <p>A reverse index, keyed on UiPath's cryptic error surface instead of command names. The generated CLI's FTS-backed SQLite mirror indexes every discovered error by its literal signature — <code>400300 Syntax error at index 4</code>, <code>160009</code>, <code>170015</code>, <code>405</code>, <code>'id' is not valid</code>, <code>still being indexed</code> — and returns the one-paragraph cause + the exact fix command. <code>uipath-pp explain 400300</code> answers in three seconds what no search engine can, offline and credential-free.</p>
+  </div>
+  <div class="field">
+    <div class="lab">Basis</div>
+    <div class="basis external"><span class="btag external">external</span><code>tldr</code> / <code>cheat.sh</code> collapse command tribal-knowledge into instant, example-first lookups; the same model applied to an error corpus. <span class="btag direct" style="margin-left:6px;">direct</span>The dense, dated error corpus (400300, 160009, 170015, 405, "still being indexed") is all present with proven workarounds in <code>PRODUCT-FEEDBACK.md</code>; printing-press bakes SQLite FTS into every binary.</div>
+  </div>
+  <div class="field">
+    <div class="lab">Rationale</div>
+    <p>These error codes are genuinely un-Googleable — this repo's inventory is the only place that maps <code>400300 at index 4</code> to "<code>qem:</code> in spawn JobArguments." An FTS reverse-index is the single highest-leverage use of the printing-press SQLite mirror and the most viral, immediately-useful artifact for any other UiPath builder hitting the same wall — broad everyday devex, lowest lift.</p>
+  </div>
+  <div class="field down">
+    <div class="lab">Downsides</div>
+    <p>Value decays as UiPath patches codes (mitigated by version-stamped entries). It curates known knowledge rather than surfacing a new capability — strong as a companion to the linters, weaker as the sole deliverable.</p>
+  </div>
+</article>
+
+<!-- IDEA 6 -->
+<article class="idea" id="idea6">
+  <div class="head"><span class="rank">6.</span><h3><code>reconcile_case_jobs</code> — a local SQLite mirror that resolves the job/case sync gap offline</h3></div>
+  <div class="chips">
+    <span class="chip axis">Capability selection</span>
+    <span class="chip conf med">Confidence 72%</span>
+    <span class="chip cx">Complexity Medium</span>
+  </div>
+  <div class="field">
+    <div class="lab">Description</div>
+    <p>A tool whose baked-in SQLite mirror ingests both <code>uip maestro case instance list</code> and <code>uip or jobs</code>, joins them, and surfaces the Completed-instance-but-Running-job zombies that break completion polling (G4). It answers "is this case really done?" from the case-instance source of truth, with a <code>--sweep</code> action verb for confirmed zombies — promoting the live <code>case-job-janitor</code> agent's logic into a developer-addressable CLI anyone can run from a terminal.</p>
+  </div>
+  <div class="field">
+    <div class="lab">Basis</div>
+    <div class="basis direct"><span class="btag direct">direct</span><code>PRODUCT-FEEDBACK.md</code> confirms a Completed Maestro Case instance leaves its Orchestrator job <code>Running</code> indefinitely (observed 1–3 days), platform-acknowledged and unresolved as of 2026-06-15; the <code>case-job-janitor</code> agent implements the reconcile/sweep logic. The SQLite mirror is a printing-press built-in.</div>
+  </div>
+  <div class="field">
+    <div class="lab">Rationale</div>
+    <p>Turns two operational scars (the G4 sync gap + the janitor's null-<code>StartTime</code> aging fallback) into one reconciliation tool, using a printing-press feature that would otherwise be incidental, and strengthens the C3 judging axis. Observation needs no auth; only <code>--sweep</code> does.</p>
+  </div>
+  <div class="field down">
+    <div class="lab">Downsides</div>
+    <p>The janitor already covers this need in production, so the CLI's marginal value is devex/observability rather than new capability — the weakest of the seven on "does this unlock something we can't already do." Lower confidence reflects that overlap.</p>
+  </div>
+</article>
+
+<!-- IDEA 7 -->
+<article class="idea" id="idea7">
+  <div class="head"><span class="rank">7.</span><h3>The judge-facing "Open-Source Tooling / Contributing Back" callout</h3></div>
+  <div class="chips">
+    <span class="chip axis">Judge-facing narrative</span>
+    <span class="chip conf">Confidence 82%</span>
+    <span class="chip cx">Complexity Low</span>
+  </div>
+  <div class="field">
+    <div class="lab">Description</div>
+    <p>A new <code>## Open-Source Tooling</code> section in README and a parallel "Contributing Back" block in DEVPOST, leading with the umbrella diagram, a gap→tool table, live <code>npx skills add</code> / <code>clawhub install</code> commands, and a link to the fix PR. Folds in the <code>pp-uipath</code> first-mover framing (first indexed Maestro-Case collection, discoverable from six harnesses). This is the delivery wrapper that makes all the tool work <i>visible</i> to judges and fills the currently-empty C4 "Tooling" row + the +2 coding-agent bonus.</p>
+  </div>
+  <div class="field">
+    <div class="lab">Basis</div>
+    <div class="basis direct"><span class="btag direct">direct</span>The distribution dossier confirms zero existing contribute-back narrative and names the exact insertion sites (README after "Built with Coding Agents"; DEVPOST component table; CODING_AGENTS.md), plus the C4 gap and +2 bonus wording verbatim from <a href="https://github.com/mlbrilliance/cascadecare-network-command/blob/master/STRATEGY.md"><code>STRATEGY.md</code></a>.</div>
+  </div>
+  <div class="field">
+    <div class="lab">Rationale</div>
+    <p>However real the tooling is, none of it scores unless judges see it. The callout connects C1 (originality), C3 (exception handling), C4 (component variety), and the +2 bonus into one coherent "we found seven undocumented behaviors, shipped a tool for each, and fixed UiPath's own skills" story — the cheapest, highest-leverage point in the set.</p>
+  </div>
+  <div class="field down">
+    <div class="lab">Downsides</div>
+    <p>Dependent — it only lands as credible if at least one tool (e.g. #2) and/or a PR (#3) actually exist to back the claim. A callout ahead of a real artifact reads as vaporware and could backfire with technical judges. Sequence it after the first tangible deliverable.</p>
+  </div>
+</article>
+</section>
+
+<section>
+<h2>Rejection Summary</h2>
+<table class="reject">
+  <thead><tr><th>Idea</th><th>Reason cut / folded</th></tr></thead>
+  <tbody>
+    <tr><td>Define-once authoring model (standalone)</td><td>Folded into #1 — it <i>is</i> the umbrella's spine, not an independent deliverable (a methodology, not a tool).</td></tr>
+    <tr><td><code>pp-uipath</code> catalog land-grab (standalone)</td><td>Folded into #1 + #7 — a distribution outcome downstream of building the tools; can't ship an empty catalog entry.</td></tr>
+    <tr><td>Self-expiring CVE-style quirk database</td><td>Deferred to v2 — elegant but speculative at an 18-item corpus; <code>--probe</code> needs live auth, breaking the zero-credential value. Keep only as a lightweight version-stamp sidecar on the source.</td></tr>
+    <tr><td>Mixed-version solution-pack <code>rewrap</code> CLI</td><td>Cut — verifier spot-check found the load-bearing wrapper <code>rewrap_legacy.py</code> absent from the working tree; basis unconfirmed.</td></tr>
+    <tr><td>CONFIRM-gated deploy runbook compiler</td><td>Folded into #5 / docs — repackages already-captured procedural knowledge (a doc-format choice), not a new capability surface.</td></tr>
+    <tr><td>Canvas-roundtrip restore CLI</td><td>Duplicate of #2 — it is <code>validate_caseplan --restore</code> in a separate trench coat.</td></tr>
+    <tr><td><code>validate_df_entity</code> (standalone)</td><td>Sound, but folded into #1's tool surface — lighter standalone value than the six ranked builds; the lightest-lift sibling if time allows.</td></tr>
+  </tbody>
+</table>
+<p style="font-size:13.5px;color:var(--ink-soft);">Axis coverage: all five axes have at least one survivor — no recovery dispatch needed and no deliberate axis gaps.</p>
+</section>
+
+<footer class="composition-signal">
+  Composed 2026-06-16 by ce-ideate from the user prompt (printing-press-library tooling on discovered UiPath functionality) and repo grounding in <code>docs/submission/PRODUCT-FEEDBACK.md</code>, <code>scripts/merge-canvas-download.py</code>, and <code>STRATEGY.md</code>. 36 raw ideas (5 frames) → 13 deduped → 7 ranked survivors, adversarially verified.
+</footer>
+
+</div>
+</body>
+</html>
