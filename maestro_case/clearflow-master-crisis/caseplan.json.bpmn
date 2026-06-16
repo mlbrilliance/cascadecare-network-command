@@ -2484,7 +2484,6 @@ return { upsertKeys: allEventsUpdatedKeys, deleteKeys: [...exitedStageKeysToDele
               <uipath:inputSchema type="jsonSchema"><![CDATA[{"$schema":"http://json-schema.org/draft-07/schema#","type":"object","properties":{"clearflow_indicators":{"type":"integer"},"nimbus_indicators":{"type":"integer"},"clearflow_self_victim":{"type":"boolean"},"clearflow_clamped":{"type":"integer"},"nimbus_clamped":{"type":"integer"},"route_to":{"type":"string"},"clearflow_vector_status":{"type":"string"},"rationale":{"type":"string"},"error_type":{"type":"string"},"error_message":{"type":"string"}},"required":[]}]]></uipath:inputSchema>
             </uipath:context>
             <uipath:input name="JobArguments" type="json" target="bodyField"><![CDATA[{"clearflow_indicators":"=vars.clearFlowIndicators","nimbus_indicators":"=vars.nimbusIndicators","clearflow_self_victim":"=vars.clearFlowSelfVictim","clearflow_clamped":null,"nimbus_clamped":null,"route_to":null,"clearflow_vector_status":null,"rationale":null,"error_type":null,"error_message":null}]]></uipath:input>
-            <uipath:output name="Error" type="jsonSchema" source="=Error" var="error" />
             <uipath:output name="clearflow_indicators" type="integer" source="=clearflow_indicators" var="clearflowIndicators" />
             <uipath:output name="nimbus_indicators" type="integer" source="=nimbus_indicators" var="nimbusIndicators2" />
             <uipath:output name="clearflow_self_victim" type="boolean" source="=clearflow_self_victim" var="clearflowSelfVictim" />
@@ -4551,6 +4550,17 @@ return { upsertKeys: allEventsUpdatedKeys, deleteKeys: [...exitedStageKeysToDele
       <bpmn:sequenceFlow id="edge_SLACompleteReleaseLockNode_Stage_ugoiTN-StageCompletedSLAEndEvent_Stage_ugoiTN" sourceRef="SLACompleteReleaseLockNode_Stage_ugoiTN" targetRef="StageCompletedSLAEndEvent_Stage_ugoiTN" />
       <bpmn:sequenceFlow id="edge_StageExitedSLAReleaseLockNode_Stage_ugoiTN-StageExitedSLAEndEvent_Stage_ugoiTN" sourceRef="StageExitedSLAReleaseLockNode_Stage_ugoiTN" targetRef="StageExitedSLAEndEvent_Stage_ugoiTN" />
     </bpmn:subProcess>
+    <bpmn:startEvent id="33a46298-878c-4076-ace9-7dcd36c4635d">
+      <bpmn:extensionElements>
+        <uipath:entryPointId value="490e6462-8455-4b32-89e9-48117a504326" />
+        <uipath:activity version="v1" caseManagement="[object Object]">
+          <uipath:type value="uipath:EntryPointId" version="v1" />
+        </uipath:activity>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>edge_33a46298-878c-4076-ace9-7dcd36c4635d-CaseInitialVariablesSetupNode</bpmn:outgoing>
+      <bpmn:messageEventDefinition />
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="edge_33a46298-878c-4076-ace9-7dcd36c4635d-CaseInitialVariablesSetupNode" sourceRef="33a46298-878c-4076-ace9-7dcd36c4635d" targetRef="CaseInitialVariablesSetupNode" />
     <bpmn:task id="CaseInitialVariablesSetupNode" name="Set initial state variables for the whole case">
       <bpmn:extensionElements>
         <uipath:mapping version="v1">
@@ -4569,6 +4579,7 @@ return { upsertKeys: allEventsUpdatedKeys, deleteKeys: [...exitedStageKeysToDele
           <uipath:output name="Initial Response has run before" type="boolean" source="=js:false" var="stageHasRun_Initial_Response" />
         </uipath:mapping>
       </bpmn:extensionElements>
+      <bpmn:incoming>edge_33a46298-878c-4076-ace9-7dcd36c4635d-CaseInitialVariablesSetupNode</bpmn:incoming>
       <bpmn:outgoing>edge_CaseInitialVariablesSetupNode-CaseGlobalsVariablesSetupNode</bpmn:outgoing>
     </bpmn:task>
     <bpmn:task id="CaseGlobalsVariablesSetupNode" name="Initialize global variables for the whole case">

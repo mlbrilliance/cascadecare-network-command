@@ -207,7 +207,7 @@ Wired with the native `case-management` task type — no Postgres mirror, no lev
 **Canonical case surfaces** — the Maestro Case patterns Devpost judges are trained to recognize, built into the caseplans:
 
 - **SLA + escalation → Maestro Notification**, at case and stage level across all three nesting levels — on-track / at-risk / breached, firing notification actions on breach and at-risk.
-- **Agent-driven progression** — the master advances itself: the Forensic Self-Exam agent's output drives the Vector Isolation → Regulatory Response exit when ClearFlow's vector status clears (`=js:vars.var_clearflow_vector_status === 'cleared'`).
+- **Agent-driven progression** — the master advances itself: the **LangGraph** Forensic Self-Exam agent (`forensic-self-exam-agent-langgraph`, wired into the Vector Isolation stage task `tFSEXam01`) drives the Vector Isolation → Regulatory Response exit when ClearFlow's vector status clears (`=js:vars.var_clearflow_vector_status === 'cleared'`). Proven live end-to-end (v1.0.32): the agent fires in-case and returns `vector_status="cleared"`, `route_to="baa-boundary"`, the master auto-walks all agent stages, fans out 6 children + 6 grandchildren (three levels), and closes after the HITL gates.
 - **Targeted re-entry** — at Reversal 5 (ClearFlow → co-defendant), the master re-opens the Multi-Customer Investigation stage via an interrupting entry condition (`=js:vars.var_reversal_number >= 5`) and a `return-to-origin` exit, re-running **only** the cross-provider correlation while the settled anomaly classification is skipped (`shouldRunOnlyOnce`).
 - **Agent Evaluations** — eval sets for all seven agents (low-code under `agents/<name>/evals/`, coded under `agents/<name>/evaluations/`).
 
@@ -230,8 +230,8 @@ Per-agent Agent Memory is a deploy-time toggle, not fabricated offline config; c
 |-------|------|
 | `claim-flow-anomaly-detector` | Classifies an anomaly score on claim telemetry |
 | `multi-customer-pattern-detector` | Cross-provider correlation; emits the cascade signal |
-| `forensic-self-exam-agent` | Coordinates the other agents; routing |
-| `forensic-self-exam-agent-langgraph` | LangGraph conversion of the forensic routing agent — demonstrates framework-agnostic agent layer under Maestro Case (conditional `StateGraph`: clamp → route → conditional LLM enrich) |
+| `forensic-self-exam-agent` | Original Python-SDK forensic routing agent — superseded at runtime by the LangGraph version below |
+| `forensic-self-exam-agent-langgraph` | **LIVE** — the forensic agent bound to the master-crisis Vector Isolation stage (`tFSEXam01`). LangGraph `StateGraph` (clamp → route → conditional LLM enrich) deployed via `uipath-langchain`, demonstrating a framework-agnostic agent layer under the Maestro Case orchestrator. Proven end-to-end in production (v1.0.32) |
 | `case-job-janitor` | Ops utility on an hourly time trigger: sweeps zombie "Running" Orchestrator job rows left behind by completed case instances (the platform never flips them to Successful) |
 
 ### Integration Service API Workflows (19, `Type:"Api"`)
