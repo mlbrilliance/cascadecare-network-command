@@ -1,0 +1,29 @@
+name: Publish maestro-case-kit to PyPI
+
+# Trusted Publishing (OIDC) — no API token stored anywhere.
+# Trigger manually from the Actions tab, or automatically when a GitHub Release is published.
+on:
+  workflow_dispatch: {}
+  release:
+    types: [published]
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    environment: pypi          # must match the "Environment name" in the PyPI trusted publisher
+    permissions:
+      id-token: write          # REQUIRED for trusted publishing (mints the OIDC token)
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Build the package
+        working-directory: tooling/maestro-case-kit
+        run: uv build
+
+      - name: Publish to PyPI (trusted publishing)
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: tooling/maestro-case-kit/dist
