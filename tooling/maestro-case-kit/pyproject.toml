@@ -8,6 +8,7 @@ dependencies = []
 
 [project.scripts]
 maestro-case = "maestro_case_kit.cli:main"
+maestro-case-mcp = "maestro_case_kit.mcp_server:main"
 
 [build-system]
 requires = ["hatchling"]
