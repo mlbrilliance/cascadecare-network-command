@@ -36,6 +36,10 @@ def _check_df(args: dict) -> list[dict]:
     return [f.to_dict() for f in validators.validate_df_entity(str(args["spec_path"]))]
 
 
+def _check_cli(args: dict) -> list[dict]:
+    return [f.to_dict() for f in validators.check_cli_namespace(str(args["path"]))]
+
+
 def _caseplan_dir_schema() -> dict:
     return {
         "type": "object",
@@ -92,6 +96,19 @@ TOOLS: list[Tool] = [
             "required": ["spec_path"],
         },
         _check_df,
+    ),
+    Tool(
+        "maestro_case_check_cli",
+        "Flag bare 'uip case/flow/bpmn' invocations in scripts/docs that should use the "
+        "'uip maestro' namespace (the footgun UiPath's own skills carried, issues #333/#337).",
+        {
+            "type": "object",
+            "properties": {
+                "path": {"type": "string", "description": "A file or directory to scan."}
+            },
+            "required": ["path"],
+        },
+        _check_cli,
     ),
 ]
 

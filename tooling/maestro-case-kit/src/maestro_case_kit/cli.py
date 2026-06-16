@@ -77,6 +77,11 @@ def _cmd_check_df(args: argparse.Namespace) -> int:
     return _emit_findings(findings, args.json, f"no Data Fabric field-name traps in {args.spec}")
 
 
+def _cmd_check_cli(args: argparse.Namespace) -> int:
+    findings = validators.check_cli_namespace(args.path)
+    return _emit_findings(findings, args.json, f"no Maestro CLI-namespace issues in {args.path}")
+
+
 def _cmd_validate_knowledge(args: argparse.Namespace) -> int:
     denylist: list[str] = []
     if args.denylist_file:
@@ -148,6 +153,14 @@ def build_parser() -> argparse.ArgumentParser:
     check_df.add_argument("spec", help="Path to a JSON entity spec ({\"fields\": [...]}).")
     check_df.add_argument("--json", action="store_true", help="Emit structured JSON findings.")
     check_df.set_defaults(func=_cmd_check_df)
+
+    check_cli = sub.add_parser(
+        "check-cli",
+        help="Flag bare 'uip case/flow/bpmn' invocations (Maestro verbs need 'uip maestro ...').",
+    )
+    check_cli.add_argument("path", help="A file or directory of scripts/docs to scan.")
+    check_cli.add_argument("--json", action="store_true", help="Emit structured JSON findings.")
+    check_cli.set_defaults(func=_cmd_check_cli)
 
     vk = sub.add_parser(
         "validate-knowledge",

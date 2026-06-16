@@ -182,6 +182,20 @@
       "resolved_in": null,
       "severity": "medium",
       "references": ["scripts/seed_data_fabric.py", "docs/submission/PRODUCT-FEEDBACK.md"]
+    },
+    {
+      "id": "CLI-MAESTRO-NAMESPACE",
+      "kind": "cli",
+      "title": "uip case / uip flow / uip bpmn are not valid — use the maestro namespace",
+      "surface": "uip CLI",
+      "symptom": "Running a top-level uip case / uip flow / uip bpmn command fails with an unknown-command error.",
+      "error_signatures": ["unknown command", "CASE_CLI_NOT_FOUND"],
+      "cause": "Maestro CLI verbs live under the maestro namespace; there is no top-level uip case/flow/bpmn command. UiPath's own official skills carried this exact bug (issues #333/#337) before fixing it.",
+      "fix": "Prefix the verb with maestro: use 'uip maestro case ...', 'uip maestro flow ...', and 'uip maestro bpmn ...'. Run 'maestro-case check-cli <path>' to catch bare invocations in scripts and docs.",
+      "proven_on": "0.3.4",
+      "resolved_in": null,
+      "severity": "medium",
+      "references": ["https://github.com/UiPath/skills/issues/333", "https://github.com/UiPath/skills/issues/337"]
     }
   ]
 }

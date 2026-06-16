@@ -6,4 +6,4 @@ crisis case, plus credential-free static validators that run in CI. No UiPath
 login required for the v1 surface.
 """
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"

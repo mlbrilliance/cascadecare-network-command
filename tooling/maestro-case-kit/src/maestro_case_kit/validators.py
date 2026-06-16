@@ -9,6 +9,7 @@ to knowledge-layer entries so `maestro-case explain <rule>` gives the full recip
 from __future__ import annotations
 
 import json
+import os
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -229,6 +230,53 @@ def _extract_field_names(spec: object) -> list[str]:
             elif isinstance(field, dict) and isinstance(field.get("name"), str):
                 names.append(field["name"])
     return names
+
+
+_BARE_MAESTRO_NS = re.compile(r"\buip\s+(case|flow|bpmn)\b")
+_TEXT_EXT = {
+    ".md", ".sh", ".py", ".txt", ".yml", ".yaml", ".json", ".toml",
+    ".cfg", ".ini", ".ps1", ".bat", ".rst", ".bash", ".zsh",
+}
+
+
+def _iter_text_files(path: Path):
+    if path.is_file():
+        yield path
+        return
+    for f in sorted(path.rglob("*")):
+        if f.is_file() and f.suffix.lower() in _TEXT_EXT and f"{os.sep}.git{os.sep}" not in str(f):
+            yield f
+
+
+def check_cli_namespace(path: Path | str) -> list[Finding]:
+    """Flag bare `uip case/flow/bpmn` invocations — Maestro verbs need `uip maestro ...`.
+
+    Scans a file or directory of scripts/docs. Credential-free static analysis; guards
+    the exact namespace footgun that UiPath's own skills carried (issues #333/#337).
+    """
+    root = Path(path)
+    if not root.exists():
+        raise FileNotFoundError(f"no such path: {root}")
+    findings: list[Finding] = []
+    for f in _iter_text_files(root):
+        try:
+            text = f.read_text(encoding="utf-8")
+        except (UnicodeDecodeError, OSError):
+            continue
+        for lineno, line in enumerate(text.splitlines(), 1):
+            for match in _BARE_MAESTRO_NS.finditer(line):
+                sub = match.group(1)
+                findings.append(
+                    Finding(
+                        "CLI-MAESTRO-NAMESPACE",
+                        "medium",
+                        f"'uip {sub}' is not a valid CLI command — Maestro verbs live under "
+                        f"the maestro namespace; use 'uip maestro {sub}'.",
+                        location=f"{f}:{lineno}",
+                        entry_id="CLI-MAESTRO-NAMESPACE",
+                    )
+                )
+    return findings
 
 
 def validate_df_entity(spec_path: Path | str) -> list[Finding]:
