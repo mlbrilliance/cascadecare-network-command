@@ -36,13 +36,27 @@ Case's capability ceiling.
 Visibility into case status · Clear auditability · Meaningful human oversight.
 
 ## Prize landscape
-| Prize | Amount | Status | Effort |
+_Verified 2026-06-16 from https://uipath-agenthack.devpost.com/rules (full $50,000 / 3-track structure)._
+_The 2025 "$10K Agent of the Future" / "Specialist Coded Agent Challenge" are CLOSED 2025 events — NOT in 2026._
+
+| Prize | Amount | Status / target | Notes |
 |---|---|---|---|
-| Track 1 main judging | ~$TBD | In progress | 14 days |
-| ~~Specialist Coded Agent Challenge ($10K)~~ | — | **Closed 2025 community event — NOT an AgentHack 2026 prize** (verified 2026-06-16). The 2026 coding-agent value is the +2 bonus below. | — |
-| Product feedback form | $1,500 | Not started | 15 min |
-| People's Choice (community vote, Jul 3–30) | $500 | Not started | Forum post |
-| Coding agent bonus | +2 pts | Not started | 4–6 hrs docs |
+| Grand Prize | $8,000 | aspirational | best overall (replaces 2025 "$10K Agent of the Future") |
+| **Best of UiPath Maestro Case — OUR TRACK** | $5,000 | **primary target** | Runner-up $3,000 · Honorable Mention $2,000 |
+| Most Creative Solution | $3,000 | special award — in reach | regulated-vertical originality |
+| Best Demo / Presentation | $3,000 | special award — in reach | needs the ≤5-min live video |
+| Best Cross-Platform Integration | $1,500 | special award — in reach | ViVE bridge + multi-product surfaces |
+| Best First-Time Builder | $1,500 | special award — check eligibility | first-time-entrant constraint |
+| **Best Product Feedback** | $1,500 | DRAFTED → submit | individual award; `docs/submission/PRODUCT-FEEDBACK.md`; **closes Jul 2** |
+| **People's Choice** | $500 × 3 | forum/social push | community vote **Jul 3–30**; standalone (any participant) |
+| Coding-agent bonus | +2 pts | documented | within Platform Usage; lifts max score to 27 |
+
+**Rules that shape strategy:** a project can win **at most 2 prizes** — one Overall/Track prize **+** one Special
+Award. Best Product Feedback is an *individual* award and People's Choice is *standalone* (any participant,
+regardless of finalist status), so both likely stack on top of the project cap. **Deadlines (all EDT):** main
+submission **Jun 29 11:45 PM** · product-feedback form **Jul 2 11:45 PM** (earlier — don't miss it) · People's
+Choice voting **Jul 3–30**. The `forms.office.com/e/KitjGLF5k1` feedback URL is unverified for 2026 — a human
+must click it to confirm it's the current form (Devpost doesn't publish the URL publicly).
 
 ## Key metrics
 - End-to-end run completion rate (✅ v1.0.32 live-proven)
