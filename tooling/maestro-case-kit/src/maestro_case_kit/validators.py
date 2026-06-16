@@ -175,16 +175,90 @@ def _check_expressions(caseplan: object) -> list[Finding]:
     return findings
 
 
-def lint_caseplan(caseplan_dir: Path | str) -> list[Finding]:
-    """Lint a caseplan directory. Raises FileNotFoundError if caseplan.json is absent."""
+def _load_caseplan(caseplan_dir: Path | str) -> tuple[object, Path]:
     directory = Path(caseplan_dir)
     caseplan_path = directory / "caseplan.json"
     if not caseplan_path.is_file():
         raise FileNotFoundError(f"no caseplan.json in {directory}")
-    caseplan = json.loads(caseplan_path.read_text(encoding="utf-8"))
-    bpmn_path = directory / "caseplan.json.bpmn"
+    return json.loads(caseplan_path.read_text(encoding="utf-8")), caseplan_path
+
+
+def lint_caseplan(caseplan_dir: Path | str) -> list[Finding]:
+    """Lint a caseplan directory. Raises FileNotFoundError if caseplan.json is absent."""
+    caseplan, caseplan_path = _load_caseplan(caseplan_dir)
+    bpmn_path = caseplan_path.parent / "caseplan.json.bpmn"
     findings: list[Finding] = []
     findings.extend(_check_bpmn(caseplan_path, bpmn_path))
     findings.extend(_check_outputs(caseplan))
     findings.extend(_check_expressions(caseplan))
+    return findings
+
+
+def check_spawn_fanout(caseplan_dir: Path | str) -> list[Finding]:
+    """Flag =datafabric.qem expressions in spawn inputs — they fail at runtime (400300)."""
+    caseplan, _ = _load_caseplan(caseplan_dir)
+    findings: list[Finding] = []
+    for path, value in _walk_strings(caseplan):
+        if "=datafabric.qem" in value:
+            findings.append(
+                Finding(
+                    "MC-SPAWN-QEM-400300",
+                    "high",
+                    f"=datafabric.qem expression {value!r} fails at runtime in spawn "
+                    f"inputs (400300, 'Syntax error at index 4'). Resolve the value at "
+                    f"authoring time and pass a literal slug instead.",
+                    location=path,
+                    entry_id="MC-SPAWN-QEM-400300",
+                )
+            )
+    return findings
+
+
+def _to_camel(name: str) -> str:
+    parts = name.split("_")
+    return parts[0] + "".join(p[:1].upper() + p[1:] for p in parts[1:] if p)
+
+
+def _extract_field_names(spec: object) -> list[str]:
+    fields = spec.get("fields", []) if isinstance(spec, dict) else spec
+    names: list[str] = []
+    if isinstance(fields, list):
+        for field in fields:
+            if isinstance(field, str):
+                names.append(field)
+            elif isinstance(field, dict) and isinstance(field.get("name"), str):
+                names.append(field["name"])
+    return names
+
+
+def validate_df_entity(spec_path: Path | str) -> list[Finding]:
+    """Lint a Data Fabric entity/field spec for silent-drop and reserved-name traps."""
+    path = Path(spec_path)
+    if not path.is_file():
+        raise FileNotFoundError(f"no spec file at {path}")
+    spec = json.loads(path.read_text(encoding="utf-8"))
+    findings: list[Finding] = []
+    for name in _extract_field_names(spec):
+        if name == "id":
+            findings.append(
+                Finding(
+                    "DF-RESERVED-ID",
+                    "medium",
+                    "Field 'id' collides with the system Id primary key and is rejected; "
+                    "use 'slug' (or another business-key name) instead.",
+                    location=name,
+                    entry_id="DF-RESERVED-ID",
+                )
+            )
+        if "_" in name:
+            findings.append(
+                Finding(
+                    "DF-UNDERSCORE-DROP",
+                    "high",
+                    f"Field {name!r} contains an underscore and is silently dropped on "
+                    f"insert (no error surfaced). Use {_to_camel(name)!r} instead.",
+                    location=name,
+                    entry_id="DF-UNDERSCORE-DROP",
+                )
+            )
     return findings

@@ -46,13 +46,12 @@ def _cmd_explain(args: argparse.Namespace) -> int:
     return 0
 
 
-def _cmd_lint(args: argparse.Namespace) -> int:
-    findings = validators.lint_caseplan(args.caseplan_dir)
-    if args.json:
+def _emit_findings(findings: list[validators.Finding], as_json: bool, ok_label: str) -> int:
+    if as_json:
         print(json.dumps([f.to_dict() for f in findings], indent=2))
         return 1 if findings else 0
     if not findings:
-        print(f"OK — no Maestro Case footguns found in {args.caseplan_dir}")
+        print(f"OK — {ok_label}")
         return 0
     for f in findings:
         suffix = f"  (explain: {f.entry_id})" if f.entry_id else ""
@@ -60,6 +59,21 @@ def _cmd_lint(args: argparse.Namespace) -> int:
         print(f"[{f.severity.upper()}] {f.rule_id}: {f.message}{where}{suffix}")
     print(f"\n{len(findings)} finding(s).")
     return 1
+
+
+def _cmd_lint(args: argparse.Namespace) -> int:
+    findings = validators.lint_caseplan(args.caseplan_dir)
+    return _emit_findings(findings, args.json, f"no Maestro Case footguns in {args.caseplan_dir}")
+
+
+def _cmd_check_spawn(args: argparse.Namespace) -> int:
+    findings = validators.check_spawn_fanout(args.caseplan_dir)
+    return _emit_findings(findings, args.json, f"no qem spawn-fanout issues in {args.caseplan_dir}")
+
+
+def _cmd_check_df(args: argparse.Namespace) -> int:
+    findings = validators.validate_df_entity(args.spec)
+    return _emit_findings(findings, args.json, f"no Data Fabric field-name traps in {args.spec}")
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -96,6 +110,22 @@ def build_parser() -> argparse.ArgumentParser:
     )
     lint.add_argument("--json", action="store_true", help="Emit structured JSON findings.")
     lint.set_defaults(func=_cmd_lint)
+
+    check_spawn = sub.add_parser(
+        "check-spawn",
+        help="Flag =datafabric.qem expressions in spawn inputs (fail at runtime, 400300).",
+    )
+    check_spawn.add_argument("caseplan_dir", help="Path to a directory containing caseplan.json.")
+    check_spawn.add_argument("--json", action="store_true", help="Emit structured JSON findings.")
+    check_spawn.set_defaults(func=_cmd_check_spawn)
+
+    check_df = sub.add_parser(
+        "check-df",
+        help="Lint a Data Fabric entity/field spec for silent-drop and reserved-name traps.",
+    )
+    check_df.add_argument("spec", help="Path to a JSON entity spec ({\"fields\": [...]}).")
+    check_df.add_argument("--json", action="store_true", help="Emit structured JSON findings.")
+    check_df.set_defaults(func=_cmd_check_df)
     return parser
 
 
