@@ -105,6 +105,17 @@ heatmap if Case App isn't live. End card with repo URL.*
 > Automation Cloud, and built end-to-end with Claude Code. CascadeCare Network Command: the living
 > case layer for healthcare financial shockwaves."
 
+### Optional closing tag (≤15s) — Above and beyond: the open-source contribution
+*Use only if the cut lands under 5:00; otherwise this lives in the coding-agent reel below.
+Show: a terminal — `maestro-case explain 400300` returns the cause + fix instantly, then a
+quick `maestro-case lint` on a caseplan directory.*
+
+> "One more thing. Building this live, we kept hitting undocumented Maestro Case error codes
+> that return zero search results. So we packaged that hard-won knowledge into a free,
+> open-source toolkit — **Maestro Case Kit** — that explains those errors and lints caseplans
+> in CI, with no UiPath login. We even found UiPath's *own* official skills were broken in this
+> exact area and drafted the fix. Beyond the demo, we shipped something UiPath could adopt tomorrow."
+
 ---
 
 ## Agent name checklist (all 10 must be spoken or captioned)
@@ -132,6 +143,12 @@ heatmap if Case App isn't live. End card with repo URL.*
 - Both Approve and Deny **advance** the fiduciary gate the same way — the decision is data-driven
   (`reviewerDecision` consumed downstream), NOT a stage rework. Never narrate Deny as "rewinding"
   a stage.
+- **Maestro Case Kit framing:** it's a **define-once Python** toolkit (CLI + MCP server + agent
+  skills) — do NOT call it "printing-press-generated" (a spike proved printing-press only wraps
+  external APIs, not static validators). v1 is offline/credential-free; the auth operators are a
+  v2 roadmap, not shipped — don't demo them. The contribute-back PR is **drafted, not merged** —
+  UiPath closed the prior namespace-fix PR (#399) unmerged — so say "we drafted the fix," never
+  "UiPath merged our fix."
 
 ## Post-production
 
@@ -139,6 +156,13 @@ heatmap if Case App isn't live. End card with repo URL.*
 - Lower-third captions at every agent beat (checklist above).
 - Separate 1-minute coding-agent reel: screen captures of Claude Code sessions
   (`docs/coding-agents/screenshots/`), narrated over the CLAUDE_CODE_USAGE.md highlights.
+  **Close the reel on the open-source contribution** (the strongest "above and beyond" beat):
+  Claude Code didn't just build the demo — it extracted the project's hardest-won, undocumented
+  UiPath discoveries into **Maestro Case Kit**, a free, installable toolkit (CLI + MCP server +
+  agent skills, all offline/credential-free). Show two terminal runs live: `maestro-case explain
+  400300` (cryptic error → proven cause + fix) and `maestro-case lint <caseplan-dir>` (catches
+  footguns in CI). Note that we also drafted a fix for UiPath's own broken official skills. One
+  line for the judges: *"the +2 coding-agent value made concrete — tooling UiPath could dogfood."*
 - Separate **90-second Criterion-3 clip** (exception handling) per
   `docs/submission/DEMO-criterion3-and-fanout.md`: in-agent graceful degradation (the agent
   surfacing `error_type` and still routing) + the recorded/consumed HITL ruling + an `instance
