@@ -15,6 +15,7 @@ swallowed silently, and never allowed to fail the graph or change the route.
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import Annotated
 
@@ -80,8 +81,18 @@ def enrich_node(state: ForensicState) -> dict:
     error_type/error_message (matching the Coded-agent structured-error
     convention). Routing — route_to and clearflow_vector_status set by
     route_node — is authoritative and is never touched here.
+
+    Demo/test hook: setting the FORENSIC_FORCE_ENRICH_ERROR env var forces the
+    failure path deterministically (no real Gateway outage needed). It is OFF by
+    default, only reachable on the enrich path, and — caught below like any other
+    enrichment failure — never changes the route or faults the graph.
     """
     try:
+        if os.getenv("FORENSIC_FORCE_ENRICH_ERROR"):
+            raise RuntimeError(
+                "Simulated LLM Gateway failure (FORENSIC_FORCE_ENRICH_ERROR set); "
+                "advisory enrichment skipped, routing unaffected."
+            )
         from uipath.llm_gateway import UiPathOpenAIService  # noqa: PLC0415
 
         system_prompt = PROMPT_FILE.read_text(encoding="utf-8") if PROMPT_FILE.exists() else (

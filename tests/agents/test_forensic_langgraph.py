@@ -8,6 +8,7 @@ a monkeypatch so the happy path is verified without network calls.
 from __future__ import annotations
 
 import importlib
+import os
 import sys
 import types
 from typing import Any
@@ -163,6 +164,62 @@ class TestLLMErrorSurfacing:
     def test_escalate_path_has_empty_error_metadata(self, agent):
         """escalate skips enrich_node entirely → error fields stay empty (no false error)."""
         result = invoke(agent, {"clearflow_indicators": 0, "nimbus_indicators": 0, "clearflow_self_victim": False})
+        assert result["route_to"] == "escalate"
+        assert result["error_type"] == ""
+        assert result["error_message"] == ""
+
+
+# ── Forced-failure hook (deterministic live exceptions demo, OFF by default) ──
+
+class TestForcedFailureHook:
+    """The FORENSIC_FORCE_ENRICH_ERROR env hook lets a demo deterministically
+    trigger the advisory-enrichment failure path WITHOUT a real Gateway outage.
+    It is OFF by default (unset/empty), fires only on the enrich path, and — like
+    any enrichment failure — never changes the route or faults the graph.
+    """
+
+    def test_flag_on_surfaces_simulated_error(self, agent):
+        """Flag set → error surfaced even though the LLM mock would have succeeded."""
+        mock_service = MagicMock()
+        mock_service.chat_completions.return_value = "should never be used"
+
+        mock_module = types.ModuleType("uipath.llm_gateway")
+        mock_module.UiPathOpenAIService = MagicMock(return_value=mock_service)
+
+        with patch.dict("sys.modules", {"uipath.llm_gateway": mock_module}), \
+                patch.dict(os.environ, {"FORENSIC_FORCE_ENRICH_ERROR": "1"}, clear=False):
+            result = invoke(agent, {"clearflow_indicators": 0, "nimbus_indicators": 1, "clearflow_self_victim": False})
+
+        # Route is authoritative and untouched by the simulated failure.
+        assert result["route_to"] == "baa-boundary"
+        assert result["clearflow_vector_status"] == "cleared"
+        # The simulated failure is surfaced, not swallowed; the real LLM was never called.
+        assert result["rationale"] == ""
+        assert result["error_type"] == "RuntimeError"
+        assert "FORENSIC_FORCE_ENRICH_ERROR" in result["error_message"]
+        mock_service.chat_completions.assert_not_called()
+
+    def test_flag_off_is_noop(self, agent):
+        """Flag unset/empty → normal happy path, no false error (OFF by default)."""
+        mock_service = MagicMock()
+        mock_service.chat_completions.return_value = "Nimbus is the vector."
+
+        mock_module = types.ModuleType("uipath.llm_gateway")
+        mock_module.UiPathOpenAIService = MagicMock(return_value=mock_service)
+
+        with patch.dict("sys.modules", {"uipath.llm_gateway": mock_module}), \
+                patch.dict(os.environ, {"FORENSIC_FORCE_ENRICH_ERROR": ""}, clear=False):
+            result = invoke(agent, {"clearflow_indicators": 0, "nimbus_indicators": 1, "clearflow_self_victim": False})
+
+        assert result["rationale"] != ""
+        assert result["error_type"] == ""
+        assert result["error_message"] == ""
+
+    def test_flag_on_does_not_affect_escalate_path(self, agent):
+        """Even with the flag ON, the escalate path skips enrich_node entirely —
+        so a no-signal run still completes with empty error fields (won't break a demo)."""
+        with patch.dict(os.environ, {"FORENSIC_FORCE_ENRICH_ERROR": "1"}, clear=False):
+            result = invoke(agent, {"clearflow_indicators": 0, "nimbus_indicators": 0, "clearflow_self_victim": False})
         assert result["route_to"] == "escalate"
         assert result["error_type"] == ""
         assert result["error_message"] == ""
