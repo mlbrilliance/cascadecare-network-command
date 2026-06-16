@@ -78,14 +78,15 @@ an OpenClaw skill — all **offline and credential-free** (no UiPath login):
 | Inert caseplan edits (stale `.bpmn`, dropped start event) | `maestro-case lint <dir>` — validated clean on all 3 live caseplans |
 | `=datafabric.qem:` in spawn inputs → runtime `400300` | `maestro-case check-spawn <dir>` |
 | Data Fabric silent field-drop / reserved `id` | `maestro-case check-df <spec>` |
+| `uip case`/`uip flow` without the `maestro` prefix (UiPath's own skills had it) | `maestro-case check-cli <dir>` |
 
-Authored test-first like the rest of the build (59 toolkit tests wired into the repo
-`uv run pytest` gate; 742 total pass, `mypy` clean, IP-safe). Each knowledge entry is
+Authored test-first like the rest of the build (64 toolkit tests wired into the repo
+`uv run pytest` gate; 747 total pass, `mypy` clean, IP-safe). Each knowledge entry is
 version-stamped and self-deprecates when UiPath ships a fix, behind an automated schema +
-IP-safety contribution gate. A companion **contribute-back PR is drafted**
-([`docs/submission/CONTRIBUTE-BACK-PR.md`](docs/submission/CONTRIBUTE-BACK-PR.md)) against UiPath's
-*own* official skills (the `uip maestro case` CLI namespace; issue #333 remains open, and UiPath
-closed the prior fix PR #399 unmerged). Built via `/ce-ideate → /ce-brainstorm → /ce-work`; a spike
+IP-safety contribution gate. We even hit this footgun in UiPath's *own* official skills — the
+`uip maestro` CLI namespace (issues #333/#337) — now **fixed upstream** on UiPath's `main`; rather
+than a no-op PR we shipped it as the toolkit's `check-cli` regression guard (verified findings in
+[`docs/submission/CONTRIBUTE-BACK-PR.md`](docs/submission/CONTRIBUTE-BACK-PR.md)). Built via `/ce-ideate → /ce-brainstorm → /ce-work`; a spike
 proved the `printing-press` generator only wraps external APIs, so it is a define-once Python source —
 **not** printing-press-generated — and the auth-requiring operators are a v2 roadmap, not shipped.
 

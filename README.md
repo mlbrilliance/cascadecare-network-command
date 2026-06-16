@@ -485,6 +485,7 @@ The v1 surface is **offline and credential-free** (no UiPath login), so it drops
 | Inert caseplan edits (stale `.bpmn`, dropped start event) | `maestro-case lint <dir>` | Static V20 linter — validated clean on all 3 live caseplans |
 | `=datafabric.qem:` in spawn inputs → runtime `400300` | `maestro-case check-spawn <dir>` | Flags the failing fan-out expression before deploy |
 | Data Fabric silent field-drop / reserved `id` | `maestro-case check-df <spec>` | Catches underscore-drop, suggests camelCase |
+| `uip case`/`uip flow` without the `maestro` prefix (UiPath's own skills had it) | `maestro-case check-cli <dir>` | Flags bare invocations → use `uip maestro …` |
 
 ```bash
 pipx install maestro-case-kit       # CLI: maestro-case ; MCP server: maestro-case-mcp
@@ -492,9 +493,10 @@ pipx install maestro-case-kit       # CLI: maestro-case ; MCP server: maestro-ca
 
 Every knowledge entry is **version-stamped** and self-deprecates when UiPath ships a fix, and
 contributions pass an automated schema + IP-safety gate — so the kit stays current as the platform
-evolves. A companion **contribute-back PR** corrects bugs in UiPath's *own* official skills (the
-`uip maestro case` CLI namespace; see [`docs/submission/CONTRIBUTE-BACK-PR.md`](docs/submission/CONTRIBUTE-BACK-PR.md)).
-Auth-requiring operators are deliberately deferred to v2; v1 stays credential-free by design.
+evolves. We even hit this footgun in UiPath's *own* official skills — the `uip maestro` CLI namespace
+(issues #333/#337, since **fixed upstream**) — and shipped it as the `check-cli` guard so it can't
+regress in your code ([verified findings](docs/submission/CONTRIBUTE-BACK-PR.md)). Auth-requiring
+operators are deferred to v2; v1 stays credential-free by design.
 
 ## Documentation
 

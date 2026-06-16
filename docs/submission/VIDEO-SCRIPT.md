@@ -113,8 +113,9 @@ quick `maestro-case lint` on a caseplan directory.*
 > "One more thing. Building this live, we kept hitting undocumented Maestro Case error codes
 > that return zero search results. So we packaged that hard-won knowledge into a free,
 > open-source toolkit — **Maestro Case Kit** — that explains those errors and lints caseplans
-> in CI, with no UiPath login. We even found UiPath's *own* official skills were broken in this
-> exact area and drafted the fix. Beyond the demo, we shipped something UiPath could adopt tomorrow."
+> in CI, with no UiPath login. We even hit this exact bug in UiPath's *own* official skills —
+> since fixed upstream — so the kit ships a guard that catches it in your code. Beyond the demo,
+> we shipped something UiPath could adopt tomorrow."
 
 ---
 
@@ -146,9 +147,10 @@ quick `maestro-case lint` on a caseplan directory.*
 - **Maestro Case Kit framing:** it's a **define-once Python** toolkit (CLI + MCP server + agent
   skills) — do NOT call it "printing-press-generated" (a spike proved printing-press only wraps
   external APIs, not static validators). v1 is offline/credential-free; the auth operators are a
-  v2 roadmap, not shipped — don't demo them. The contribute-back PR is **drafted, not merged** —
-  UiPath closed the prior namespace-fix PR (#399) unmerged — so say "we drafted the fix," never
-  "UiPath merged our fix."
+  v2 roadmap, not shipped — don't demo them. The `uip maestro` namespace bug is **already fixed
+  upstream** on UiPath's `main` — do NOT claim a "contribute-back PR" or that "we fixed UiPath's
+  skills." Say: "we found this bug in UiPath's own skills (since fixed upstream) and shipped a
+  `check-cli` guard against it."
 
 ## Post-production
 
@@ -161,8 +163,9 @@ quick `maestro-case lint` on a caseplan directory.*
   UiPath discoveries into **Maestro Case Kit**, a free, installable toolkit (CLI + MCP server +
   agent skills, all offline/credential-free). Show two terminal runs live: `maestro-case explain
   400300` (cryptic error → proven cause + fix) and `maestro-case lint <caseplan-dir>` (catches
-  footguns in CI). Note that we also drafted a fix for UiPath's own broken official skills. One
-  line for the judges: *"the +2 coding-agent value made concrete — tooling UiPath could dogfood."*
+  footguns in CI). Note we found this exact bug in UiPath's own official skills (since fixed
+  upstream) and shipped a `check-cli` guard against it. One line for the judges: *"the +2
+  coding-agent value made concrete — tooling UiPath could dogfood."*
 - Separate **90-second Criterion-3 clip** (exception handling) per
   `docs/submission/DEMO-criterion3-and-fanout.md`: in-agent graceful degradation (the agent
   surfacing `error_type` and still routing) + the recorded/consumed HITL ruling + an `instance

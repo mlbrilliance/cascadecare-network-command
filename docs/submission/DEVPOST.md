@@ -160,10 +160,11 @@ self-contained tool authored end-to-end by Claude Code, within Platform Usage; l
 
 | Gap we hit on the platform | Tool |
 |---|---|
-| Cryptic error codes (`400300`, `160009`, …) return zero search results | `explain` — knowledge oracle over 13 version-stamped entries |
+| Cryptic error codes (`400300`, `160009`, …) return zero search results | `explain` — knowledge oracle over 14 version-stamped entries |
 | Caseplan edits silently inert (stale `.bpmn`, missing start event, dup output vars, bad V20 expressions) | `lint` — static caseplan linter (validated clean on all 3 live caseplans) |
 | `=datafabric.qem:` in spawn inputs faults at runtime (`400300`) | `check-spawn` — flags `qem:` expressions in spawn `JobArguments` |
 | Data Fabric drops underscore field names / reserved `id` on insert | `check-df` — static Data Fabric entity-spec checker |
+| `uip case`/`uip flow`/`uip bpmn` called without the `maestro` prefix (UiPath's *own* skills had this) | `check-cli` — flags bare invocations in scripts/docs → `uip maestro …` |
 
 Each knowledge entry is stamped with the platform/CLI version it was proven on (and an optional
 `resolved_in`, so an entry drops from active guidance once UiPath ships a fix). Contributions run
@@ -179,8 +180,10 @@ maestro-case lint path/to/caseplan-dir
 #   command: maestro-case-mcp
 ```
 
-We also drafted a contribute-back PR to UiPath's own `UiPath/skills` repo (CLI-namespace
-corrections for the Maestro Case / Flow skills); the plan lives in
+We even hit this exact CLI-namespace bug in UiPath's *own* `UiPath/skills` repo (issues #333/#337) —
+since **fixed upstream** on `main`. Rather than open a no-op PR against an already-fixed repo, we
+shipped a **`check-cli` guard** (`maestro-case check-cli <path>`) that flags bare `uip case` /
+`uip flow` / `uip bpmn` so the footgun can't regress in *your* code; the verified findings are in
 [`CONTRIBUTE-BACK-PR.md`](CONTRIBUTE-BACK-PR.md).
 
 ## Honest limitations
