@@ -1,0 +1,24 @@
+[project]
+name = "maestro-case-kit"
+version = "0.1.0"
+description = "Agent-native knowledge layer + offline, credential-free static validators for UiPath Maestro Case footguns."
+requires-python = ">=3.12"
+license = { text = "MIT" }
+dependencies = []
+
+[project.scripts]
+maestro-case = "maestro_case_kit.cli:main"
+maestro-case-mcp = "maestro_case_kit.mcp_server:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/maestro_case_kit"]
+
+# Standalone test config (when the package is run on its own, post-extraction).
+# The repo-level gate wires this package in via the root pyproject's pythonpath.
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

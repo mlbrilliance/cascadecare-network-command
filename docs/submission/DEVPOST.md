@@ -138,6 +138,51 @@ Evidence: `CODING_AGENTS.md` (full 37-artifact authorship table), `CLAUDE_CODE_U
 `docs/coding-agents/` (per-type evidence pages + prompt logs + screenshots
 `[HUMAN: capture during demo session]`).
 
+## Tooling & contributing back (Criterion 4 "Tooling" + bonus)
+
+Building on Maestro Case for five weeks meant discovering a layer of undocumented footguns —
+cryptic error codes (`400300`, `160009`) that return zero search hits, caseplan edits that go
+silently inert, Data Fabric fields that vanish on insert. We turned that hard-won knowledge into
+an open-source, **offline, credential-free** developer kit: the **Maestro Case Kit** (`tooling/maestro-case-kit/`, MIT).
+
+It fills the **UiPath component variety (C4) "Tooling" row** — a coding-agent–native tool built
+*for* the platform — and adds verifiable evidence for the **+2 coding-agent bonus** (a specialized,
+self-contained tool authored end-to-end by Claude Code, within Platform Usage; lifts our max score to 27).
+
+**One define-once source → four artifacts**, all over one shared tool registry:
+
+- a **`maestro-case` CLI** (CI-ready: every command takes `--json` and exits non-zero on a finding)
+- a dependency-free **MCP server** (`maestro-case-mcp`, stdio JSON-RPC — no third-party SDK)
+- a **Claude Code skill** (`SKILL.md`, the define-once skill source)
+- an **OpenClaw skill** (fanned out from the same `SKILL.md` via a skills converter)
+
+**Four credential-free tools** (v1 needs no UiPath login — it runs entirely offline / in CI):
+
+| Gap we hit on the platform | Tool |
+|---|---|
+| Cryptic error codes (`400300`, `160009`, …) return zero search results | `explain` — knowledge oracle over 13 version-stamped entries |
+| Caseplan edits silently inert (stale `.bpmn`, missing start event, dup output vars, bad V20 expressions) | `lint` — static caseplan linter (validated clean on all 3 live caseplans) |
+| `=datafabric.qem:` in spawn inputs faults at runtime (`400300`) | `check-spawn` — flags `qem:` expressions in spawn `JobArguments` |
+| Data Fabric drops underscore field names / reserved `id` on insert | `check-df` — static Data Fabric entity-spec checker |
+
+Each knowledge entry is stamped with the platform/CLI version it was proven on (and an optional
+`resolved_in`, so an entry drops from active guidance once UiPath ships a fix). Contributions run
+through an automated **schema + IP-safety gate** (`maestro-case validate-knowledge`). Auth-requiring
+operators (gate actions, AppTask completion, reconcile) are a documented **v2** roadmap item — v1 is
+deliberately scoped to the offline knowledge + static-validator surface.
+
+```bash
+pipx install maestro-case-kit        # CLI: maestro-case
+maestro-case explain 400300          # error code -> proven cause + fix (offline)
+maestro-case lint path/to/caseplan-dir
+# MCP server (stdio) — register with any MCP host:
+#   command: maestro-case-mcp
+```
+
+We also drafted a contribute-back PR to UiPath's own `UiPath/skills` repo (CLI-namespace
+corrections for the Maestro Case / Flow skills); the plan lives in
+[`CONTRIBUTE-BACK-PR.md`](CONTRIBUTE-BACK-PR.md).
+
 ## Honest limitations
 
 - The crisis timeline is simulated (90 days compressed to minutes by a demo driver).

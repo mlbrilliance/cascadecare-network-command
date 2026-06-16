@@ -468,6 +468,32 @@ skills, under a test-gated spec-kit workflow. The AgentHack coding-agent bonus e
 - [`CLAUDE_CODE_USAGE.md`](CLAUDE_CODE_USAGE.md) — the Devpost bonus write-up.
 - [`docs/coding-agents/`](docs/coding-agents/) — per-artifact-type evidence pages + prompt logs.
 
+## Open-Source Tooling — Contributing Back
+
+Beyond the demo, this project extracted its hardest-won, **undocumented UiPath Maestro Case
+knowledge** into a standalone, open-source toolkit any UiPath developer can install — something
+UiPath could dogfood directly. [**Maestro Case Kit**](tooling/maestro-case-kit/) is a define-once
+Python source that ships as four agent-native artifacts — a `maestro-case` **CLI**, a dependency-free
+**MCP server**, a **Claude Code skill**, and an **OpenClaw skill** — over one shared tool registry.
+The v1 surface is **offline and credential-free** (no UiPath login), so it drops straight into CI:
+
+| Footgun (hit live in this build) | Tool | What it does |
+|---|---|---|
+| Cryptic, un-Googleable error codes (`400300`, `160009`, …) | `maestro-case explain <code>` | Version-stamped knowledge oracle → proven cause + fix |
+| Inert caseplan edits (stale `.bpmn`, dropped start event) | `maestro-case lint <dir>` | Static V20 linter — validated clean on all 3 live caseplans |
+| `=datafabric.qem:` in spawn inputs → runtime `400300` | `maestro-case check-spawn <dir>` | Flags the failing fan-out expression before deploy |
+| Data Fabric silent field-drop / reserved `id` | `maestro-case check-df <spec>` | Catches underscore-drop, suggests camelCase |
+
+```bash
+pipx install maestro-case-kit       # CLI: maestro-case ; MCP server: maestro-case-mcp
+```
+
+Every knowledge entry is **version-stamped** and self-deprecates when UiPath ships a fix, and
+contributions pass an automated schema + IP-safety gate — so the kit stays current as the platform
+evolves. A companion **contribute-back PR** corrects bugs in UiPath's *own* official skills (the
+`uip maestro case` CLI namespace; see [`docs/submission/CONTRIBUTE-BACK-PR.md`](docs/submission/CONTRIBUTE-BACK-PR.md)).
+Auth-requiring operators are deliberately deferred to v2; v1 stays credential-free by design.
+
 ## Documentation
 
 - [Architecture](docs/architecture.md)

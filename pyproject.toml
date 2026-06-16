@@ -59,7 +59,8 @@ warn_unused_configs = true
 disallow_untyped_defs = true
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["tests", "tooling/maestro-case-kit/tests"]
+pythonpath = ["tooling/maestro-case-kit/src"]
 asyncio_mode = "auto"
 addopts = "--strict-markers -v"
 markers = [
