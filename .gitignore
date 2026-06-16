@@ -98,6 +98,7 @@ scripts/logs/
 # Exception: the architecture diagram is a deliberate committed submission asset
 # (rendered from docs/images/architecture.svg), embedded in README + Devpost.
 !docs/images/architecture.png
+!docs/images/architecture.gif
 *.zip
 knowledge/new_knowledge/
 knowledge/screenshots/studio_web_errors/
