@@ -176,6 +176,68 @@ print(' '.join(j['Key'] for j in d if 'clearflow' in (j.get('ProcessName') or ''
 
 ---
 
+## Path P — Preserve a run for rolling judging
+
+Judging is **rolling (Jun 3 – Jul 14, 2026)** and a judge may open the tenant *days or weeks*
+after your run. The hourly `case-job-janitor` and routine cleanup can leave them looking at an
+**empty Case Instances view**. This path preserves one clean, all-Completed run so the live
+tenant still tells the story when a judge arrives.
+
+> **Read this first — what's canonical.** Per the AgentHack rules, *"judges may choose to judge
+> based solely on the text description, images, and video."* So the **demo video + the committed
+> `docs/evidence/` artifacts are the canonical proof**; a preserved live tenant is a *bonus* that
+> removes the "empty view" risk. Do Path P **and** ship a strong video — don't rely on the tenant
+> alone.
+
+### P1. Produce one clean run and leave it alone
+Run **Path A** end-to-end (A1→A5), approve both gates, and confirm **all instances Completed**
+(A5). After this, **do not cancel any instance in this folder** (see P4) — a cancel is the one
+operation that ruins the view.
+
+### P2. Capture immutable evidence *now* (survives anything the tenant does)
+This is the durable artifact — it stays valid even if the tenant is later swept.
+
+```bash
+mkdir -p docs/evidence
+# 1) Export the completed-instance list as committed proof:
+uip maestro case instance list --folder-key $FK \
+  | python3 -c "import sys,json;raw=sys.stdin.read();d=json.loads(raw[raw.find('{'):])['Data'];\
+import datetime;print(json.dumps([{'package':x['packageId'].split('.')[-1],'status':x['latestRunStatus'],'created':x['createdTimeUtc']} for x in d],indent=2))" \
+  > docs/evidence/preserved-run-$(date +%F).json
+# 2) Capture the screenshot set per docs/submission/SCREENSHOT-SHOTLIST.md → docs/evidence/
+```
+
+Commit `docs/evidence/` (the JSON + the screenshots). That is the closure proof judges can see
+regardless of live-tenant state.
+
+### P3. Pause the janitor so nothing sweeps during judging
+`case-job-janitor` is a Coded Agent on an **hourly Orchestrator trigger**. Disable it for the
+judging window:
+
+- **Orchestrator → Triggers →** find the `case-job-janitor` trigger → **Disable** (toggle off).
+  *(Trigger enable/disable is UI-only — there is no committed CLI for it.)*
+- Optionally **Deactivate** the `case-job-janitor` process too, so no manual run sweeps the
+  preserved folder.
+
+> **Why this is belt-and-suspenders, not strictly required.** The janitor only force-stops zombie
+> *job shells* — and stopping a job shell does **not** touch a Completed **case instance**
+> (proven on 27 jobs; see A6). The genuine risk to a preserved Completed view is **cancelling
+> instances** (P4), not the janitor. Pausing the janitor simply guarantees nothing automated runs
+> against the preserved folder while judges look.
+
+### P4. Do NOT run instance-cancelling cleanup on the preserved folder
+- **Never** run `scripts/cleanup_deployments.sh` or `uip maestro case instance cancel` against
+  this folder — cancelling flips Monitoring from **Completed → Cancelled** and destroys the proof.
+- `A6` (bulk `uip or jobs stop`) is **instance-safe** — run it if you want a tidy Orchestrator
+  **Jobs** view; if in doubt, skip it (the cosmetic zombie-`Running` jobs don't change the Case
+  Instances truth, which is what judges should read).
+
+### P5. Re-enable after judging
+Re-enable the `case-job-janitor` trigger once the window you care about closes — **Jul 14**
+(judging) or **Jul 30** (People's Choice) — so the tenant resumes auto-housekeeping.
+
+---
+
 ## Path B — Rebuild & redeploy from source
 
 Do this when you changed a case in Studio Web, edited a caseplan locally, or are deploying
@@ -415,7 +477,7 @@ gateway routes to case creation — preventing false positives from a single-pro
 triggering a full multi-stakeholder crisis response.
 
 **Time-to-detect vs. historical reality:**
-The real CH/Change Healthcare-class incident went undetected at scale for days. CascadeCare's
+The real mid-2020s clearinghouse-class incident went undetected at scale for days. CascadeCare's
 polling interval is 15 minutes. First-responder organizations took hours to activate. CascadeCare
 spawns the master case within seconds of cascade confirmation.
 
@@ -449,7 +511,7 @@ when to run, for which provider, under which legal constraints, in what order.
 > and CascadeCare is what makes them work together instead of independently."*
 
 **"The scenario we're demonstrating — a payment network going dark across multiple providers — is
-exactly what the Change Healthcare incident looked like in the first 72 hours. CascadeCare shows
+exactly what a real mid-2020s clearinghouse incident looked like in the first 72 hours. CascadeCare shows
 how an AI-driven Maestro Case, triggered automatically by anomaly detection, would manage that
 in real time rather than through manual war-room coordination."**
 
@@ -501,6 +563,6 @@ handle obligations in parallel — identical to how a real incident command oper
 compresses 90 days to minutes; the architecture is unchanged.
 
 **If a judge challenges this:** "HITL gates pause only the specific case that needs human input.
-The master crisis R4 gate and the 18 grandchild gates are all open simultaneously — each waiting
+The master crisis R4 gate and the 6 grandchild gates are all open simultaneously — each waiting
 independently. This is correct behavior. In production, Day 45 (R4) events happen regardless of
 whether individual Day 30 (R3) obligation filings are complete."

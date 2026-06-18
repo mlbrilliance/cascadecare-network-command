@@ -11,7 +11,7 @@ Status as of 2026-06-12 (slice 023 closed). The build artifacts are DONE — inc
 | 1 | Public GitHub repo (MIT) + README | ✅ DONE | — | [`README.md`](../../README.md) names every UiPath component; [`LICENSE`](../../LICENSE) MIT; gate `tests/unit/docs/test_readme_completeness.py` |
 | 2 | Devpost project page | ⬜ PENDING (human) | — | Paste-ready copy drafted: [`DEVPOST.md`](DEVPOST.md) (fill `[HUMAN]` links/screenshots; clear `[VERIFY]` items live first) |
 | 3 | Demo video ≤5 min on YouTube/Vimeo | ⬜ PENDING (human) | — | Must show the solution running **live** (not slides); name each agent. Full shot-list + narration: [`VIDEO-SCRIPT.md`](VIDEO-SCRIPT.md); run procedure: [`docs/DEMO-RUNBOOK.md`](../DEMO-RUNBOOK.md). Hero (Reversal 3 fan-spawn) ~2:30 |
-| 4 | Solution running live on Automation Cloud | ✅ DONE (live) | — | `clearflow-solution` 1.0.23 deployed to `Shared/CascadeCare-v110`; full cascade live-proven 2026-06-12 (master + 6 children + 6 grandchildren all Completed). The former blockers (Error 2005, Maestro folder context, BPMN 1654) were resolved in slices 015–023 — see [`docs/DEMO-RUNBOOK.md`](../DEMO-RUNBOOK.md) |
+| 4 | Solution running live on Automation Cloud | ✅ DONE (live) | — | `clearflow-solution` 1.0.32 deployed to `Shared/CascadeCare-v110`; full cascade live-proven 2026-06-15 (master + 6 children + 6 grandchildren all Completed, incl. closure). The former blockers (Error 2005, Maestro folder context, BPMN 1654) were resolved in slices 015–023 — see [`docs/DEMO-RUNBOOK.md`](../DEMO-RUNBOOK.md) |
 
 ## Bonus + supplementary
 

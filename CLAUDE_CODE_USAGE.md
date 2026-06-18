@@ -1,7 +1,7 @@
 # Claude Code Usage — AgentHack 2026 Coding-Agent Bonus
 
 This project was built end-to-end with **Claude Code** (Anthropic's official CLI). This page is
-the concise bonus-submission summary; the full 27-artifact authorship table and methodology are
+the concise bonus-submission summary; the full 37-artifact authorship table and methodology are
 in [`CODING_AGENTS.md`](CODING_AGENTS.md).
 
 **(a) Which coding agent.** Claude Code (Claude Opus / Sonnet), driving the UiPath `uip` CLI and
