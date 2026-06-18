@@ -41,6 +41,12 @@ Prevention, Prior Authorization) do the work; **CascadeCare is the Maestro Case 
 orchestrates them under fire.** Each stakeholder parent case invokes all three solution
 workflows for its provider — the crisis orchestrator for the agents UiPath already ships.
 
+It also lands on real accountability frameworks: the per-decision audit trail and SLA-timeliness
+record CascadeCare produces are the kind of **survey-grade evidence** hospital, health-plan, and
+home-health accreditors — **The Joint Commission**, **NCQA**, and **ACHC** (with HIPAA throughout)
+— look for after an operational disruption. *CascadeCare produces that evidence; it does not
+implement any accreditation standard.*
+
 ## What it does (the five reversals)
 
 | # | Day | Goal shift |

@@ -109,6 +109,13 @@ of providers unable to get paid and drove billions of dollars in downstream cost
 consequential healthcare cyber events on record. CascadeCare demonstrates how an AI-driven
 Maestro Case would manage exactly that, end to end.
 
+**Accreditation fit.** The case file CascadeCare produces — a per-decision audit trail (who
+decided what, when, and why) plus an SLA-timeliness record across every obligation — is the kind
+of **survey-grade evidence** that hospital, health-plan, and home-health accreditation programs
+(**The Joint Commission**, **NCQA**, and **ACHC**, alongside HIPAA) look for in an
+operational-disruption review. *CascadeCare produces that evidence; it does not implement any
+accreditation standard.*
+
 ## How CascadeCare Detects a Crisis — Production Trigger Architecture
 
 > [!TIP]
