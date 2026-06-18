@@ -32,11 +32,7 @@ A <b>UiPath Maestro Case</b> command center that manages a multi-hospital cyber-
   <img src="docs/images/architecture.png" width="900" alt="CascadeCare architecture — three nested Maestro Case levels, 11 agents under their stages, Trust Layer, and platform foundation" />
 </p>
 
-<p align="center">
-  <img src="docs/images/architecture.gif" width="900" alt="Schematic animation of the CascadeCare architecture building out — master pipeline lights up, agents plug in, and Reversal 3 fans out the three-level cascade" />
-</p>
-
-<p align="center"><sub><i>▶ The same case, in motion — the master pipeline builds, agents plug into their stages, and Reversal 3 fans out 13 instances across three levels. Schematic diagram animation, not live-tenant footage.</i></sub></p>
+<p align="center"><sub><i>Schematic architecture diagram — three nested Maestro Case levels, 11 agents under their stages, the Trust Layer governing every LLM call, and the data / integration foundation. Not live-tenant footage.</i></sub></p>
 
 <!-- TODO(human, high-impact): a real live-run screen-capture (the actual UiPath canvas — Reversal-3 fan-out / forensic agent firing / HITL gate) would be even stronger when the tenant is up. -->
 
