@@ -367,7 +367,11 @@ Per-agent Agent Memory is a deploy-time toggle, not fabricated offline config; c
 `vendor-nimbus`.
 
 **Case utilities (2)** — `register-stakeholder` (parent-case onboarding: registers the stakeholder
-and pulls its BAA) and `generate-audit-record` (writes a per-action audit record).
+and pulls its BAA) and `generate-audit-record` (records a per-obligation audit entry into the
+case's Action History). Each dispositioned obligation is also persisted as an immutable,
+queryable row in the `AuditRecord` **Data Fabric** entity by a build-time audit-ledger writer
+(`scripts/populate_audit_ledger.py`, core in `src/cascadecare/audit_ledger.py`) — a
+survey-ready compliance export that complements the Maestro Action History.
 
 **UiPath Healthcare Agentic Solutions (3)** — the *vertical bridge*: CascadeCare orchestrates
 UiPath's own ViVE-2026 Healthcare Solutions as case-invoked tasks inside the stakeholder-parent's
