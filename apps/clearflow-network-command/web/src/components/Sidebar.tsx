@@ -8,6 +8,7 @@ const NAV: NavItem[] = [
   { id: 'cascade', label: 'Energy Flow', glyph: '⚡' },
   { id: 'overview', label: 'Overview', glyph: '▦' },
   { id: 'reversals', label: 'Reversals', glyph: '↻' },
+  { id: 'ledger', label: 'Ledger', glyph: '⛓' },
   { id: 'console', label: 'Console', glyph: '◉' },
   { id: 'agents', label: 'Agents', glyph: '◆' },
 ];

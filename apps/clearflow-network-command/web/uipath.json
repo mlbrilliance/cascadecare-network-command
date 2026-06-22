@@ -1,4 +1,4 @@
 {
-  "scope": "PIMS OR.Execution.Read OR.Execution.Create OR.Jobs.Read OR.Tasks.Read OR.Tasks.Edit OR.Folders.Read DataFabric.Data.Read",
+  "scope": "PIMS OR.Execution.Read OR.Execution.Create OR.Jobs.Read OR.Tasks.Read OR.Tasks.Edit OR.Folders.Read DataService.Data.Read DataService.Schema.Read",
   "clientId": "6572ecf9-64da-48cd-b846-3c91047ca7e5"
 }

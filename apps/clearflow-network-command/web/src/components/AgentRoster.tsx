@@ -35,7 +35,7 @@ function AgentCard({ agent, index }: { agent: Agent; index: number }) {
   );
 }
 
-/** The seven runtime agents — shows the topology and names each one. */
+/** The twelve runtime agents (6 Coded · 6 Builder) — shows the topology and names each one. */
 export function AgentRoster() {
   const coded = AGENTS.filter((a) => a.kind === 'Coded').length;
   const builder = AGENTS.filter((a) => a.kind === 'Builder').length;

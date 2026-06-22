@@ -84,15 +84,26 @@ export interface Agent {
   role: string;
 }
 
-/** Seven runtime agents — 3 Coded (Python SDK), 4 Agent Builder (BYO Claude). */
+/**
+ * Twelve runtime agents — 6 Coded (Python SDK; two run as LangGraph
+ * StateGraphs) and 6 Agent Builder (BYO Claude). Two coded agents execute
+ * in-case on the Maestro canvas (forensic at Vector Isolation, audit-ledger at
+ * the master's Closed stage); the janitor runs on an hourly Orchestrator
+ * trigger, outside any caseplan.
+ */
 export const AGENTS: Agent[] = [
   { id: 'claim-flow-anomaly-detector', displayName: 'Claim Flow Anomaly Detector', kind: 'Coded', llm: 'UiPath', role: 'Classifies anomaly score on claim telemetry' },
   { id: 'multi-customer-pattern-detector', displayName: 'Multi-Customer Pattern Detector', kind: 'Coded', llm: 'UiPath', role: 'Cross-provider correlation; emits cascade signal' },
-  { id: 'forensic-self-exam-agent', displayName: 'Forensic Self-Exam Agent', kind: 'Coded', llm: 'UiPath', role: 'Coordinates other agents; routing' },
+  { id: 'forensic-self-exam-agent-langgraph', displayName: 'Forensic Self-Exam Agent', kind: 'Coded', llm: 'UiPath · LangGraph', role: 'In-case at Vector Isolation; clears ClearFlow, routes to BAA boundary' },
+  { id: 'audit-ledger-writer-langgraph', displayName: 'Audit-Ledger Writer', kind: 'Coded', llm: 'UiPath · LangGraph', role: 'In-case at Closed stage; writes 6 immutable AuditRecord ledger rows (idempotent)' },
+  { id: 'case-job-janitor', displayName: 'Case-Job Janitor', kind: 'Coded', llm: 'UiPath', role: 'Hourly Orchestrator trigger; ages off stale case jobs' },
+  { id: 'forensic-self-exam-agent', displayName: 'Forensic Self-Exam Agent (legacy)', kind: 'Coded', llm: 'UiPath', role: 'Original Python-SDK forensic agent, superseded by the LangGraph build' },
   { id: 'vector-hypothesis-agent', displayName: 'Vector Hypothesis Agent', kind: 'Builder', llm: 'Claude', role: 'Determines attack vector (ClearFlow vs Nimbus)' },
-  { id: 'baa-boundary-reasoner', displayName: 'BAA Boundary Reasoner', kind: 'Builder', llm: 'Claude + Context Grounding', role: 'Analyzes BAA terms; cross-BAA conflicts' },
+  { id: 'baa-boundary-reasoner', displayName: 'BAA Boundary Reasoner', kind: 'Builder', llm: 'Claude + Context Grounding', role: 'Analyzes BAA terms; cross-BAA conflicts (BAA-corpus grounding)' },
   { id: 'fiduciary-conflict-detector', displayName: 'Fiduciary Conflict Detector', kind: 'Builder', llm: 'Claude', role: 'Multi-party obligation conflicts; HITL payload' },
   { id: 'negligent-monitoring-risk-agent', displayName: 'Negligent Monitoring Risk Agent', kind: 'Builder', llm: 'Claude', role: 'Co-defendant exposure for Reversal 5' },
+  { id: 'assess-claim-disruption', displayName: 'Assess Claim Disruption', kind: 'Builder', llm: 'Claude', role: 'Scores business-continuity impact of claim-flow disruption' },
+  { id: 'classify-obligation', displayName: 'Classify Obligation', kind: 'Builder', llm: 'Claude', role: 'Classifies each spawned obligation grandchild by type' },
 ];
 
 export interface OverrideAction {

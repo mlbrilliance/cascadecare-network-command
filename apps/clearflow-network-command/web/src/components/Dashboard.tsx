@@ -20,6 +20,7 @@ import { ReversalTimeline } from './ReversalTimeline';
 import { AgentRoster } from './AgentRoster';
 import { OperatorConsole } from './OperatorConsole';
 import { HitlGates } from './HitlGates';
+import { AuditLedger } from './AuditLedger';
 
 interface DashboardProps {
   onLogout: () => void;
@@ -93,6 +94,11 @@ export function Dashboard({ onLogout }: DashboardProps) {
           {/* Reversal timeline */}
           <section id="reversals" className="scroll-mt-24">
             <ReversalTimeline currentReversal={crisis.reversalN} />
+          </section>
+
+          {/* Immutable AuditRecord compliance ledger (Data Fabric, live) */}
+          <section id="ledger" className="scroll-mt-24">
+            <AuditLedger />
           </section>
 
           {/* Operator console + HITL + agents */}
