@@ -214,7 +214,7 @@ def build_body() -> str:
     b.append(text(71, 146, "1", 16, ACCENT["orange"], 800, "middle"))
     b.append(text(94, 146, "ORCHESTRATION — the Maestro Case canvas IS the orchestrator",
                   16.5, TEXT, 700, "start", 0.3))
-    b.append(text(1620, 146, "3 nested case levels · 7+4+3 stages · native case-management task",
+    b.append(text(1620, 146, "3 nested case levels · 7+4+3 stages · 5 reversals · native case-management task",
                   12.5, MUTED, 500, "end"))
     b.append(rail(94, 1610, 160, "orange", 0.32))
 
@@ -254,7 +254,8 @@ def build_body() -> str:
                   12, ACCENT["gold"], 600, "middle"))
 
     # agent chips under stages
-    b.append(text(70, 338, 'agents run as type:"agent" tasks inside stages', 11, MUTED, 500))
+    b.append(text(70, 338, 'agents run inside stages as type:"agent" tasks  ·  '
+                           '12 agents = 6 Agent Builder + 6 Coded (2 LangGraph)', 11, MUTED, 500))
     chips = [
         (centers[0], 342, "Claim Flow Anomaly Detector", "cyan", False),
         (centers[1], 342, "Multi-Customer Pattern Detector", "cyan", False),
@@ -263,9 +264,11 @@ def build_body() -> str:
         (centers[3], 342, "BAA Boundary Reasoner", "violet", False),
         (centers[4], 342, "Fiduciary Conflict Detector", "violet", False),
         (centers[5], 342, "Negligent Monitoring Risk", "violet", False),
+        (centers[6], 342, "Audit Ledger · LangGraph", "cyan", True),
     ]
     cw = 196
-    droppers_at = {0: "cyan", 1: "cyan", 2: "cyan", 3: "violet", 4: "violet", 5: "violet"}
+    droppers_at = {0: "cyan", 1: "cyan", 2: "cyan", 3: "violet", 4: "violet", 5: "violet",
+                   6: "cyan"}
     for idx, key in droppers_at.items():
         b.append(dropper(centers[idx], sy + sh + 1, 341, key, 0.55))
     for cx, cy, label, key, spark in chips:
@@ -277,8 +280,9 @@ def build_body() -> str:
             b.append(text(cx + 86, cy + 18, "⚡", 13, ACCENT["gold"], 700, "middle"))
     # HITL gate marker under Fiduciary Conflict Detector
     b.append(pill(centers[4] - 54, 372, 108, 22, "🔒 HITL gate", "gold", 11.5))
-    # closed -> completed text
-    b.append(text(centers[6], 359, "✓ all instances Completed", 11.5, ACCENT["green"], 700, "middle"))
+    # closed -> in-case audit-ledger write, then completed text
+    b.append(text(centers[6], 392, "writes immutable AuditRecord ledger", 10, MUTED, 500, "middle"))
+    b.append(text(centers[6], 408, "✓ all instances Completed", 11.5, ACCENT["green"], 700, "middle"))
 
     # ---- nested case cards ----
     # stakeholder-parent (stacked ×6)
@@ -351,7 +355,7 @@ def build_body() -> str:
     b.append(glass(60, 704, 22, 22, 6, "green", glow=0.5, sheen=False, bw=1.2))
     b.append(text(71, 722, "2", 16, ACCENT["green"], 800, "middle"))
     b.append(text(94, 722, "DATA, INTEGRATION & SURFACES", 16.5, TEXT, 700, "start", 0.3))
-    b.append(text(1620, 722, "13 UiPath product surfaces · 37 runtime artifacts",
+    b.append(text(1620, 722, "13 UiPath product surfaces · 38 runtime artifacts",
                   12.5, MUTED, 500, "end"))
     b.append(rail(94, 1610, 736, "green", 0.3))
 
@@ -370,7 +374,7 @@ def build_body() -> str:
         (70, "Maestro BPMN × 2", "ideal-response + closure", "orange"),
         (459, "Maestro Flow", "demo driver", "orange"),
         (848, "Action Center", "2 HITL gate apps", "gold"),
-        (1237, "Coded Web App", "React + Vite dashboard", "cyan"),
+        (1237, "Coded Web App", "dashboard + Compliance Ledger", "cyan"),
     ]
     for x, title, sub, key in rowb:
         b.append(glass(x, 848, 373, 66, 11, key, glow=0.3, bw=1.3))
@@ -391,7 +395,7 @@ def build_body() -> str:
     # ---- footer: Claude Code + legend ----
     b.append(glass(40, 1046, 560, 64, 12, "violet", glow=0.34, circuit=True, bw=1.4))
     b.append(text(62, 1073, "Built end-to-end with Claude Code", 14, "#D9CCFF", 800))
-    b.append(text(62, 1094, "37 UiPath artifacts · 683 offline tests (TDD) · IP-safe fictional cast",
+    b.append(text(62, 1094, "38 UiPath artifacts · 768 offline tests (TDD) · IP-safe fictional cast",
                   11.5, MUTED, 500))
 
     b.append(glass(628, 1046, 1012, 64, 12, "neutral", glow=0.18, bw=1.2))
