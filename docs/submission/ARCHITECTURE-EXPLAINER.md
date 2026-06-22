@@ -1,192 +1,211 @@
-# CascadeCare — The Architecture Diagram, Explained Simply
+# CascadeCare — The Architecture Diagram, Explained
 
-A plain-language companion to [`docs/images/architecture.png`](../images/architecture.png).
-Read it to learn the picture; use the **"Say it out loud"** script when you present it.
-No jargon is used without a plain definition (see the glossary at the end).
+A companion to [`docs/images/architecture.png`](../images/architecture.png). It tells you **what the
+diagram is**, then **what it does** as a flow story (Day 1 → Day 90), then walks the picture panel by
+panel in the real UiPath terminology — and ends with a say-it-out-loud script and a glossary. New
+terms are defined inline and collected at the end.
 
 ---
 
 ## In one breath
 
-> One smart "case file" runs an entire healthcare-payment crisis from start to finish.
-> It moves through stages, calls AI helpers at each step, splits into smaller cases as the
-> crisis spreads, pauses for a human at the big decisions, and keeps a permanent record —
-> all inside UiPath, with nothing bolted on from outside.
+> One **UiPath Maestro Case** orchestrates an entire healthcare-payment crisis end to end. The
+> master case (`clearflow-master-crisis`) walks itself through seven stages over a simulated 90 days,
+> calls **12 agents** as `type:"agent"` tasks inside those stages, **spawns** child and grandchild
+> cases via the native `case-management` task as the crisis spreads, pauses at two **Action Center**
+> human gates, and on closure writes an immutable **AuditRecord** ledger to **Data Fabric** — every
+> LLM call governed by the **UiPath LLM Gateway + Trust Layer**, with no external orchestrator.
 
-That's the whole picture. The rest of this doc just slows it down.
+## What the diagram is
 
----
+It's a schematic of a **running** UiPath solution, in two numbered sections: **① Orchestration** (the
+Maestro Case at runtime — stages, agents, nesting, human gates, Trust Layer) and **② Data,
+Integration & Surfaces** (the platform foundation it runs on), plus a **vertical bridge** to UiPath's
+own healthcare agents and a footer. The architectural claim it makes: **the Maestro Case canvas *is*
+the orchestrator** — there is no Python/LangGraph harness driving it from outside.
 
-## The big idea (no jargon)
+## The big idea
 
-UiPath sells AI "agents" — small programs that each do one healthcare job well (read a
-medical record, fight a denied claim, approve a treatment). They're good, but each works
-**alone, for one hospital at a time**.
-
-Now imagine a real disaster: a cyberattack freezes payments across **six hospital systems
-at once**. Suddenly you don't need one clever helper — you need a **conductor** who decides
-*which* helper runs, *for which* hospital, *in what order*, and *under which legal rule* —
-and who keeps everyone in sync for 90 days while the situation keeps changing.
-
-**CascadeCare is that conductor.** The diagram is a picture of the conductor at work.
-
-A helpful way to hold it in your head: *the AI agents are the musicians; the UiPath Maestro
-Case is the conductor; CascadeCare is the conductor leading the orchestra through the hardest
-piece in healthcare.*
+UiPath ships healthcare **agents** — Medical Records Summarization, Claim Denial Prevention, Prior
+Authorization — but each runs **one job, one provider, in isolation**. A payment-network cyberattack
+that freezes claims across **six hospital systems at once** doesn't need a better soloist; it needs a
+**conductor** that decides which agent runs, for which provider, in what order, under which legal
+constraint. CascadeCare is that conductor — and the conductor is a Maestro Case.
 
 ---
 
-## A guided tour of the picture (top to bottom)
+## The flow, as a story (Day 1 → Day 90)
 
-The diagram has **two big numbered boxes**. Box ① is the conductor doing its job. Box ② is the
-supporting cast underneath. Read it top to bottom, left to right.
+Read the diagram left to right and this is the story it tells. The protagonist is **ClearFlow Health
+Network** (a fictional payment intermediary) sitting between six hospitals and four payers.
 
-### The title strip (very top)
-The name, a one-line description, and a tag that says this is an **AgentHack 2026, Track 1**
-entry. "Live on Automation Cloud" means it's really running on UiPath's cloud, not a mock-up.
+1. **Day 1 — Initial Response.** A provider (Northstar Regional Health) goes dark and claim volume
+   collapses. An **Integration Service API Workflow** emits the event; a **Maestro Trigger** routes it
+   to the **Claim Flow Anomaly Detector** (Coded Agent · Python SDK), which flags the anomaly. The
+   master case opens.
 
-### Box ① — "Orchestration" (the conductor at work)
+2. **Reversal 1 (Day 1) → Multi-Customer Investigation.** A second provider shows the same signature.
+   The **Multi-Customer Pattern Detector** (Coded) correlates across providers — this is **network-
+   wide, not isolated** — and the case advances to Multi-Customer Investigation.
 
-**The row of seven boxes** is the master case moving through **seven stages**, left to right,
-over a simulated **90 days**: *Initial Response → Multi-Customer Investigation → Vector
-Isolation → Regulatory Response → Fiduciary Review → Litigation Defense → Closed.* Think of
-them as chapters in the story of the crisis. The **arrows between them** mean the case moves
-itself forward — nobody is clicking "next."
+3. **Reversal 2 (Day 5) → Vector Isolation.** The vendor (Nimbus) is implicated as the attack vector.
+   The **Forensic Self-Exam Agent** (Coded · **LangGraph `StateGraph`**) examines ClearFlow's *own*
+   infrastructure — is the intermediary itself compromised? — and returns `vector_status="cleared"`,
+   which satisfies the stage exit (`=js:vars.var_clearflow_vector_status === 'cleared'`). The **Vector
+   Hypothesis Agent** (Agent Builder) forms the breach hypothesis. The case clears Vector Isolation.
 
-**The small orange tags (R1…R5)** above the boxes are the **five reversals** — the five moments
-where new bad news changes the plan. The crisis isn't a straight line; it keeps surprising you.
+4. **Reversal 3 (Day 30) → Regulatory Response — the hero moment.** A state insurance regulator
+   (TN DOI) issues a subpoena. Every provider now needs a **lawful, individualized** answer, so the
+   master **fans out 6 `clearflow-stakeholder-parent` cases at once** via the native
+   `case-management` task — one per provider. Inside each parent, the **BAA Boundary Reasoner** (Agent
+   Builder, grounded on the live `BAA-corpus` via **Context Grounding**) decides what may lawfully be
+   disclosed under *that* provider's Business Associate Agreement, and **Assess Claim Disruption**
+   sizes the liquidity hit. Each parent then spawns a **`clearflow-obligation-grandchild`**, where
+   **Classify Obligation** triages each legal obligation. **Thirteen instances** now run — 1 master +
+   6 parents + 6 grandchildren — **three levels of native nesting.** *Six providers, six lawful
+   answers, one subpoena.*
 
-**The dashed curved arrow** (top) is the cleverest part: at Reversal 5 the case can **go back and
-re-open an earlier chapter** it had already finished. A normal workflow can't walk backwards;
-a case can.
+5. **Reversal 4 (Day 45) → Fiduciary Review — the human gate.** A payer (Apex) demands action that
+   conflicts with a provider's BAA *and* ClearFlow's own duties. The **Fiduciary Conflict Detector**
+   (Agent Builder) surfaces the three-way conflict and recommends "route to neutral review" — but a
+   machine shouldn't settle a tri-party fiduciary conflict alone, so the case **stops at an Action
+   Center HITL gate.** A human rules; the ruling is recorded with *who / why / when* and **read
+   downstream** to set the litigation posture. *Both Approve and Deny advance — the decision is data,
+   not a rewind.*
 
-**The little colored pills under each box** are the **AI agents** — the thinking helpers that
-run *inside* that stage. For example, under "Vector Isolation" sit the *Forensic Self-Exam*
-agent and the *Vector Hypothesis* agent. The caption says it plainly: **12 agents total — 6
-low-code + 6 coded, 2 of them built with LangGraph.** A ⚡ bolt marks the LangGraph ones.
+6. **Reversal 5 (Day 90) → Litigation Defense + return-to-origin.** ClearFlow is named a
+   co-defendant. The **Negligent Monitoring Risk** agent (Agent Builder) assesses exposure. Because
+   new evidence reopens the question of who-knew-what, the case takes the **`return-to-origin` exit
+   back to Multi-Customer Investigation** (interrupting entry `=js:vars.var_reversal_number >= 5`),
+   re-running *only* the cross-provider correlation while settled work is skipped (`shouldRunOnlyOnce`).
+   This is the dashed arc at the top of the diagram — the thing a linear process can't do.
 
-**The stacked boxes lower-left** show the case **splitting into smaller cases**. At Reversal 3
-(Day 30) a subpoena makes the master spawn **6 "stakeholder" cases** (one per hospital), and
-each of those spawns **1 "obligation" case** — so you end up with **13 live cases at once,
-nested 3 levels deep.** That fan-out is the signature move; the diagram even labels "13 live
-case instances."
+7. **Closed.** Every obligation is discharged and every stakeholder resolved, so the master closes. On
+   closure the **Audit Ledger Writer** (Coded · **LangGraph**) fires **in-case**, takes `case_ref`
+   from `metadata.ExternalId` (the readable `CFCS-…` id), and writes **6 immutable, idempotent
+   `AuditRecord` rows** to **Data Fabric** — the survey-grade compliance ledger, surfaced live on the
+   Coded Web App's **Compliance Ledger** panel. **All 13 instances: Completed.**
 
-**The two gold padlock pills** ("HITL gate" and "file / withdraw") are the **two points where the
-case stops and waits for a human** to make a high-stakes legal call. The machine does the work;
-a person makes the judgment.
-
-**The gold bar across the bottom of Box ①** is the **Trust Layer**: every single AI call passes
-through a privacy checkpoint (no patient data leaks). It sits under everything on purpose — it
-governs all of it.
-
-**The "Closed" box (far right, green)** is where the case ends — and notice the last agent,
-*Audit Ledger · LangGraph*. The moment the case closes, that agent **writes a permanent,
-tamper-evident record** of what happened. "✓ all instances Completed" means every one of the
-13 cases finished cleanly.
-
-### Box ② — "Data, Integration & Surfaces" (the supporting cast)
-
-These are the UiPath pieces the conductor relies on:
-
-- **Data Fabric** — the database of (made-up) hospitals, insurers, and contracts.
-- **Context Grounding** — search indexes the agents read so their answers are grounded in real
-  documents, not guesses.
-- **Integration Service** — the connectors to the outside world (19 of them) that stand in for
-  hospitals, insurers, regulators, and three of UiPath's own healthcare products.
-- **Maestro BPMN / Maestro Flow** — the process models and the "demo driver" that plays the
-  crisis like a script.
-- **Action Center** — where the two human approvals actually appear for a person to act on.
-- **Coded Web App** — the live dashboard, including a **Compliance Ledger** that shows the
-  permanent record from the Closed stage.
-
-The line on the right — "13 UiPath product surfaces · 38 runtime artifacts" — is just the
-headline count of how many different UiPath pieces are used.
-
-### The "Vertical bridge" strip
-This says CascadeCare doesn't replace UiPath's healthcare agents — it **conducts them**. Each
-hospital case can call UiPath's real ViVE-2026 products (Medical Records Summarization, Claim
-Denial Prevention, Prior Authorization). So it's adoptable tomorrow.
-
-### The bottom strip
-On the left: **"Built end-to-end with Claude Code"** — an AI coding agent wrote the entire
-thing, test-first. On the right: the **color key** (legend) for the whole diagram.
+Throughout, every LLM call passed through the **LLM Gateway + Trust Layer** (PHI/PII guardrails);
+structured data came from **Data Fabric** + **Context Grounding**; external parties were **Integration
+Service API Workflows**; and each stakeholder case could invoke UiPath's **ViVE healthcare agents** via
+the vertical bridge.
 
 ---
 
-## What the colors mean (the legend, in plain words)
+## A guided tour of the picture (what each panel is)
 
-| Color | Means |
+### Section ① — Orchestration (the Maestro Case canvas)
+- **The master pipeline** = `clearflow-master-crisis` and its **seven stages**: Initial Response →
+  Multi-Customer Investigation → Vector Isolation → Regulatory Response → Fiduciary Review →
+  Litigation Defense → Closed. Arrows are **stage exits**; the case advances itself via exit
+  conditions, not clicks.
+- **The R1–R5 pills** = the **five reversals** (the scripted goal changes above).
+- **The dashed arc** = the **`return-to-origin` exit** that re-opens Multi-Customer Investigation at R5.
+- **The agent chips under each stage** = agents wired as **`type:"agent"` tasks** (named per stage in
+  the flow story above). Caption: **12 agents = 6 Agent Builder (Claude Sonnet 4.6 BYO-LLM) + 6 Coded
+  (Python SDK), 2 LangGraph `StateGraph`s** (⚡) via `uipath-langchain`.
+- **The nested cards** = the 3-level hierarchy via the native **`case-management` task**:
+  `clearflow-stakeholder-parent` ×6 (stages: Stakeholder Onboarding → Impact Assessment → Obligation
+  Determination → Resolved) and `clearflow-obligation-grandchild` ×6 (Obligation Intake → Response →
+  Discharged). The **"13 live case instances"** callout is the fan-out total.
+- **The two gold pills** = **Action Center HITL gates** (Fiduciary Review ruling; grandchild
+  file/withdraw).
+- **The amber bar** = **UiPath LLM Gateway + Trust Layer** — PHI/PII guardrails on every LLM call.
+- **The green "Closed" stage** = closure + the **Audit Ledger Writer** writing the `AuditRecord` ledger;
+  **"✓ all instances Completed."**
+
+### Section ② — Data, Integration & Surfaces (the foundation)
+- **Data Fabric** — 9 entities, 4,320 telemetry rows (structured source-of-truth seed).
+- **Context Grounding** — 2 indexes; the live `BAA-corpus` grounds the BAA Boundary Reasoner.
+- **Integration Service** — **19 API Workflows** (CNCF Serverless): external-party mocks + 3 ViVE bridges.
+- **Maestro BPMN × 2** (ideal-response playbook + closure) · **Maestro Flow** (demo driver).
+- **Action Center** (2 HITL gate apps) · **Coded Web App** (dashboard + live **Compliance Ledger**).
+- Right-hand headline: **13 UiPath product surfaces · 38 runtime artifacts.**
+
+### The Vertical bridge
+Each `clearflow-stakeholder-parent` invokes the **UiPath ViVE-2026** solutions (Medical Records
+Summarization · Claim Denial Prevention · Prior Authorization). In the demo these are API-workflow
+mocks; swapping in the live solutions is a connector change.
+
+### The footer
+**"Built end-to-end with Claude Code"** (38 artifacts · 768 offline tests, test-first) + the legend.
+
+---
+
+## The legend (color key), in UiPath terms
+
+| Color | Element |
 |---|---|
-| **Orange** | A Maestro Case stage (a chapter of the case) |
-| **Violet** | A low-code "Agent Builder" agent (runs on Claude Sonnet 4.6) |
-| **Cyan** | A coded agent (written in Python); ⚡ = built with LangGraph |
-| **Green** | A platform service (a built-in UiPath capability) |
-| **Gold** | A human gate (the case waits for a person) |
-
----
+| **Orange** | Maestro Case stage (a stage in a `caseplan.json`) |
+| **Violet** | Agent Builder agent (low-code, Claude Sonnet 4.6 BYO-LLM) |
+| **Cyan** | Coded Agent (Python SDK); ⚡ = LangGraph `StateGraph` via `uipath-langchain` |
+| **Green** | Platform service (a first-party UiPath capability) |
+| **Gold** | Human gate (Action Center HITL task — the case waits) |
 
 ## The numbers, and what each one means
 
-| Number | Plain meaning |
+| Number | Meaning |
 |---|---|
-| **3 case levels** | The case nests three deep: master → hospital → obligation. |
-| **5 reversals** | Five times the plan changes mid-crisis. |
-| **12 agents** | 12 AI helpers (6 low-code + 6 coded; 2 use LangGraph). |
-| **13 live instances** | At the peak, 13 cases run at the same time. |
-| **2 human gates** | Two points where a person must decide. |
-| **13 product surfaces** | 13 different UiPath products are used together. |
-| **38 artifacts** | 38 built pieces ship in the solution. |
-| **768 tests** | 768 automated checks, all written before the code. |
+| **3 case levels** | Native `case-management` nesting: master → stakeholder-parent → obligation-grandchild. |
+| **5 reversals** | Five scripted goal changes (R1–R5), incl. a `return-to-origin` re-entry. |
+| **12 agents** | 6 Agent Builder + 6 Coded; 2 are LangGraph `StateGraph`s. |
+| **13 live instances** | 1 master + 6 parents + 6 grandchildren at fan-out. |
+| **2 HITL gates** | Action Center tasks: the fiduciary ruling + the obligation file/withdraw. |
+| **13 product surfaces** | 13 distinct UiPath products composed together. |
+| **38 artifacts** | 38 runtime artifacts in the `clearflow-solution` `.uipx`. |
+| **768 tests** | Offline structure/contract tests, authored test-first (TDD). |
 
 ---
 
 ## Say it out loud (a ~60-second script)
 
-> "This is one UiPath Maestro Case running a healthcare-payment crisis end to end. Across the
-> top, the master case moves itself through seven stages over ninety days, and these orange
-> tags are five reversals — five times the situation changes and the case re-routes itself,
-> even reopening an earlier step.
+> "This is one UiPath Maestro Case — `clearflow-master-crisis` — orchestrating a healthcare-payment
+> crisis end to end, and the Maestro Case canvas *is* the orchestrator; there's no external harness.
+> The master walks itself through seven stages, and these R1-to-R5 pills are five reversals that
+> change the goal. On Day 1 the Claim Flow Anomaly Detector flags a provider going dark; the
+> Multi-Customer Pattern Detector correlates it across the network; the Forensic Self-Exam agent — a
+> LangGraph agent — clears ClearFlow's own infrastructure.
 >
-> Under each stage sit the AI agents that do the reasoning — twelve in all, six low-code and
-> six coded, two of them built with LangGraph. Every one of their calls passes through the
-> Trust Layer, the gold bar — so patient data never leaves UiPath's privacy boundary.
+> Then the hero moment: at Reversal 3 a regulator subpoena makes the master spawn six
+> stakeholder-parent cases at once via the native case-management task, each spawning an obligation
+> grandchild — thirteen live instances, three levels deep — and the BAA Boundary Reasoner grounds
+> each provider's lawful answer in its own agreement via Context Grounding. At Reversal 4 the case
+> stops at an Action Center human gate for a tri-party fiduciary ruling that's read downstream. At
+> Reversal 5 it takes a return-to-origin exit back to re-investigate.
 >
-> Down here is the signature move: at Reversal 3, a subpoena makes the master fan out into six
-> hospital cases at once, each spawning its own obligation case — thirteen live cases, three
-> levels deep. Twice, the case stops for a human to make a legal ruling.
->
-> When it closes, a LangGraph agent writes a permanent, tamper-evident audit record. Below,
-> the data, integrations, and surfaces it all runs on — thirteen UiPath products, thirty-eight
-> artifacts. And it plugs straight into UiPath's own healthcare agents. The whole thing was
-> built end to end with Claude Code."
+> Every LLM call goes through the LLM Gateway and Trust Layer. When the case closes, the Audit Ledger
+> Writer — the second LangGraph agent — writes six immutable AuditRecord rows to Data Fabric, shown
+> live on the Compliance Ledger. Thirteen UiPath surfaces, thirty-eight artifacts, all built with
+> Claude Code."
 
 ---
 
-## Mini-glossary (plain definitions)
+## Glossary (the jargon used above)
 
-- **Maestro Case** — UiPath's tool for long-running "case files" that can branch, pause, and
-  change course. Here, the case file *is* the orchestrator.
-- **Agent** — a small AI program that does one reasoning job (e.g. spot an anomaly, read a
-  contract). *Low-code* ones are built in UiPath's visual Agent Builder; *coded* ones are
-  written in Python.
-- **LangGraph** — a way to build a coded agent as a small "graph" of steps. Two of our agents
-  use it, deployed through `uipath-langchain`.
-- **Trust Layer** — UiPath's privacy/safety checkpoint that inspects every AI call for patient
-  or personal data.
-- **Data Fabric** — UiPath's built-in database for structured business data.
-- **Context Grounding** — UiPath's document search that lets an agent ground its answer in real
-  source text instead of guessing.
-- **HITL gate** — "Human-in-the-loop." A point where the case pauses for a person to approve or
-  decide.
-- **`case-management` task** — the native Maestro feature that lets one case spawn another; this
-  is how the 3-level nesting happens, with no outside orchestrator.
-- **BAA** — Business Associate Agreement; the contract that says what a partner may do with
-  health data. The legal agent grounds each answer in the right BAA.
-- **Reversal** — a scripted moment where new information changes the master goal and the case
-  re-routes.
-- **Fan-out** — one case spawning many at once (here, 6 hospital cases from one subpoena).
+- **Maestro Case** — UiPath's long-running case-management runtime; here, three `caseplan.json` files
+  (V20) wired by the native `case-management` task. The case canvas is the orchestrator.
+- **`type:"agent"` task** — a Maestro Case stage task that invokes an agent; how agents plug into stages.
+- **`case-management` task** — the native task type that lets one case spawn another → the 3-level
+  nesting and the Reversal-3 fan-out, with no external spawner.
+- **Agent Builder agent** — a low-code UiPath agent (Claude Sonnet 4.6 via BYO-LLM through the LLM Gateway).
+- **Coded Agent** — a Python-SDK agent; two of ours are **LangGraph `StateGraph`** agents deployed via
+  **`uipath-langchain`**.
+- **LLM Gateway + Trust Layer** — the single path every LLM call takes; the Trust Layer applies
+  PHI/PII guardrails uniformly.
+- **Data Fabric** — UiPath's structured-data store; also where the `AuditRecord` ledger entity lives.
+- **Context Grounding** — retrieval over indexed corpora (e.g. `BAA-corpus`) so agents cite source text.
+- **Action Center / HITL gate** — where a human-in-the-loop task pauses the case for an approval/ruling.
+- **Integration Service API Workflow** — a CNCF-Serverless workflow standing in for an external party
+  (or bridging a ViVE solution).
+- **Reversal** — a scripted event (R1–R5) that changes the master goal and re-routes the case.
+- **`return-to-origin` exit** — a Maestro Case exit type that re-enters an earlier stage (used at R5).
+- **AuditRecord** — the immutable Data Fabric entity the Audit Ledger Writer populates at Closed.
+- **BAA** — Business Associate Agreement; the health-data contract the BAA Boundary Reasoner grounds in.
+- **ViVE-2026 solutions** — UiPath's healthcare agents (Medical Records Summarization, Claim Denial
+  Prevention, Prior Authorization) each stakeholder case invokes via the vertical bridge.
 
 ---
 
-*Source of truth for the narrative: [`STORY.md`](STORY.md). If anything here drifts from
-STORY.md, STORY.md wins. The diagram is a schematic — not live-tenant footage.*
+*Source of truth for the narrative: [`STORY.md`](STORY.md). The diagram is a schematic — not
+live-tenant footage.*
