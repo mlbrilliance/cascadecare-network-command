@@ -19,6 +19,14 @@ import { STAKEHOLDERS } from './narrative';
 /** Tenant-scoped Data Fabric entity that holds the immutable audit ledger. */
 export const AUDIT_ENTITY_NAME = 'AuditRecord';
 
+/**
+ * Known entity UUID of the AuditRecord entity (tenant-scoped, FolderId
+ * all-zeros). Reading records directly by this id needs only the
+ * `DataFabric.Data.Read` user scope and skips the entity-list call — used as a
+ * fallback when resolve-by-name (`entities.getAll()`) is unavailable.
+ */
+export const AUDIT_ENTITY_ID = '252cd5cc-f66c-f111-8fcb-000d3ab36606';
+
 /** A normalised ledger row, decoded from a raw Data Fabric EntityRecord. */
 export interface AuditRow {
   /** Data Fabric record UUID (the `Id` system field) — stable React key. */

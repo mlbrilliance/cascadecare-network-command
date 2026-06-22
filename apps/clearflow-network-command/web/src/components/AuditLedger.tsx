@@ -10,6 +10,7 @@ import { REFRESH_INTERVAL_MS } from '../config';
 import { formatTime } from '../caseUtils';
 import { Panel, PanelError, PanelLoading } from './Panel';
 import {
+  AUDIT_ENTITY_ID,
   AUDIT_ENTITY_NAME,
   contentHash,
   dispositionChipClasses,
@@ -20,33 +21,60 @@ import {
 } from '../auditLedger';
 import type { AuditRow, LedgerRun } from '../auditLedger';
 
-/**
- * Page through every record of the tenant-scoped AuditRecord entity. The entity
- * lives at the tenant level (FolderId all-zeros), so NO folderKey is passed —
- * mirroring the audit-ledger-writer agent's read path. The page loop keeps the
- * read correct as runs accumulate (six rows per run).
- */
-async function fetchAuditRows(entities: Entities): Promise<AuditRow[]> {
-  const all = await entities.getAll();
-  const entity = all.find((e: EntityGetResponse) => e.name === AUDIT_ENTITY_NAME);
-  if (!entity) {
-    throw new Error(
-      `Data Fabric entity "${AUDIT_ENTITY_NAME}" not found in this tenant — no ledger to show yet.`,
-    );
-  }
+/** A function that returns one page of EntityRecords given an optional cursor. */
+type PageFetcher = (cursor?: PaginatedResponse<EntityRecord>['nextCursor']) => Promise<PaginatedResponse<EntityRecord>>;
 
+/** Cursor-loop a paginated record source into a flat array (6 rows per run). */
+async function pageAll(fetchPage: PageFetcher): Promise<EntityRecord[]> {
   const records: EntityRecord[] = [];
   let cursor: PaginatedResponse<EntityRecord>['nextCursor'] | undefined;
   for (;;) {
-    const page = (await entity.getAllRecords({
-      pageSize: 200,
-      ...(cursor ? { cursor } : {}),
-    })) as PaginatedResponse<EntityRecord>;
+    const page = await fetchPage(cursor);
     records.push(...page.items);
     if (!page.hasNextPage || !page.nextCursor) break;
     cursor = page.nextCursor;
   }
+  return records;
+}
 
+/**
+ * Read every record of the tenant-scoped AuditRecord entity. The entity lives at
+ * the tenant level (FolderId all-zeros), so NO folderKey is passed — mirroring
+ * the audit-ledger-writer agent's read path.
+ *
+ * PRIMARY path reads records DIRECTLY by the known entity id
+ * (`entities.getAllRecords(AUDIT_ENTITY_ID, …)`) — this needs only the granted
+ * `DataFabric.Data.Read` user scope and AVOIDS the list-entities call
+ * (`entities.getAll()`), which can require a schema/list scope the app does not
+ * have. The by-name resolution is kept ONLY as a defensive fallback for the
+ * unlikely case the entity id ever changes (id read 404s) yet records remain
+ * readable by name. A genuine missing-scope failure on the id read propagates to
+ * the panel as an error rather than being masked.
+ */
+async function fetchAuditRows(entities: Entities): Promise<AuditRow[]> {
+  const records = await pageAll((cursor) =>
+    entities.getAllRecords(AUDIT_ENTITY_ID, {
+      pageSize: 200,
+      ...(cursor ? { cursor } : {}),
+    }) as Promise<PaginatedResponse<EntityRecord>>,
+  ).catch(async (idErr) => {
+    // The known id failed (e.g. entity recreated with a new id). Try resolving
+    // the entity by name as a last resort; if that ALSO fails, surface the
+    // original id-read error so a real scope problem isn't hidden.
+    try {
+      const all = await entities.getAll();
+      const entity = all.find((e: EntityGetResponse) => e.name === AUDIT_ENTITY_NAME);
+      if (!entity) throw idErr;
+      return pageAll((cursor) =>
+        entity.getAllRecords({
+          pageSize: 200,
+          ...(cursor ? { cursor } : {}),
+        }) as Promise<PaginatedResponse<EntityRecord>>,
+      );
+    } catch {
+      throw idErr;
+    }
+  });
   return records.map(toAuditRow);
 }
 
@@ -162,11 +190,14 @@ function RunSelector({
  * Compliance Ledger — live view of the immutable AuditRecord Data Fabric entity.
  *
  * Reads every ledger row through the browser SDK's Entities service (same auth
- * + token the rest of the dashboard uses; requires the DataService.Data.Read +
- * DataService.Schema.Read scopes in VITE_UIPATH_SCOPE). Rows are grouped by case
- * reference into runs; the most-recent run shows by default and a selector
- * exposes prior runs. A fresh master run's six rows appear automatically — no
- * code change — because grouping/ordering is entirely data-driven.
+ * + token the rest of the dashboard uses). The read needs the Data Fabric user
+ * scope `DataFabric.Data.Read` (resource `DataFabricOpenApi`) — granted on the
+ * external-app registration and requested in VITE_UIPATH_SCOPE. NOTE: the tenant
+ * exposes Data Fabric ONLY as `DataFabric.Data.Read`; there is no `DataService.*`
+ * scope here, so requesting `DataService.Data.Read` fails sign-in with
+ * invalid_scope. Rows are grouped by case reference into runs; the most-recent
+ * run shows by default and a selector exposes prior runs. A fresh master run's
+ * six rows appear automatically — no code change — because grouping is data-driven.
  */
 export function AuditLedger() {
   const { sdk, isAuthenticated } = useAuth();
