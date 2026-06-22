@@ -50,7 +50,7 @@ offline `uip solution pack` probes). Diagnoses were empirical, not guessed — e
 | 35 | `clearflow-ideal-incident-response` | Maestro **BPMN** | Claude Code + `uipath-maestro-bpmn` | [bpmn](docs/coding-agents/bpmn.md) |
 | 36 | `case-closed-notification` | Maestro BPMN | Claude Code + `uipath-maestro-bpmn` | [bpmn](docs/coding-agents/bpmn.md) |
 | 37 | `clearflow-demo-driver` | Maestro **Flow** (Demo Driver) | Claude Code + `uipath-maestro-flow` | [flow](docs/coding-agents/flow.md) |
-| 38 | `clearflow-network-command` | UiPath **Apps** (Coded Web App dashboard) | Claude Code + `uipath-coded-apps` | [apps](docs/coding-agents/apps.md) |
+| 38 | `clearflow-network-command` (incl. a live **Compliance Ledger** panel — reads the immutable `AuditRecord` Data Fabric entity per run, integrity-hash badges + prior-run selector) | UiPath **Apps** (Coded Web App dashboard) | Claude Code + `uipath-coded-apps` | [apps](docs/coding-agents/apps.md) |
 
 Plus the connective tissue Claude Code authored: the `clearflow-solution` `.uipx` packaging
 (`scripts/pack-solution.sh`), Data Fabric entity schemas + seeding (`scripts/seed_data_fabric.py`),
