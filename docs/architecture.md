@@ -102,7 +102,7 @@ Role in demo: cold-open cut (0–20s). Shows the expected happy path. When Rever
 > `forensic-self-exam-agent-langgraph` (a **LangGraph `StateGraph`**, LIVE) + `case-job-janitor`
 > + `audit-ledger-writer-langgraph` (a second **LangGraph `StateGraph`** coded Agent, wired into the
 > master caseplan's **Closed stage** (task `tALWdgr01`) — it fires **in-case, live during the run**,
-> receives `case_ref` from `metadata.caseId`, and writes immutable, idempotent `AuditRecord` ledger
+> receives `case_ref` from `metadata.ExternalId` (the readable `CFCS-…` id), and writes immutable, idempotent `AuditRecord` ledger
 > rows to Data Fabric — 6 rows per run, idempotent on duplicate fire) (Coded). The README "Agent
 > inventory" table is the authoritative current list.
 
@@ -134,9 +134,9 @@ All LLM calls flow through the **UiPath LLM Gateway** → **Trust Layer** (PHI/P
 
 ---
 
-## Integration Service API Workflows (~13 Mock External Systems) (planned — Slice 006)
+## Integration Service API Workflows (19 total — mock external systems + 2 case utilities + 3 ViVE bridges)
 
-Each workflow reads from Data Fabric, shapes a payload, and emits an event consumed by Maestro Triggers on the master case.
+The mock-system workflows read from Data Fabric, shape a payload, and emit an event consumed by Maestro Triggers on the master case. The two case utilities and the three ViVE bridges are invoked from case stages (the ViVE bridges from each stakeholder-parent — see the vertical bridge).
 
 | Workflow | External system |
 |---|---|
@@ -152,7 +152,13 @@ Each workflow reads from Data Fabric, shapes a payload, and emits an event consu
 | `api_workflows/payer-lakeshore/` | Lakeshore TPA Services |
 | `api_workflows/vendor-nimbus/` | Nimbus Patient Engagement Platform |
 | `api_workflows/regulator-tn-doi/` | TN Department of Insurance |
-| `api_workflows/insurer-aurora/` | Aurora Specialty (cyber insurer) |
+| `api_workflows/insurer-aurora-specialty/` | Aurora Specialty (cyber insurer) |
+| `api_workflows/counsel-hawthorne/` | Hawthorne Mercer LLP (legal counsel) |
+| `api_workflows/register-stakeholder/` | Case utility — stakeholder registration |
+| `api_workflows/generate-audit-record/` | Case utility — audit-record emission |
+| `api_workflows/solution-medical-records-summarization/` | ViVE bridge — Medical Records Summarization |
+| `api_workflows/solution-claim-denial-prevention/` | ViVE bridge — Claim Denial Prevention |
+| `api_workflows/solution-prior-auth-continuity/` | ViVE bridge — Prior Authorization |
 
 ---
 

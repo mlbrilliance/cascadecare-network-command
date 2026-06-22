@@ -78,7 +78,7 @@ All running live on UiPath Automation Cloud (`clearflow-solution` 1.0.35, folder
   (ops — sweeps platform job-state drift hourly), and **audit-ledger-writer-langgraph** (a second
   **LangGraph `StateGraph`** agent, structurally identical to the forensic agent — wired into the
   master caseplan's **Closed stage**, it fires **in-case, live during the run**, receives `case_ref`
-  from `metadata.caseId`, and persists immutable, queryable `AuditRecord` rows to Data Fabric: a
+  from `metadata.ExternalId` (the readable `CFCS-…` id), and persists immutable, queryable `AuditRecord` rows to Data Fabric: a
   survey-ready compliance ledger complementing Maestro's Action History — 6 rows per run, idempotent
   on duplicate fire)
 - **19 Integration Service API Workflows** — one mock front per external party (6 providers,
