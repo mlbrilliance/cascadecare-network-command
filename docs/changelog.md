@@ -1,5 +1,25 @@
 # CascadeCare Network Command — Changelog
 
+## Live Compliance Ledger panel + agent-roster refresh (2026-06-22)
+
+Added a **Compliance Ledger** panel to the `clearflow-network-command` Coded Web App: it reads the
+immutable `AuditRecord` Data Fabric entity **live** (records read directly by entity id
+`252cd5cc-f66c-f111-8fcb-000d3ab36606`, casing-resilient decoder), groups rows by run newest-first
+with a run selector, and renders disposition + privilege chips, the audit narrative, and a per-row
+integrity-hash badge — so the ledger the in-case `audit-ledger-writer-langgraph` agent writes is now
+*visualised* live (closing the write→show loop). Refreshed the **agent roster** to the honest
+6 Coded · 6 Builder inventory (two LangGraph agents: forensic + audit-ledger).
+
+**Scope fix (the one that mattered):** the live Data Fabric read uses the `DataFabric.Data.Read` scope
+(resource `DataFabricOpenApi`), already granted on the dashboard's external app. An interim
+`DataService.*` guess — a scope that does not exist in this tenant — briefly caused an `invalid_scope`
+sign-in lockout; reverted to `DataFabric.Data.Read` + the entity-id read.
+
+**Live**: **v1.0.15**, HTTP 200, ledger confirmed loading (2 runs / 12 rows). Commits `62fa753` →
+`0b3b68e` pushed to origin.
+
+---
+
 ## Dashboard "Energy-Flow" Redesign (2026-06-13)
 
 Redesigned the live `clearflow-network-command` Coded Web App around two human-designed reference

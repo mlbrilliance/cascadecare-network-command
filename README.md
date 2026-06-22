@@ -312,7 +312,7 @@ Grounding, and Trust Layer surfaces below.
 | **Context Grounding** | 2 indexes (`BAA-corpus` bound to the BAA Boundary Reasoner) |
 | **Data Fabric** | 9 entities (~4,320 claim-telemetry rows) |
 | **Action Center** (AppTask) | 2 HITL gates (fiduciary review + obligation response) |
-| **UiPath Apps** (Coded Web App) | Live operator command-center dashboard |
+| **UiPath Apps** (Coded Web App) | Live operator command-center dashboard + live `AuditRecord` compliance-ledger panel |
 | **Orchestrator** | Case/agent jobs, hourly janitor trigger, bulk job sweep |
 | **Integration Service API Workflows** | 19 mock-front + ViVE-bridge workflows |
 | **Solution** (`.uipx`) | One deployable bundle of all projects |
@@ -396,7 +396,7 @@ Impact Assessment stage — `solution-medical-records-summarization` (Medical Re
 
 | App | Role |
 |-----|------|
-| `clearflow-network-command` | Live Coded Web App command center: **Energy-Flow cascade** (master crisis → stakeholder ports → obligation grandchildren), containment gauge, reversal timeline, agent roster, and an operator console that fires reversals + approves the HITL gate live |
+| `clearflow-network-command` | Live Coded Web App command center: **Energy-Flow cascade** (master crisis → stakeholder ports → obligation grandchildren), containment gauge, reversal timeline, agent roster, a **live Compliance Ledger** (reads the immutable `AuditRecord` Data Fabric entity per run — records by entity id, integrity-hash badges, prior-run selector), and an operator console that fires reversals + approves the HITL gate live |
 
 ### Data Fabric entities (9)
 

@@ -39,7 +39,7 @@
 | # | Filename (`docs/evidence/`) | What to capture | Caption | Use it for |
 |---|---|---|---|---|
 | 8 | `08-baa-six-answers.png` | A **BAA Boundary Reasoner** run trace whose rationale quotes the corpus section-by-section and shows a *different* disclosure position for two providers (e.g., one conditional, one restricted). | "Six providers, six lawful answers, one subpoena — each grounded in that provider's actual BAA via Context Grounding." | The hero "six-answer problem"; README/video/deck slide 7 |
-| 9 | `09-dashboard.png` | The live **Coded Web App** dashboard (Energy-Flow cascade + containment gauge + reversal timeline). | "The live operator command center — a UiPath Coded Web App." | C5 Presentation; deck close |
+| 9 | `09-dashboard.png` | The live **Coded Web App** dashboard (Energy-Flow cascade + containment gauge + reversal timeline + the **Compliance Ledger** panel showing live immutable `AuditRecord` rows with integrity hashes). | "The live operator command center — a UiPath Coded Web App, with the immutable Data Fabric compliance ledger surfaced live." | C5 Presentation; deck close |
 
 ---
 

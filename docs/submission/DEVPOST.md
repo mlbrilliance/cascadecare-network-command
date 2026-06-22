@@ -85,7 +85,7 @@ All running live on UiPath Automation Cloud (`clearflow-solution` 1.0.32, folder
   4 payers, regulator, insurer, counsel, vendor, audit) + the 3 ViVE healthcare-solution bridges
 - **2 Maestro BPMN** (ideal-response playbook that spawns the master case; closure
   notification) + **1 Maestro Flow** (demo driver) — hybrid BPMN + Case pattern
-- **1 UiPath App** (ClearFlow Network Command dashboard) + 2 Action Center HITL apps
+- **1 UiPath App** (ClearFlow Network Command dashboard — incl. a live **Compliance Ledger** panel that reads the immutable `AuditRecord` Data Fabric entity per run) + 2 Action Center HITL apps
   (master fiduciary gate; grandchild file/withdraw gate)
 - **9 Data Fabric entities** (providers, payers, BAAs, claim telemetry — 4,320 telemetry rows)
 - **OOTB Case App** configured for all three case types (caseSummary + stakeholder/obligation
