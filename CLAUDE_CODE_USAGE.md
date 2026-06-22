@@ -11,7 +11,7 @@ the official `uipath-*` authoring skills.
 definitions, 6 Agent Builder agents (Claude Sonnet 4.6 BYO-LLM), 6 Coded Agents (two LangGraph
 `StateGraph` agents via `uipath-langchain`, one of them `audit-ledger-writer-langgraph` writing an
 immutable Data Fabric `AuditRecord` ledger in-case at the master's Closed stage), 19 API Workflows, 2 BPMN models, 1 Maestro Flow,
-1 UiPath App (**38 artifacts**) — plus the solution packaging, Data Fabric seeding, and **680** offline test
+1 UiPath App (**38 artifacts**) — plus the solution packaging, Data Fabric seeding, and **768** offline test
 gates. It worked in test-gated slices under a spec-kit workflow (`/speckit.plan → analyze →
 tasks → implement`), Spec-Gate-per-function, TDD (tests before source), and a zero-tolerance
 IP-safety audit on every commit. Diagnoses were empirical: e.g. Orchestrator **Error 2005** was

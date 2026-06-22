@@ -19,7 +19,7 @@
 
 ---
 
-![CascadeCare architecture — three nested Maestro Case levels, 11 agents, Trust Layer, platform foundation](`[HUMAN: public image URL for docs/images/architecture.png — e.g. the GitHub raw link]`)
+![CascadeCare architecture — three nested Maestro Case levels, 12 agents, Trust Layer, platform foundation](`[HUMAN: public image URL for docs/images/architecture.png — e.g. the GitHub raw link]`)
 
 ### TL;DR
 
@@ -66,7 +66,7 @@ organizations accountable for — and the case file it produces is survey-grade 
 
 ### Built with a coding agent — and we gave something back 🛠️
 
-The entire repo — **37 UiPath artifacts and every test, test-first** — was authored by **Claude
+The entire repo — **38 UiPath artifacts and every test, test-first** — was authored by **Claude
 Code**. And we went beyond the demo: we packaged our hardest-won, undocumented Maestro Case
 discoveries into **[Maestro Case Kit](https://pypi.org/project/maestro-case-kit/)** — a free,
 open-source, **offline & credential-free** toolkit (CLI + MCP server + agent skills) that

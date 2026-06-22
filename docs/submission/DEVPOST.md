@@ -61,7 +61,7 @@ implement any accreditation standard.*
 
 ![CascadeCare Network Command — architecture](../images/architecture.png)
 
-All running live on UiPath Automation Cloud (`clearflow-solution` 1.0.32, folder
+All running live on UiPath Automation Cloud (`clearflow-solution` 1.0.35, folder
 `Shared/CascadeCare-v110`); full cascade proven end-to-end — master + 6 children +
 6 grandchildren all reach **Completed**. **13 UiPath product surfaces, 38 runtime artifacts.**
 
@@ -89,7 +89,7 @@ All running live on UiPath Automation Cloud (`clearflow-solution` 1.0.32, folder
   (master fiduciary gate; grandchild file/withdraw gate)
 - **9 Data Fabric entities** (providers, payers, BAAs, claim telemetry — 4,320 telemetry rows)
 - **OOTB Case App** configured for all three case types (caseSummary + stakeholder/obligation
-  sections) `[VERIFY: 1.0.24 deployed + renders]`
+  sections) `[VERIFY: 1.0.35 deployed + renders]`
 - **2 Context Grounding indexes, live + retrieval-verified** — `BAA-corpus` (6 synthetic
   full-text BAAs grounding the BAA Boundary Reasoner) and `ClaimTelemetry-corpus`; corpora are
   generated from the same seed tables as the Data Fabric records, so retrieval and structured
@@ -137,7 +137,7 @@ changes the response, not just the audit log.
 ## Built with coding agents (bonus)
 
 **Claude Code** (Anthropic's CLI) authored 100% of this submission — **38 UiPath runtime
-artifacts**, **680 offline test gates** (written test-first, before each artifact), and **9
+artifacts**, **768 offline test gates** (written test-first, before each artifact), and **9
 externalized agent prompts** — driving the `uip` CLI and the official `uipath-*` authoring skills
 under a test-gated spec-kit workflow. Diagnoses were empirical, not guessed (e.g. Orchestrator
 Error 2005 root-caused by inspecting the offline-packed `package-descriptor.json`). The Criterion-3
@@ -221,7 +221,7 @@ shipped a **`check-cli` guard** (`maestro-case check-cli <path>`) that flags bar
 1. Master case canvas with all stages + reversal path
 2. The Reversal-3 fan: 6 children spawning (Case Instances view)
 3. Action Center fiduciary gate (tri-party HITL form)
-4. OOTB Case App: timeline + SLA tiles + sections `[VERIFY: 1.0.32]`
+4. OOTB Case App: timeline + SLA tiles + sections `[VERIFY: 1.0.35]`
 5. Trust Layer / LLM Gateway policy view on an agent call
 6. All-Completed cascade (master + 6 + 6) — the closure proof
 7. Exception handling (Criterion 3): the forensic agent surfacing `error_type`/`error_message` on a Gateway failure (still routed), and/or the Action History showing an `instance retry` recovery

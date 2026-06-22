@@ -9,7 +9,7 @@
 ## System Layers
 
 > **Status (2026-06):** every layer below is **built and live** on UiPath Automation Cloud
-> (`clearflow-solution` 1.0.32, full cascade proven end-to-end). The polished current architecture
+> (`clearflow-solution` 1.0.35, full cascade proven end-to-end). The polished current architecture
 > diagram is [`docs/images/architecture.svg`](images/architecture.svg) (embedded in the README); the
 > ASCII views here are the engineering reference. Any remaining "(planned — Slice NNN)" markers below
 > are historical build annotations, not current gaps.

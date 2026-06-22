@@ -1,5 +1,23 @@
 # CascadeCare Network Command — Changelog
 
+## Solution 1.0.34 → 1.0.35 — in-case audit ledger + Slack close-out fix (2026-06-22)
+
+Two solution ships landed on `Shared/CascadeCare-v110`, both live-proven end-to-end:
+
+- **1.0.34** — wired `audit-ledger-writer-langgraph` (a Coded **LangGraph** agent) **in-case** at the
+  master's Closed stage (task `tALWdgr01`). On every run it writes **6 immutable, idempotent**
+  `AuditRecord` rows to Data Fabric — a survey-ready compliance ledger complementing Maestro's Action
+  History. Live-proven on run **`CFCS-67730745`** (the duplicate-fire double-subscription hits the
+  idempotency guard → `written=0/skipped=6`, no dupes). Commit `e8f3f8a`.
+- **1.0.35** — fixed the Slack close-out: the V20 `messageToSend` field held a literal
+  `{=metadata.caseId}` (Maestro does not evaluate `{=…}` braces), so it now uses a `=js:` expression
+  resolving `${metadata.ExternalId}` (the readable `CFCS-…` id). Live-proven on run **`CFCS-67767069`**
+  (Completed, 0 incidents, Slack fired). Commit `ffd6d3f`.
+
+Gates green: `uv run pytest` (768 passed / 7 skipped), `mypy` clean, IP-safe.
+
+---
+
 ## Live Compliance Ledger panel + agent-roster refresh (2026-06-22)
 
 Added a **Compliance Ledger** panel to the `clearflow-network-command` Coded Web App: it reads the

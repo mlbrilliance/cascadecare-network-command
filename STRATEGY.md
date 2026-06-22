@@ -1,6 +1,6 @@
 ---
 name: CascadeCare Network Command
-last_updated: 2026-06-15
+last_updated: 2026-06-22
 ---
 
 # CascadeCare Network Command Strategy
@@ -27,10 +27,10 @@ Case's capability ceiling.
 |---|---|---|---|
 | C1 | Originality, creativity, real-world applicability | 1–5 | ✅ Strong |
 | C2 | Orchestration & agent collaboration | 1–5 | ✅ Strong (3-level nesting) |
-| C3 | Exception, failure, edge-case handling | 1–5 | ⚠ Gap — forensic agent silent error; retry not yet visible |
-| C4 | UiPath component variety | 1–5 | ⚠ Gap — components table missing from README |
-| C5 | Presentation quality (video + deck + Devpost) | 1–5 | ⚠ Gap — video/deck/Devpost not yet created |
-| +2 | Coding agent bonus (Claude Code docs in Devpost) | +2 | ⚠ Gap — unclaimed |
+| C3 | Exception, failure, edge-case handling | 1–5 | ✅ Shipped — four-layer defense-in-depth; forensic silent-error fixed test-first |
+| C4 | UiPath component variety | 1–5 | ✅ Strong — 13-surface component inventory in README |
+| C5 | Presentation quality (video + deck + Devpost) | 1–5 | ⚠ In progress — Devpost copy + deck brief drafted; demo video pending (human) |
+| +2 | Coding agent bonus (Claude Code docs in Devpost) | +2 | ✅ Documented — `CODING_AGENTS.md` + `CLAUDE_CODE_USAGE.md` |
 
 **Strong submission signals (UiPath guidance):** Intelligent exception/edge-case handling ·
 Visibility into case status · Clear auditability · Meaningful human oversight.
@@ -78,7 +78,7 @@ Ordered by impact × effort (see `docs/ideation/agentHack-judging-gaps-2026-06-1
 
 ### Tier 2 — This week (documentation & submission)
 6. **Coding agent bonus docs** — `CODING_AGENTS.md` + Devpost section with Claude Code screenshots → unlocks the **+2 coding-agent bonus** (max score 27; document the tool, its contribution, and verifiable evidence)
-7. **docs/evidence/ screenshot set** — 6+ annotated screenshots from live v1.0.32 runs (retry badge, forensic output, HITL gate, fan-out, closure, Faulted case)
+7. **docs/evidence/ screenshot set** — 6+ annotated screenshots from live v1.0.35 runs (retry badge, forensic output, HITL gate, fan-out, closure, Faulted case)
 8. **Demo script rewrite (Crisis-First)** — open on Faulted case → CVR-frame Reversal-3 fan-out → WHO Surgical Timeout at HITL gate → completion
 9. **Rubric-mapping Devpost editorial** — label every Devpost paragraph with C1–C5 criterion; cut anything unmapped
 10. **UiPath components table** — add to README.md (Criterion 4 direct)

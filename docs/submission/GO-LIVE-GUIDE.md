@@ -3,7 +3,7 @@
 > **Who this is for:** someone who has never touched UiPath, Maestro, Orchestrator, or Studio Web.
 > Every step says **who does it**, **exactly what to do**, **what you should see**, and **what to do if it goes wrong**.
 >
-> **Last updated:** 2026-06-12 (v1.0.23 → `Shared/CascadeCare-v110`; **full cascade live-proven** — master + 6 children + 6 grandchildren all Completed; current step = **record the demo video + submit**) · **Branch:** `master` · **Tenant:** `staging.uipath.com/hackathon26_042/DefaultTenant`
+> **Last updated:** 2026-06-22 (v1.0.35 → `Shared/CascadeCare-v110`; **full cascade live-proven** — master + 6 children + 6 grandchildren all Completed; in-case **LangGraph audit-ledger** write live; dashboard **v1.0.15** Compliance Ledger live; current step = **record the demo video + submit**) · **Branch:** `master` · **Tenant:** `staging.uipath.com/hackathon26_042/DefaultTenant`
 >
 > Operational run procedure now lives in [`docs/DEMO-RUNBOOK.md`](../DEMO-RUNBOOK.md) (auth, deploy recipe, A5 closure check, A6 zombie sweep). Sections below marked with a date are historical snapshots.
 >
@@ -23,12 +23,12 @@ Your project is a **bundle of files in this repo**. To make it real, that bundle
 | **Automation Cloud** | The website where everything runs. | `staging.uipath.com/hackathon26_042` |
 | **Tenant** | Your private workspace on that website. | `DefaultTenant` |
 | **Orchestrator** | The part that runs and schedules jobs. | inside the tenant |
-| **Folder** | A labelled box on the tenant that holds one deployment. | e.g. `CascadeCare-v104` (current) |
+| **Folder** | A labelled box on the tenant that holds one deployment. | e.g. `CascadeCare-v110` (current) |
 | **Studio Web** | The browser editor where you draw/fix flowcharts & cases. *(The screenshot you sent was this.)* | browser |
 | **Maestro Case** | The long-running "case file" — your crisis, with stages. You have **3** (master → parent → grandchild). | the runtime brain |
 | **Maestro BPMN** | A flowchart process. The file we just fixed (`ideal-incident-response`) is one. | `maestro_bpmn/` |
 | **Maestro Flow** | The "Demo Driver" that plays the demo like a script. | `maestro_flow/` |
-| **Agent / Agent Builder** | The 7 AI agents that reason about the crisis. | `agents/` |
+| **Agent / Agent Builder** | The 12 AI agents (6 Agent Builder low-code + 6 Coded) that reason about the crisis. | `agents/` |
 | **Data Fabric** | The database of made-up providers, payers, contracts (BAAs), telemetry. | tenant DB |
 | **Context Grounding** | Search indexes the agents read (over BAAs + telemetry). | tenant |
 | **Solution (`.uipx`)** | One zip bundling ALL projects so they deploy together. | `maestro_case/clearflow-solution/` |
@@ -54,14 +54,17 @@ Your project is a **bundle of files in this repo**. To make it real, that bundle
 
 ## 2. Where things stand right now (snapshot)
 
-### ✅ Status update (2026-06-12) — the build is live-proven
-- **`clearflow-solution` 1.0.23** deployed + active on **`Shared/CascadeCare-v110`**.
+### ✅ Status update (2026-06-22) — the build is live-proven
+- **`clearflow-solution` 1.0.35** deployed + active on **`Shared/CascadeCare-v110`**.
 - **Full cascade proven live**: master + all 6 child cases + all 6 grandchild cases reached
-  **Completed** (first fully-draining run, 2026-06-12, after the closing-stage fix).
+  **Completed** (first fully-draining run 2026-06-12; latest preserved runs `CFCS-67730745` + `CFCS-67767069`).
 - HITL gates pause correctly at master (Reversal 4) and grandchild (File/Withdraw).
-- 4th coded agent `case-job-janitor` deployed (hourly sweep of zombie "Running" job rows).
-- Suite 613 passed / 0 failed / 7 skipped; IP audit clean.
-- Still open: Context Grounding indexes (deferred — verify or document honestly), demo video,
+- **6 Coded Agents** deployed — 4 Python SDK + **two LangGraph** (`forensic-self-exam-agent-langgraph`,
+  `audit-ledger-writer-langgraph`, which writes the immutable Data Fabric `AuditRecord` ledger in-case);
+  `case-job-janitor` runs the hourly sweep of zombie "Running" job rows.
+- **Live dashboard** (Coded Web App **v1.0.15**) renders the Compliance Ledger from those `AuditRecord` rows.
+- Suite **768 passed / 0 failed / 7 skipped**; `mypy` clean; IP audit clean.
+- Both Context Grounding indexes are **live + retrieval-verified**. Still open (human): demo video,
   Devpost page, deck. Everything below this block is the **2026-06-04 historical snapshot**.
 
 ### ✅ Done / built (offline, machine-verified)
@@ -425,10 +428,10 @@ bash scripts/cleanup_deployments.sh --confirm    # actually uninstall the stale 
 | 1 | Public GitHub repo (MIT) + README naming every component | ✅ DONE | — |
 | 2 | Devpost project page (Track 1) | ⬜ PENDING | 🔴 you (🟢 I draft) |
 | 3 | Demo video ≤5 min, **live**, names each agent | ⬜ PENDING | 🔴 you (🟢 I script) |
-| 4 | Solution running **live** on Automation Cloud | ✅ DONE (1.0.23 on `Shared/CascadeCare-v110`, full cascade proven 2026-06-12) | — |
+| 4 | Solution running **live** on Automation Cloud | ✅ DONE (1.0.35 on `Shared/CascadeCare-v110`, full cascade live-proven; latest preserved runs 2026-06-22) | — |
 | Bonus | Coding-agent evidence (`CODING_AGENTS.md`, `CLAUDE_CODE_USAGE.md`) | ✅ DONE | — |
 | Bonus | 1-min coding-agent reel | ⬜ PENDING | 🔴 you |
-| Supp. | Slides deck (AgentHack template) | ⬜ PENDING | 🔴 you |
+| 5 (req.) | Slides deck — **mandatory** ([AgentHack template](https://bit.ly/3R0MsHU); host with public access) | ⬜ PENDING | 🔴 you |
 | Supp. | Live screenshots / prompt logs | ⬜ PENDING | 🔴 you (capture during run) |
 
 > **Tag rule:** do **not** apply `agenthack-2026-submission` until artifact #3 (live video) exists.

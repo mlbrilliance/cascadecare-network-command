@@ -3,7 +3,10 @@
 Strategy (per win-plan): **record the entire live run once**, then cut/speed-up in post. The
 contest requires the solution running live (no slides) and **each agent named on screen** — the
 narration below names all **11** distinct agents (5 coded incl. **two LangGraph** agents +
-6 Agent Builder); add lower-third captions at each agent beat as insurance.
+6 Agent Builder); add lower-third captions at each agent beat as insurance. (The repo ships
+**12 agents** — 6 Coded + 6 Agent Builder; the video narrates **11 distinct on screen** because the
+original Python forensic agent is superseded by its LangGraph version and isn't shown separately.
+Both counts are correct — see [`STORY.md`](STORY.md) §13 for the canonical 12.)
 
 ---
 

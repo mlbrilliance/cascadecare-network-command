@@ -54,7 +54,7 @@ offline `uip solution pack` probes). Diagnoses were empirical, not guessed — e
 
 Plus the connective tissue Claude Code authored: the `clearflow-solution` `.uipx` packaging
 (`scripts/pack-solution.sh`), Data Fabric entity schemas + seeding (`scripts/seed_data_fabric.py`),
-Context Grounding index resources + corpus generation (`scripts/gen_cg_corpus.py`), the **680**
+Context Grounding index resources + corpus generation (`scripts/gen_cg_corpus.py`), the **768**
 offline test gates, and this evidence set.
 
 **Criterion-3 evidence (exception handling, authored test-first).** The forensic agent's
@@ -82,7 +82,7 @@ an OpenClaw skill — all **offline and credential-free** (no UiPath login):
 | `uip case`/`uip flow` without the `maestro` prefix (UiPath's own skills had it) | `maestro-case check-cli <dir>` |
 
 Authored test-first like the rest of the build (64 toolkit tests wired into the repo
-`uv run pytest` gate; 747 total pass, `mypy` clean, IP-safe). Each knowledge entry is
+`uv run pytest` gate; 768 total pass, `mypy` clean, IP-safe). Each knowledge entry is
 version-stamped and self-deprecates when UiPath ships a fix, behind an automated schema +
 IP-safety contribution gate. We even hit this footgun in UiPath's *own* official skills — the
 `uip maestro` CLI namespace (issues #333/#337) — now **fixed upstream** on UiPath's `main`; rather

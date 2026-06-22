@@ -9,7 +9,7 @@ A <b>UiPath Maestro Case</b> command center that manages a multi-hospital cyber-
 
 <p align="center">
   <img src="https://img.shields.io/badge/status-live%20on%20Automation%20Cloud-FF6A3D?style=for-the-badge" alt="Status: live on Automation Cloud" />
-  <img src="https://img.shields.io/badge/tests-683%20passing-2FBE7C?style=for-the-badge" alt="683 tests passing" />
+  <img src="https://img.shields.io/badge/tests-768%20passing-2FBE7C?style=for-the-badge" alt="768 tests passing" />
   <img src="https://img.shields.io/badge/license-MIT-3B82F6?style=for-the-badge" alt="License: MIT" />
 </p>
 
@@ -37,7 +37,7 @@ A <b>UiPath Maestro Case</b> command center that manages a multi-hospital cyber-
 <!-- TODO(human, high-impact): a real live-run screen-capture (the actual UiPath canvas — Reversal-3 fan-out / forensic agent firing / HITL gate) would be even stronger when the tenant is up. -->
 
 
-> Three nested Maestro Case levels orchestrate the crisis end-to-end. Eleven agents plug into stages as `type:"agent"` tasks — every LLM call routed through the UiPath LLM Gateway + Trust Layer — while Data Fabric, Context Grounding, and 19 API Workflows feed the case. Authored end-to-end with Claude Code. ([editable SVG source](docs/images/architecture.svg))
+> Three nested Maestro Case levels orchestrate the crisis end-to-end. Agents plug into stages as `type:"agent"` tasks — every LLM call routed through the UiPath LLM Gateway + Trust Layer — while Data Fabric, Context Grounding, and 19 API Workflows feed the case. Authored end-to-end with Claude Code. ([editable SVG source](docs/images/architecture.svg))
 
 ## What This Is
 
@@ -52,9 +52,9 @@ The hero moment: **Reversal 3** (a state DOI subpoena) fans out **six grandchild
 simultaneously** on the Maestro Case canvas.
 
 > [!IMPORTANT]
-> **Live status (2026-06-15).** Every UiPath artifact below is authored, validated against its UiPath
+> **Live status (2026-06-22).** Every UiPath artifact below is authored, validated against its UiPath
 > contract (V20 / CNCF Serverless 1.0.0 / Agent Builder), and **running live on UiPath Automation
-> Cloud** — `clearflow-solution` **1.0.32** deployed to `Shared/CascadeCare-v110`, with a full
+> Cloud** — `clearflow-solution` **1.0.35** deployed to `Shared/CascadeCare-v110`, with a full
 > cascade run proven end-to-end (master auto-walks all agent stages → 6 child + 6 grandchild cases →
 > two HITL gates → master **Completed**). The **LangGraph** Forensic Self-Exam agent fires in-case at
 > Vector Isolation and surfaces structured errors on LLM-Gateway failure without faulting (Criterion-3
@@ -74,7 +74,7 @@ simultaneously** on the Maestro Case canvas.
 | 🧯 **Fails safe (Criterion 3)** | 4-layer exception handling — agents degrade instead of crashing; the case keeps moving |
 | 🏥 **Regulated-vertical realism** | a real class of healthcare payment-network cyberattack — orchestrating UiPath's own **ViVE-2026** healthcare agents |
 | 🟢 **Live on Automation Cloud** | full cascade proven end-to-end — master + 6 + 6 all reach **Completed** |
-| 🛠️ **Built with Claude Code** | 38 UiPath artifacts + 683 offline tests, authored test-first |
+| 🛠️ **Built with Claude Code** | 38 UiPath artifacts + 768 offline tests, authored test-first |
 
 ---
 
@@ -332,7 +332,7 @@ Wired with the native `case-management` task type — no Postgres mirror, no lev
 **Canonical case surfaces** — the Maestro Case patterns Devpost judges are trained to recognize, built into the caseplans:
 
 - **SLA + escalation → Maestro Notification**, at case and stage level across all three nesting levels — on-track / at-risk / breached, firing notification actions on breach and at-risk.
-- **Agent-driven progression** — the master advances itself: the **LangGraph** Forensic Self-Exam agent (`forensic-self-exam-agent-langgraph`, wired into the Vector Isolation stage task `tFSEXam01`) drives the Vector Isolation → Regulatory Response exit when ClearFlow's vector status clears (`=js:vars.var_clearflow_vector_status === 'cleared'`). Proven live end-to-end (v1.0.32): the agent fires in-case and returns `vector_status="cleared"`, `route_to="baa-boundary"`, the master auto-walks all agent stages, fans out 6 children + 6 grandchildren (three levels), and closes after the HITL gates.
+- **Agent-driven progression** — the master advances itself: the **LangGraph** Forensic Self-Exam agent (`forensic-self-exam-agent-langgraph`, wired into the Vector Isolation stage task `tFSEXam01`) drives the Vector Isolation → Regulatory Response exit when ClearFlow's vector status clears (`=js:vars.var_clearflow_vector_status === 'cleared'`). Proven live end-to-end (v1.0.35): the agent fires in-case and returns `vector_status="cleared"`, `route_to="baa-boundary"`, the master auto-walks all agent stages, fans out 6 children + 6 grandchildren (three levels), and closes after the HITL gates.
 - **Targeted re-entry** — at Reversal 5 (ClearFlow → co-defendant), the master re-opens the Multi-Customer Investigation stage via an interrupting entry condition (`=js:vars.var_reversal_number >= 5`) and a `return-to-origin` exit, re-running **only** the cross-provider correlation while the settled anomaly classification is skipped (`shouldRunOnlyOnce`).
 - **Agent Evaluations** — eval sets for the reasoning agents (low-code under `agents/<name>/evals/`, coded under `agents/<name>/evaluations/`).
 
@@ -433,7 +433,7 @@ cascade_command/
   api_workflows/        # 19 Integration Service API Workflows
   apps/                 # clearflow-network-command UiPath App
   src/cascadecare/      # build-time Python wrappers (auth, maestro_client) — dev only
-  tests/                # 680 offline structure/contract gates
+  tests/                # 768 offline structure/contract gates
   specs/                # active spec: specs/003-uipath-native/
   scripts/              # pack-solution.sh, gen_api_entry_points.py (build-time)
   knowledge/            # immutable source-of-truth documents
@@ -454,7 +454,7 @@ cascade_command/
 # Install the build tooling (no runtime Python service exists)
 uv sync --extra dev
 
-# Run the offline gate suite (680 structure/contract tests)
+# Run the offline gate suite (768 structure/contract tests)
 uv run pytest
 
 # Authenticate against the UiPath tenant

@@ -273,7 +273,7 @@ disconnected agent runs and a war room. With it, it's one auditable case that co
 | **1 · Business Impact & Adoption** | The vertical bridge — crisis orchestrator for UiPath's own ViVE agents; accreditation-grade audit trail; adoptable with a connector swap. |
 | **2 · Platform Usage** | 13 UiPath product surfaces, Maestro Case canvas as the orchestrator, governed BYO-LLM via Trust Layer, two LangGraph agents via `uipath-langchain` — *plus the +2 coding-agent bonus* (built with Claude Code) and the open-source Maestro Case Kit. |
 | **3 · Technical Execution / Feasibility** | 3-level native nesting, the case progressing itself, four-layer exception handling (agents degrade, the case never crashes), the consumed HITL ruling. |
-| **4 · Completeness of Delivery** | Live on Automation Cloud (1.0.34), full cascade Completed end-to-end, public repo + README + ≤5-min video + deck. |
+| **4 · Completeness of Delivery** | Live on Automation Cloud (1.0.35), full cascade Completed end-to-end, public repo + README + ≤5-min video + deck. |
 | **5 · Creativity & Innovation** | A self-reshaping crisis case with five goal reversals and a six-way fan-out — an orchestration pattern, not a linear toy. |
 
 ---
@@ -296,7 +296,7 @@ disconnected agent runs and a war room. With it, it's one auditable case that co
   retrieval, not fine-tuning.
 - Numbers to keep consistent everywhere: **12 agents** (6 Agent Builder + 6 Coded, 2 LangGraph),
   **38 runtime artifacts**, **13 product surfaces**, **5 reversals**, **3 case levels**, **13
-  live instances** at fan-out, **2 HITL gates**, live deploy **1.0.34 → CascadeCare-v110**.
+  live instances** at fan-out, **2 HITL gates**, live deploy **1.0.35 → CascadeCare-v110**.
 
 ---
 

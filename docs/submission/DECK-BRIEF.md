@@ -182,7 +182,7 @@ Slides 1–5 are the *story* (≈90s), 6–11 the *proof* (≈75s), 12–14 the 
 ---
 
 ## Appendix — assets & facts to keep exact (do not drift)
-- Live deploy: **`clearflow-solution` 1.0.34 → `Shared/CascadeCare-v110`**; full cascade Completed.
+- Live deploy: **`clearflow-solution` 1.0.35 → `Shared/CascadeCare-v110`**; full cascade Completed.
 - Counts: **12 agents** (6 Agent Builder + 6 Coded; 2 LangGraph), **38 runtime artifacts**, **13
   UiPath product surfaces**, **5 reversals**, **3 case levels**, **13 live instances** at fan-out,
   **2 HITL gates**.
