@@ -66,10 +66,10 @@ Full detail (do not duplicate): the diffs themselves; `git log`; and the memory 
 - **`/mnt/c` (OneDrive) 9p EIO hazard:** heavy parallel I/O can throw EIO and wedge git/hooks; recover with `wsl --shutdown`. A stale `.git/index.lock` from a crashed op is safe to `rm -f` when no git is running.
 - **git push:** remote is HTTPS; creds in `~/.git-creds` as `https://x-access-token:<PAT>@github.com`
   (the bare `https://<PAT>@github.com` form is silently skipped). The secret-scan PreToolUse hook **blocks
-  a literal `ghp_…` in any Bash command** → write the creds file with the **Write tool** (rm it first).
+  a literal GitHub PAT in any Bash command** → write the creds file with the **Write tool** (rm it first).
 - **Commit rules (`CLAUDE.md`):** **no `Co-Authored-By` trailer** (settings.json has no `attribution.commit`);
-  **IP-safety zero tolerance** (forbidden tokens list in `CLAUDE.md`; note `wEx`/`workflowExpression` is a
-  benign substring false-positive). `knowledge/` is immutable; never touch `.specify/`.
+  **IP-safety zero tolerance** (forbidden tokens list in `CLAUDE.md`; the short-token scan has a benign
+  false-positive inside the V20 schema key `workflowExpression`). `knowledge/` is immutable; never touch `.specify/`.
 - **HITL gates:** always Approve/Deny or File/Withdraw — **deleting/Removing a gate task Faults the case.**
   `scripts/demo_autocomplete.py` (env `DEMO_ASSIGNEE=<login email>`, `DEMO_KEEP_FIDUCIARY=0`,
   `DEMO_KEEP_OBLIGATION=0`, `DEMO_UIP_BIN=$HOME/.npm-global/bin/uip`) CLI-actions them. Listing needs a
