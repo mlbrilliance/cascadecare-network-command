@@ -229,6 +229,11 @@ tasks:
       type: execute-connector-activity
       stage_id: Stage_JW7OlW
       notes: "Slack send_message_to_channel_v2 connector task; posts the master close-out message. Live-proven (1.0.13+)."
+    - id: tALWdgr01
+      display_name: "Write Compliance Ledger"
+      type: agent
+      stage_id: Stage_JW7OlW
+      notes: "Closed-stage in-case write by coded agent audit-ledger-writer-langgraph (LangGraph; postdates the frozen Slice-009 7-agent registry — like case-job-janitor — so it carries no agent_key ref): writes 6 immutable AuditRecord ledger rows per run, case_ref from metadata. Live-proven 1.0.34 (CFCS-67730745)."
 
   stakeholder_parent:
     - id: tO1Iycl5a

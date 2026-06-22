@@ -32,7 +32,7 @@ if TYPE_CHECKING:
     from types import ModuleType
 
 REPO_ROOT = Path(__file__).parents[4]
-AGENT_PY = REPO_ROOT / "agents" / "audit-ledger-writer" / "agent.py"
+AGENT_PY = REPO_ROOT / "agents" / "audit-ledger-writer-langgraph" / "agent.py"
 
 CASE_REF = "CFCS-67598194"
 RECORDED_AT = "2026-06-20T03:38:40Z"
@@ -70,7 +70,7 @@ def agent() -> ModuleType:
 class TestImportsWithoutAuth:
     def test_module_imports_without_uipath_auth(self, agent: ModuleType) -> None:
         for sym in ("OBLIGATION_CATALOG", "compose_audit_records", "select_new",
-                    "run_ledger", "Input", "Output", "main"):
+                    "run_ledger", "extract_record_ids", "Input", "Output", "graph"):
             assert hasattr(agent, sym), f"missing {sym}"
 
 
@@ -244,3 +244,27 @@ class TestRunLedger:
         )
         assert out.error_type == "LEDGER_WRITE_FAILED"
         assert "entity list 503" in out.error_message
+
+    def test_empty_case_ref_writes_nothing_not_raise(self, agent: ModuleType) -> None:
+        # In-case: a type:agent invocation of a coded Function does not pass
+        # data.inputs[] as job args, so case_ref can arrive empty. The agent must
+        # return data (NO_CASE_REF), never fault, and never write empty-ref garbage.
+        inserted: list[dict[str, Any]] = []
+        inp = agent.Input(case_ref="", recorded_at=RECORDED_AT)
+        out = agent.run_ledger(
+            inp,
+            list_existing_ids=lambda: set(),
+            insert_records=lambda rows: inserted.extend(rows),
+            recorded_at=RECORDED_AT,
+        )
+        assert out.error_type == "NO_CASE_REF"
+        assert out.written == 0
+        assert out.eligible == 0
+        assert inserted == []
+
+
+class TestInput:
+    def test_case_ref_optional_no_validation_error(self, agent: ModuleType) -> None:
+        # case_ref defaults to "" so an empty in-case input dict does not raise a
+        # pydantic validation error (which would fault the job, not return data).
+        assert agent.Input().case_ref == ""

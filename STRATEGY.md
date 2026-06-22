@@ -110,7 +110,7 @@ re-entry). Hero moment at Reversal 3 (Day 30): 6 grandchild spawns fan out on th
   - `forensic-self-exam-agent-langgraph` — **LIVE** LangGraph StateGraph routing (Vector Isolation `tFSEXam01`)
   - `forensic-self-exam-agent` — original Python-SDK forensic agent, superseded by the LangGraph version
   - `case-job-janitor` — ops utility; hourly trigger, sweeps zombie Orchestrator jobs (not in any caseplan)
-  - `audit-ledger-writer` — Coded **Function** agent; job-invoked standalone (like the janitor, not in any caseplan), writes one immutable, idempotent, queryable `AuditRecord` row per dispositioned obligation to Data Fabric — a survey-ready compliance ledger complementing Maestro's Action History
+  - `audit-ledger-writer-langgraph` — Coded **LangGraph Agent** (`uipath-langchain`); wired **in-case** at the master's Closed stage (task `tALWdgr01`), writes immutable, idempotent, queryable `AuditRecord` rows to Data Fabric live during the run (6 per run) — a survey-ready compliance ledger complementing Maestro's Action History. Live-proven 1.0.34 (run `CFCS-67730745`)
 - 6 Agent Builder agents (low-code, **Claude Sonnet 4.6 BYO-LLM** via UiPath LLM Gateway):
   - `baa-boundary-reasoner` — Context Grounding on BAA-corpus; PHI/PII compliance routing (R3)
   - `vector-hypothesis-agent` — attack-vector hypothesis (Vector Isolation)

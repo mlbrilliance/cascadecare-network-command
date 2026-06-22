@@ -40,7 +40,7 @@ three-level nesting: `clearflow-master-crisis` (1) → `clearflow-stakeholder-pa
 → `clearflow-obligation-grandchild` (~12). Hero moment: Reversal 3 (Day 30) fans 6
 grandchild spawns on the canvas.
 
-Agents: 6 Coded Agents (Python SDK; one uses LangGraph via `uipath-langchain`) + 6
+Agents: 6 Coded Agents (Python SDK; two use LangGraph via `uipath-langchain`) + 6
 Agent Builder agents (low-code, `uipath-agents`, Claude BYO-LLM; BAA Boundary Reasoner
 uses Context Grounding on `BAA-corpus`). Prompts live in `agents/prompts/*.md` — NEVER
 inline a prompt in Python.

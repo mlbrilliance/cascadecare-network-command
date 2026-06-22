@@ -8,9 +8,9 @@ in [`CODING_AGENTS.md`](CODING_AGENTS.md).
 the official `uipath-*` authoring skills.
 
 **(b) How it contributed.** Claude Code authored 100% of the runtime artifacts — 3 Maestro Case
-definitions, 6 Agent Builder agents (Claude Sonnet 4.6 BYO-LLM), 6 Coded Agents (one a LangGraph
-`StateGraph` via `uipath-langchain`; one a Coded Function — `audit-ledger-writer` — writing an
-immutable Data Fabric `AuditRecord` ledger), 19 API Workflows, 2 BPMN models, 1 Maestro Flow,
+definitions, 6 Agent Builder agents (Claude Sonnet 4.6 BYO-LLM), 6 Coded Agents (two LangGraph
+`StateGraph` agents via `uipath-langchain`, one of them `audit-ledger-writer-langgraph` writing an
+immutable Data Fabric `AuditRecord` ledger in-case at the master's Closed stage), 19 API Workflows, 2 BPMN models, 1 Maestro Flow,
 1 UiPath App (**38 artifacts**) — plus the solution packaging, Data Fabric seeding, and **680** offline test
 gates. It worked in test-gated slices under a spec-kit workflow (`/speckit.plan → analyze →
 tasks → implement`), Spec-Gate-per-function, TDD (tests before source), and a zero-tolerance

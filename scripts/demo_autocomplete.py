@@ -105,7 +105,13 @@ def classify_tasks(tasks: list[Task]) -> tuple[list[Task], list[Task]]:
 
 
 def partition_tasks(tasks: list[Task], keep: int) -> tuple[list[Task], list[Task]]:
-    """Return (auto_complete, keep_for_human). Keeps the last `keep` tasks."""
+    """Return (auto_complete, keep_for_human). Keeps the last `keep` tasks.
+
+    keep<=0 means "auto-complete everything" — guarded explicitly because the
+    slice ``tasks[:-0]`` is ``tasks[:0]`` (empty), which would otherwise keep all.
+    """
+    if keep <= 0:
+        return list(tasks), []
     if len(tasks) <= keep:
         return [], list(tasks)
     return list(tasks[:-keep]), list(tasks[-keep:])

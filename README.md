@@ -69,7 +69,7 @@ simultaneously** on the Maestro Case canvas.
 |---|---|
 | 🧱 **3-level native case nesting** | master crisis → 6 stakeholder parents → 6 obligation grandchildren, wired with the native `case-management` task |
 | 🔀 **5 mid-flight goal reversals** | the case re-routes *itself* across a simulated 90-day timeline; Reversal 3 fans out **13 live case instances** in one beat |
-| 🤖 **12 agents, 2 frameworks** | 6 Agent Builder (Claude Sonnet 4.6 BYO-LLM) + 6 Coded (Python SDK) — one a **LangGraph `StateGraph`** via `uipath-langchain` |
+| 🤖 **12 agents, 2 frameworks** | 6 Agent Builder (Claude Sonnet 4.6 BYO-LLM) + 6 Coded — 4 Python SDK + **two LangGraph `StateGraph`s** via `uipath-langchain` |
 | 🛡️ **Governed by default** | every LLM call routes through the UiPath **LLM Gateway + Trust Layer** (PHI/PII guardrails) |
 | 🧯 **Fails safe (Criterion 3)** | 4-layer exception handling — agents degrade instead of crashing; the case keeps moving |
 | 🏥 **Regulated-vertical realism** | a real class of healthcare payment-network cyberattack — orchestrating UiPath's own **ViVE-2026** healthcare agents |
@@ -307,7 +307,7 @@ Grounding, and Trust Layer surfaces below.
 | **Maestro BPMN** | 2 process models (incident-response playbook, case-closed notification) |
 | **Maestro Flow** | Demo Driver — paces the 90-day timeline to wall-clock |
 | **Agent Builder** | 6 low-code Claude Sonnet 4.6 (BYO-LLM) reasoning agents |
-| **Coded Agents** (Python SDK) | 6 agents — 1 via **LangGraph** (`uipath-langchain`) |
+| **Coded Agents** | 6 agents — **2 via LangGraph** (`uipath-langchain`) + 4 Python SDK |
 | **LLM Gateway → Trust Layer** | Every LLM call; PHI/PII + content guardrails |
 | **Context Grounding** | 2 indexes (`BAA-corpus` bound to the BAA Boundary Reasoner) |
 | **Data Fabric** | 9 entities (~4,320 claim-telemetry rows) |
@@ -353,12 +353,14 @@ Per-agent Agent Memory is a deploy-time toggle, not fabricated offline config; c
 | `multi-customer-pattern-detector` | Coded | UiPath Python SDK — deterministic | — | master · detection (Phase 1) | Cross-provider correlation → cascade signal (Reversal 1) |
 | `forensic-self-exam-agent` | Coded | UiPath Python SDK — deterministic | — | superseded by the LangGraph version | Original forensic routing agent — kept as a documented reference implementation |
 | `case-job-janitor` | Coded · ops | UiPath Python SDK — no LLM | — | standalone · hourly Orchestrator trigger | Sweeps zombie "Running" Maestro job rows the platform never flips to Successful |
-| `audit-ledger-writer` | Coded · Function | UiPath Python SDK — no LLM | — | standalone · Orchestrator process (like the janitor) | Persists one immutable, queryable `AuditRecord` row per dispositioned obligation into Data Fabric — a survey-ready compliance ledger complementing Maestro's Action History; idempotent (keyed on `auditRecordId` per `case_ref`) |
+| `audit-ledger-writer-langgraph` | **Coded · LangGraph** | LangGraph `StateGraph` via `uipath-langchain` — no LLM | — | **master · Closed (`tALWdgr01`) — LIVE** | Fires in-case at case closure (receives `case_ref` from `metadata.caseId`) and persists immutable, queryable `AuditRecord` rows into Data Fabric — a survey-ready compliance ledger complementing Maestro's Action History; idempotent (keyed on `auditRecordId` per `case_ref`) so a duplicate fire writes nothing |
 
 > **Models & governance.** The 6 Agent Builder agents run **Claude Sonnet 4.6 (BYO-LLM)**; the Coded
 > agents are deterministic Python whose *optional* advisory enrichment calls the UiPath LLM Gateway
-> (first-party OpenAI). Only `forensic-self-exam-agent-langgraph` is a true LangGraph agent. **Every**
-> LLM call — Claude or OpenAI — flows through the **LLM Gateway → Trust Layer** PHI/PII guardrails.
+> (first-party OpenAI). Two of the Coded Agents are true LangGraph `StateGraph` agents —
+> `forensic-self-exam-agent-langgraph` and `audit-ledger-writer-langgraph` — both deployed via
+> `uipath-langchain`. **Every** LLM call — Claude or OpenAI — flows through the **LLM Gateway →
+> Trust Layer** PHI/PII guardrails.
 
 ### Integration Service API Workflows (19, `Type:"Api"`)
 
@@ -369,11 +371,12 @@ Per-agent Agent Memory is a deploy-time toggle, not fabricated offline config; c
 
 **Case utilities (2)** — `register-stakeholder` (parent-case onboarding: registers the stakeholder
 and pulls its BAA) and `generate-audit-record` (records a per-obligation audit entry into the
-case's Action History). Each dispositioned obligation is also persisted as an immutable,
-queryable row in the `AuditRecord` **Data Fabric** entity by the deployed `audit-ledger-writer`
-Coded Function agent (core at `agents/audit-ledger-writer/agent.py`; ops runner
-`scripts/populate_audit_ledger.py`) — a survey-ready compliance ledger that complements the
-Maestro Action History.
+case's Action History). The full case is also persisted as immutable, queryable rows in the
+`AuditRecord` **Data Fabric** entity by the `audit-ledger-writer-langgraph` Coded Agent — a
+LangGraph `StateGraph` deployed via `uipath-langchain` and wired into the master's Closed stage
+(task `tALWdgr01`). It fires **in-case** at case closure, receiving `case_ref` from
+`metadata.caseId`, and writes the immutable ledger rows live during the run (idempotent on a
+duplicate fire) — a survey-ready compliance ledger that complements the Maestro Action History.
 
 **UiPath Healthcare Agentic Solutions (3)** — the *vertical bridge*: CascadeCare orchestrates
 UiPath's own ViVE-2026 Healthcare Solutions as case-invoked tasks inside the stakeholder-parent's

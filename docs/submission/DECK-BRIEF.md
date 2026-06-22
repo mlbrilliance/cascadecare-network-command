@@ -118,7 +118,7 @@ Slides 1–5 are the *story* (≈90s), 6–11 the *proof* (≈75s), 12–14 the 
 ## Slide 9 — 12 agents, 2 frameworks, all governed
 - **Key message:** A multi-framework agent layer, every call through the Trust Layer.
 - **On slide:** "**12 agents** — 6 Agent Builder (Claude Sonnet 4.6 BYO-LLM) + 6 Coded (Python
-  SDK), one a **LangGraph `StateGraph`** via `uipath-langchain`." Banner: *"Every LLM call →
+  SDK), two **LangGraph `StateGraph`** agents via `uipath-langchain`." Banner: *"Every LLM call →
   UiPath LLM Gateway → Trust Layer (PHI/PII guardrails). PHI never leaves the governance
   boundary."*
 - **Visual:** agent roster grid colored by type (violet/cyan), with the amber Trust Layer bar.
@@ -182,8 +182,8 @@ Slides 1–5 are the *story* (≈90s), 6–11 the *proof* (≈75s), 12–14 the 
 ---
 
 ## Appendix — assets & facts to keep exact (do not drift)
-- Live deploy: **`clearflow-solution` 1.0.32 → `Shared/CascadeCare-v110`**; full cascade Completed.
-- Counts: **12 agents** (6 Agent Builder + 6 Coded; 1 LangGraph), **38 runtime artifacts**, **13
+- Live deploy: **`clearflow-solution` 1.0.34 → `Shared/CascadeCare-v110`**; full cascade Completed.
+- Counts: **12 agents** (6 Agent Builder + 6 Coded; 2 LangGraph), **38 runtime artifacts**, **13
   UiPath product surfaces**, **5 reversals**, **3 case levels**, **13 live instances** at fan-out,
   **2 HITL gates**.
 - Architecture image: `docs/images/architecture.png` (schematic — *not* live footage; never label

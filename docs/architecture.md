@@ -100,9 +100,11 @@ Role in demo: cold-open cut (0–20s). Shows the expected happy path. When Rever
 > **Current count: 6 Agent Builder + 6 Coded.** The tables below are the original design (4 + 3).
 > The shipped system adds `assess-claim-disruption` + `classify-obligation` (Agent Builder) and
 > `forensic-self-exam-agent-langgraph` (a **LangGraph `StateGraph`**, LIVE) + `case-job-janitor`
-> + `audit-ledger-writer` (a Coded **Function** agent, job-invoked standalone like the janitor —
-> not in any caseplan — writing an immutable, idempotent `AuditRecord` ledger row per dispositioned
-> obligation to Data Fabric) (Coded). The README "Agent inventory" table is the authoritative current list.
+> + `audit-ledger-writer-langgraph` (a second **LangGraph `StateGraph`** coded Agent, wired into the
+> master caseplan's **Closed stage** (task `tALWdgr01`) — it fires **in-case, live during the run**,
+> receives `case_ref` from `metadata.caseId`, and writes immutable, idempotent `AuditRecord` ledger
+> rows to Data Fabric — 6 rows per run, idempotent on duplicate fire) (Coded). The README "Agent
+> inventory" table is the authoritative current list.
 
 ### Agent Builder (original design: 4 agents — UiPath Agent Builder, low-code LLM + tools)
 

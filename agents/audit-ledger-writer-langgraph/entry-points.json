@@ -1,0 +1,142 @@
+{
+    "$schema": "https://cloud.uipath.com/draft/2024-12/entry-point",
+    "$id": "entry-points.json",
+    "entryPoints": [
+        {
+            "filePath": "agent",
+            "uniqueId": "36ef35ae-9aba-4513-8c35-79caa9464a68",
+            "type": "agent",
+            "input": {
+                "type": "object",
+                "properties": {
+                    "case_ref": {
+                        "title": "Case Ref",
+                        "type": "string"
+                    },
+                    "recorded_at": {
+                        "title": "Recorded At",
+                        "type": "string"
+                    },
+                    "entity_name": {
+                        "title": "Entity Name",
+                        "type": "string"
+                    },
+                    "dry_run": {
+                        "title": "Dry Run",
+                        "type": "boolean"
+                    },
+                    "eligible": {
+                        "title": "Eligible",
+                        "type": "integer"
+                    },
+                    "written": {
+                        "title": "Written",
+                        "type": "integer"
+                    },
+                    "skipped": {
+                        "title": "Skipped",
+                        "type": "integer"
+                    },
+                    "record_ids": {
+                        "items": {},
+                        "title": "Record Ids",
+                        "type": "array"
+                    },
+                    "error_type": {
+                        "title": "Error Type",
+                        "type": "string"
+                    },
+                    "error_message": {
+                        "title": "Error Message",
+                        "type": "string"
+                    }
+                },
+                "required": []
+            },
+            "output": {
+                "type": "object",
+                "properties": {
+                    "case_ref": {
+                        "title": "Case Ref",
+                        "type": "string"
+                    },
+                    "recorded_at": {
+                        "title": "Recorded At",
+                        "type": "string"
+                    },
+                    "entity_name": {
+                        "title": "Entity Name",
+                        "type": "string"
+                    },
+                    "dry_run": {
+                        "title": "Dry Run",
+                        "type": "boolean"
+                    },
+                    "eligible": {
+                        "title": "Eligible",
+                        "type": "integer"
+                    },
+                    "written": {
+                        "title": "Written",
+                        "type": "integer"
+                    },
+                    "skipped": {
+                        "title": "Skipped",
+                        "type": "integer"
+                    },
+                    "record_ids": {
+                        "items": {},
+                        "title": "Record Ids",
+                        "type": "array"
+                    },
+                    "error_type": {
+                        "title": "Error Type",
+                        "type": "string"
+                    },
+                    "error_message": {
+                        "title": "Error Message",
+                        "type": "string"
+                    }
+                },
+                "required": []
+            },
+            "graph": {
+                "nodes": [
+                    {
+                        "id": "__start__",
+                        "name": "__start__",
+                        "type": "__start__",
+                        "subgraph": null,
+                        "metadata": {}
+                    },
+                    {
+                        "id": "write_ledger_node",
+                        "name": "write_ledger_node",
+                        "type": "node",
+                        "subgraph": null,
+                        "metadata": {}
+                    },
+                    {
+                        "id": "__end__",
+                        "name": "__end__",
+                        "type": "__end__",
+                        "subgraph": null,
+                        "metadata": {}
+                    }
+                ],
+                "edges": [
+                    {
+                        "source": "__start__",
+                        "target": "write_ledger_node",
+                        "label": null
+                    },
+                    {
+                        "source": "write_ledger_node",
+                        "target": "__end__",
+                        "label": null
+                    }
+                ]
+            }
+        }
+    ]
+}

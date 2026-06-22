@@ -45,7 +45,7 @@ offline `uip solution pack` probes). Diagnoses were empirical, not guessed — e
 | 12 | `multi-customer-pattern-detector` | Coded Agent | Claude Code + `uipath-agents` (TDD) | [agents-coded](docs/coding-agents/agents-coded.md) |
 | 13 | `forensic-self-exam-agent` (original; superseded by #10) | Coded Agent | Claude Code + `uipath-agents` (TDD) | [agents-coded](docs/coding-agents/agents-coded.md) |
 | 14 | `case-job-janitor` (ops; hourly Orchestrator trigger) | Coded Agent | Claude Code + `uipath-agents` (TDD) | [agents-coded](docs/coding-agents/agents-coded.md) |
-| 15 | `audit-ledger-writer` (ops; standalone Orchestrator job, v0.1.2; immutable Data Fabric `AuditRecord` ledger, idempotent) | **Coded · Function** (Python SDK) | Claude Code + `uipath-agents` (TDD) | [agents-coded](docs/coding-agents/agents-coded.md) |
+| 15 | `audit-ledger-writer-langgraph` (in-case at master Closed stage `tALWdgr01`; immutable Data Fabric `AuditRecord` ledger, idempotent; 6 rows/run) | **Coded · LangGraph** `StateGraph` (`uipath-langchain`) | Claude Code + `uipath-agents` (TDD) | [agents-coded](docs/coding-agents/agents-coded.md) |
 | 16–34 | `api_workflows/*` (**19 slugs**, incl. 3 ViVE Healthcare bridges) | **API Workflow** (`Type:"Api"`, CNCF Serverless 1.0.0) | Claude Code + `uipath-api-workflow` | [api-workflows](docs/coding-agents/api-workflows.md) |
 | 35 | `clearflow-ideal-incident-response` | Maestro **BPMN** | Claude Code + `uipath-maestro-bpmn` | [bpmn](docs/coding-agents/bpmn.md) |
 | 36 | `case-closed-notification` | Maestro BPMN | Claude Code + `uipath-maestro-bpmn` | [bpmn](docs/coding-agents/bpmn.md) |

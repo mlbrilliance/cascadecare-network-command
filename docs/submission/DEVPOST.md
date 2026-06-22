@@ -70,14 +70,17 @@ All running live on UiPath Automation Cloud (`clearflow-solution` 1.0.32, folder
 - **6 Agent Builder agents** (**Claude Sonnet 4.6** BYO-LLM through UiPath LLM Gateway):
   vector-hypothesis-agent, baa-boundary-reasoner, fiduciary-conflict-detector,
   negligent-monitoring-risk-agent, assess-claim-disruption, classify-obligation
-- **6 Coded Agents** (Python SDK): claim-flow-anomaly-detector, multi-customer-pattern-detector,
+- **6 Coded Agents** (Python SDK; **two are LangGraph `StateGraph` agents** via `uipath-langchain`):
+  claim-flow-anomaly-detector, multi-customer-pattern-detector,
   **forensic-self-exam-agent-langgraph** (a **LangGraph `StateGraph`** deployed via
   `uipath-langchain` — the live forensic agent, proving the agent layer is framework-agnostic
   under Maestro Case), forensic-self-exam-agent (original, superseded), case-job-janitor
-  (ops — sweeps platform job-state drift hourly), and **audit-ledger-writer** (a Coded
-  **Function** agent deployed standalone like the janitor — *not* in-case / not under a stage —
-  that persists one immutable, queryable `AuditRecord` row per dispositioned obligation to Data
-  Fabric: a survey-ready compliance ledger complementing Maestro's Action History; idempotent)
+  (ops — sweeps platform job-state drift hourly), and **audit-ledger-writer-langgraph** (a second
+  **LangGraph `StateGraph`** agent, structurally identical to the forensic agent — wired into the
+  master caseplan's **Closed stage**, it fires **in-case, live during the run**, receives `case_ref`
+  from `metadata.caseId`, and persists immutable, queryable `AuditRecord` rows to Data Fabric: a
+  survey-ready compliance ledger complementing Maestro's Action History — 6 rows per run, idempotent
+  on duplicate fire)
 - **19 Integration Service API Workflows** — one mock front per external party (6 providers,
   4 payers, regulator, insurer, counsel, vendor, audit) + the 3 ViVE healthcare-solution bridges
 - **2 Maestro BPMN** (ideal-response playbook that spawns the master case; closure
@@ -139,9 +142,10 @@ externalized agent prompts** — driving the `uip` CLI and the official `uipath-
 under a test-gated spec-kit workflow. Diagnoses were empirical, not guessed (e.g. Orchestrator
 Error 2005 root-caused by inspecting the offline-packed `package-descriptor.json`). The Criterion-3
 exception handling above was authored test-first: a failing test proved the forensic agent was
-silently swallowing an LLM-Gateway failure *before* the fix landed. One of the six Coded Agents is
-a **LangGraph `StateGraph`** (via `uipath-langchain`) — a self-contained, specialized coded agent
-that anchors our coding-agent bonus evidence.
+silently swallowing an LLM-Gateway failure *before* the fix landed. Two of the six Coded Agents are
+**LangGraph `StateGraph`** agents (via `uipath-langchain`) — the live forensic agent and the in-case
+audit-ledger writer — self-contained, specialized coded agents that anchor our coding-agent bonus
+evidence.
 
 Evidence: `CODING_AGENTS.md` (full 38-artifact authorship table), `CLAUDE_CODE_USAGE.md`,
 `docs/coding-agents/` (per-type evidence pages + prompt logs + screenshots

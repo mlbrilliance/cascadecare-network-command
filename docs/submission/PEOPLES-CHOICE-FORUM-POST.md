@@ -39,8 +39,8 @@ A master crisis case spawns a case **per stakeholder**, and each of those spawns
 legal obligation** — **three levels of native Maestro Case nesting** — while **five goal
 reversals** reshape the response across a simulated 90-day timeline. Along the way it:
 
-- runs **11 AI agents** (6 Agent Builder on Claude Sonnet 4.6 BYO-LLM + 5 Coded Python agents,
-  **one a LangGraph `StateGraph`** via `uipath-langchain`),
+- runs **12 AI agents** (6 Agent Builder on Claude Sonnet 4.6 BYO-LLM + 6 Coded Python agents,
+  **two of them LangGraph `StateGraph` agents** via `uipath-langchain`),
 - routes **every LLM call through the UiPath LLM Gateway + Trust Layer** (PHI/PII guardrails),
 - **pauses for a human** at the two decisions a machine shouldn't make alone — and *reads that
   ruling downstream* to reshape the litigation posture,

@@ -244,7 +244,7 @@ disconnected agent runs and a war room. With it, it's one auditable case that co
   for the agents you already ship; swap mocks for connectors and it's production; it produces
   the accreditation-grade audit trail your customers are surveyed against."
 - **Developer / community (People's Choice):** emphasize *how it's built* — Maestro Case canvas
-  as the orchestrator, LangGraph agent via `uipath-langchain`, governed BYO-LLM, and the
+  as the orchestrator, two LangGraph agents via `uipath-langchain`, governed BYO-LLM, and the
   open-source **Maestro Case Kit** they can install today.
 - **Public / non-technical:** use the conductor metaphor and the ER analogy — "the agents are
   specialists; CascadeCare is the incident commander who runs the whole response and keeps the
@@ -271,9 +271,9 @@ disconnected agent runs and a war room. With it, it's one auditable case that co
 | Criterion (Phase 1) | The story beat that proves it |
 |---|---|
 | **1 · Business Impact & Adoption** | The vertical bridge — crisis orchestrator for UiPath's own ViVE agents; accreditation-grade audit trail; adoptable with a connector swap. |
-| **2 · Platform Usage** | 13 UiPath product surfaces, Maestro Case canvas as the orchestrator, governed BYO-LLM via Trust Layer, LangGraph via `uipath-langchain` — *plus the +2 coding-agent bonus* (built with Claude Code) and the open-source Maestro Case Kit. |
+| **2 · Platform Usage** | 13 UiPath product surfaces, Maestro Case canvas as the orchestrator, governed BYO-LLM via Trust Layer, two LangGraph agents via `uipath-langchain` — *plus the +2 coding-agent bonus* (built with Claude Code) and the open-source Maestro Case Kit. |
 | **3 · Technical Execution / Feasibility** | 3-level native nesting, the case progressing itself, four-layer exception handling (agents degrade, the case never crashes), the consumed HITL ruling. |
-| **4 · Completeness of Delivery** | Live on Automation Cloud (1.0.32), full cascade Completed end-to-end, public repo + README + ≤5-min video + deck. |
+| **4 · Completeness of Delivery** | Live on Automation Cloud (1.0.34), full cascade Completed end-to-end, public repo + README + ≤5-min video + deck. |
 | **5 · Creativity & Innovation** | A self-reshaping crisis case with five goal reversals and a six-way fan-out — an orchestration pattern, not a linear toy. |
 
 ---
@@ -294,9 +294,9 @@ disconnected agent runs and a war room. With it, it's one auditable case that co
   live proof is the video + the tenant.
 - ❌ Overstate Context Grounding. → ✅ It's **live + retrieval-verified** (BAA-corpus); claim
   retrieval, not fine-tuning.
-- Numbers to keep consistent everywhere: **12 agents** (6 Agent Builder + 6 Coded, 1 LangGraph),
+- Numbers to keep consistent everywhere: **12 agents** (6 Agent Builder + 6 Coded, 2 LangGraph),
   **38 runtime artifacts**, **13 product surfaces**, **5 reversals**, **3 case levels**, **13
-  live instances** at fan-out, **2 HITL gates**, live deploy **1.0.32 → CascadeCare-v110**.
+  live instances** at fan-out, **2 HITL gates**, live deploy **1.0.34 → CascadeCare-v110**.
 
 ---
 

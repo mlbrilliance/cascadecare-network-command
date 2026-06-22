@@ -1,34 +1,43 @@
-"""Audit-Ledger Writer — UiPath Coded Function Agent.
+"""Audit-Ledger Writer — UiPath LangGraph Coded Agent.
 
-Why this exists: when an obligation grandchild is dispositioned (filed /
-withdrawn), the in-case `generate-audit-record` API workflow records the entry
-into the case's Action History — durable, but not a queryable, exportable table.
-Accreditors (The Joint Commission, NCQA, ACHC) ask for a *survey-ready* ledger
-they can filter and export. This writer persists one **immutable, detailed**
-row per obligation into the `AuditRecord` Data Fabric entity, giving ClearFlow a
-queryable compliance ledger that complements Maestro's Action History.
+Why a LangGraph Agent (not a Coded Function): a Maestro Case ``type:agent`` task
+only wires inputs to an Agent-type process the Studio Web canvas can resolve. A
+coded Function is NOT canvas-resolvable, so its inputs (here, the run's
+``case_ref``) never get wired and arrive empty — verified live 2026-06-22 (the
+Function received ``{}`` and faulted). Re-expressing the writer as a single-node
+LangGraph ``StateGraph`` (the forensic-self-exam pattern) makes it an Agent the
+canvas resolves, so ``case_ref = metadata.caseId`` is wired and forwarded in-case.
 
-Design: the per-instance case variables are transient — the Maestro
-``/instances/{id}/global-variables`` blob 404s (PIMS-410201) seconds after
-completion — so the ledger's *detail* is sourced from the canonical, deterministic
-obligation catalog (the real scenario: six stakeholders, fixed obligation types)
-and bound to the *real* run via its master case reference (e.g. ``CFCS-67598194``).
-Every row is therefore real scenario data tied to a real run, never fabricated
-per-instance values.
+Why this exists: when an obligation grandchild is dispositioned, the in-case
+``generate-audit-record`` API workflow records the entry into the case's Action
+History — durable, but not a queryable, exportable table. Accreditors (The Joint
+Commission, NCQA, ACHC) ask for a *survey-ready* ledger they can filter and
+export. This agent persists one immutable, detailed row per obligation into the
+``AuditRecord`` Data Fabric entity.
 
-Deterministic core: ``compose_audit_records`` / ``select_new`` / ``run_ledger``
-are pure and fully testable without UiPath auth — the module imports only stdlib
-+ pydantic at module level; the ``uipath`` SDK import lives inside ``main``.
-Writes go through ``sdk.entities`` using the agent's own runtime identity, so no
-Integration Service connection is required. Idempotent: ``auditRecordId`` is keyed
-on the run's case reference, so re-running over the same case writes nothing new.
+Design: per-instance case variables are transient (the Maestro
+``/instances/{id}/global-variables`` blob 404s seconds after completion), so the
+ledger's detail is sourced from the canonical, deterministic obligation catalog
+(six stakeholders, fixed obligation types) bound to the real run via its master
+case reference (e.g. ``CFCS-67598194``). Every row is real scenario data tied to
+a real run, never fabricated per-instance values.
+
+The pure core (``compose_audit_records`` / ``select_new`` / ``extract_record_ids``
+/ ``run_ledger``) is unchanged and fully testable without UiPath auth; the single
+graph node ``write_ledger_node`` is the only auth-gated glue (lazy SDK import).
+Writes go through ``sdk.entities`` using the agent's robot identity (no IS
+connection). Idempotent: ``auditRecordId`` is keyed on the case reference, so
+re-running over the same case writes nothing new. AuditRecord is a tenant/default
+DF entity (FolderId all-zeros), so it is resolved WITHOUT a folder_key.
 """
 
 from __future__ import annotations
 
 from typing import Any, Callable, Iterable
 
+from langgraph.graph import END, START, StateGraph
 from pydantic import BaseModel, Field
+from typing_extensions import TypedDict
 
 # CascadeCare-v110 deployment folder (DEMO-RUNBOOK reference table).
 DEFAULT_FOLDER_KEY = "de7b7c18-d743-4c8c-b555-9bd3b96fe524"
@@ -90,7 +99,10 @@ class Input(BaseModel):
     """Which run to ledger, and the immutable recording timestamp."""
 
     case_ref: str = Field(
-        description="Master case external id of the run to ledger (e.g. CFCS-67598194).",
+        default="",
+        description="Master case external id of the run to ledger (e.g. CFCS-67598194). "
+        "Optional with an empty default so an in-case invocation that passes no job "
+        "arguments returns data (NO_CASE_REF) instead of faulting on validation.",
     )
     recorded_at: str = Field(
         default="",
@@ -112,7 +124,7 @@ class Input(BaseModel):
 
 
 class Output(BaseModel):
-    """Ledger-write report (entrypoint never raises; errors land here)."""
+    """Ledger-write report (the agent never raises; errors land here)."""
 
     case_ref: str = ""
     eligible: int = 0
@@ -212,6 +224,14 @@ def run_ledger(
 ) -> Output:
     """Orchestrate one ledger write over injected list/insert callables (testable)."""
     out = Output(case_ref=inp.case_ref)
+
+    # Guard the empty-input path (an in-case invocation that passes no job args):
+    # return data, never fault, and never write empty-ref "AUD--<stakeholder>" garbage.
+    if not (inp.case_ref or "").strip():
+        out.error_type = "NO_CASE_REF"
+        out.error_message = "case_ref not provided — nothing written"
+        return out
+
     records = compose_audit_records(inp.case_ref, OBLIGATION_CATALOG, recorded_at)
     out.eligible = len(records)
 
@@ -233,31 +253,68 @@ def run_ledger(
     return out
 
 
-def main(input: Input) -> Output:  # noqa: A002 — UiPath entrypoint signature uses `input`.
-    """UiPath Coded Function entrypoint (declared in uipath.json `functions`)."""
+# ── LangGraph wrapper ──────────────────────────────────────────────────────────
+# Single-node graph so the runtime captures the node's full return as the agent
+# output (no Annotated reducers / multi-node accumulation to worry about).
+
+
+class LedgerState(TypedDict, total=False):
+    # inputs — the caseplan agent task wires `case_ref = =js:metadata.caseId`.
+    case_ref: str
+    recorded_at: str
+    entity_name: str
+    dry_run: bool
+    # outputs
+    eligible: int
+    written: int
+    skipped: int
+    record_ids: list
+    error_type: str
+    error_message: str
+
+
+def write_ledger_node(state: LedgerState) -> dict[str, Any]:
+    """The only auth-gated node: resolve the tenant entity, run the pure core.
+
+    Never raises — an empty in-case ``case_ref``, an auth failure, or an insert
+    failure all become structured data (NO_CASE_REF / AUTH_FAILED /
+    LEDGER_WRITE_FAILED), so the graph (and the case's Closed stage) never fault.
+    """
+    case_ref = (state.get("case_ref") or "").strip()
+    base: dict[str, Any] = {
+        "case_ref": state.get("case_ref") or "",
+        "eligible": 0, "written": 0, "skipped": 0, "record_ids": [],
+        "error_type": "", "error_message": "",
+    }
+
+    if not case_ref:
+        return {**base, "error_type": "NO_CASE_REF",
+                "error_message": "case_ref not provided — nothing written"}
+
     try:
         from uipath.platform import UiPath  # noqa: PLC0415 — lazy, auth-gated.
 
         sdk = UiPath()
-        # AuditRecord is a tenant/default Data Fabric entity (FolderId is all-zeros),
-        # so it is resolved WITHOUT a folder_key — passing the run's Orchestrator
-        # folder scopes the lookup to that folder's DF environment, where the
-        # tenant entity does not exist (verified live 2026-06-21: HTTP 400
-        # "Entity 'AuditRecord' not found in folder ..."). folder_key stays on the
-        # Input as run-context metadata only.
-        entity = sdk.entities.retrieve_by_name(input.entity_name)
+        entity = sdk.entities.retrieve_by_name(state.get("entity_name") or ENTITY_NAME)
         entity_key = getattr(entity, "key", None) or getattr(entity, "id", "")
     except Exception as exc:
-        return Output(case_ref=input.case_ref, error_type="AUTH_FAILED", error_message=str(exc))
+        return {**base, "error_type": "AUTH_FAILED", "error_message": str(exc)}
 
     def list_existing_ids() -> set[str]:
-        # EntityRecordsListResponse subclasses ``list`` — iterate it directly.
         return extract_record_ids(sdk.entities.list_records(entity_key, limit=1000))
 
     def insert_records(rows: list[dict[str, Any]]) -> None:
         sdk.entities.insert_records(entity_key, records=rows)
 
-    try:
-        return run_ledger(input, list_existing_ids, insert_records, input.recorded_at)
-    except Exception as exc:  # entrypoint must not leak exceptions.
-        return Output(case_ref=input.case_ref, error_type="LEDGER_WRITE_FAILED", error_message=str(exc))
+    recorded_at = state.get("recorded_at") or ""
+    inp = Input(case_ref=case_ref, recorded_at=recorded_at, dry_run=bool(state.get("dry_run", False)))
+    out = run_ledger(inp, list_existing_ids, insert_records, recorded_at)
+    return out.model_dump()
+
+
+_builder = StateGraph(LedgerState)
+_builder.add_node("write_ledger_node", write_ledger_node)
+_builder.add_edge(START, "write_ledger_node")
+_builder.add_edge("write_ledger_node", END)
+
+graph = _builder.compile()

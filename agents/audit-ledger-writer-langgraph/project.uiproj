@@ -1,0 +1,6 @@
+{
+  "ProjectType": "Agent",
+  "Name": "audit-ledger-writer-langgraph",
+  "Description": "Persists one immutable, detailed audit row per dispositioned obligation into the AuditRecord Data Fabric entity: a survey-ready compliance ledger that complements the Maestro Action History (CascadeCare Network Command). LangGraph coded agent.",
+  "MainFile": null
+}

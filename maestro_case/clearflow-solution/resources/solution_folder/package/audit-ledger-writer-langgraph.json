@@ -1,0 +1,32 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "audit-ledger-writer-langgraph",
+    "kind": "package",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "isOverridable": true,
+    "dependencies": [],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "fileName": "audit-ledger-writer-langgraph.0.2.1.nupkg",
+      "fileReference": "audit-ledger-writer-langgraph_0.2.1",
+      "name": "audit-ledger-writer-langgraph"
+    },
+    "locks": [],
+    "key": "audit-ledger-writer-langgraph:0.2.1",
+    "files": [
+      {
+        "name": "audit-ledger-writer-langgraph.0.2.1.nupkg",
+        "kind": "Package",
+        "version": "0.2.1",
+        "url": "https://staging.uipath.com/c31109ca-8ee8-4277-b8e8-976b5177d9e9/c75333b5-65dd-42dd-b500-6c01b8fcd6df/orchestrator_/odata/Processes/UiPath.Server.Configuration.OData.DownloadPackage(key='audit-ledger-writer-langgraph:0.2.1')?feedId=03f2fcec-0e67-4ab5-b4cd-6b8c855da3ec",
+        "key": "audit-ledger-writer-langgraph_0.2.1"
+      }
+    ]
+  }
+}
