@@ -1,0 +1,168 @@
+{
+    "$schema": "https://cloud.uipath.com/draft/2024-12/entry-point",
+    "$id": "entry-points.json",
+    "entryPoints": [
+        {
+            "filePath": "main",
+            "uniqueId": "1bf9d1c3-851d-4949-ac80-49dc4037496e",
+            "type": "function",
+            "input": {
+                "type": "object",
+                "properties": {
+                    "case_ref": {
+                        "description": "Master case external id of the run to ledger (e.g. CFCS-67598194).",
+                        "title": "Case Ref",
+                        "type": "string"
+                    },
+                    "recorded_at": {
+                        "default": "",
+                        "description": "ISO-8601 recording timestamp (passed in for determinism \u2014 matches the master case completion time).",
+                        "title": "Recorded At",
+                        "type": "string"
+                    },
+                    "folder_key": {
+                        "default": "de7b7c18-d743-4c8c-b555-9bd3b96fe524",
+                        "description": "Orchestrator folder hosting the run (GUID).",
+                        "title": "Folder Key",
+                        "type": "string"
+                    },
+                    "entity_name": {
+                        "default": "AuditRecord",
+                        "description": "Data Fabric entity that holds the audit ledger.",
+                        "title": "Entity Name",
+                        "type": "string"
+                    },
+                    "dry_run": {
+                        "default": false,
+                        "description": "Compose and report records without inserting anything.",
+                        "title": "Dry Run",
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "case_ref"
+                ],
+                "title": "Input"
+            },
+            "output": {
+                "type": "object",
+                "properties": {
+                    "case_ref": {
+                        "default": "",
+                        "title": "Case Ref",
+                        "type": "string"
+                    },
+                    "eligible": {
+                        "default": 0,
+                        "title": "Eligible",
+                        "type": "integer"
+                    },
+                    "written": {
+                        "default": 0,
+                        "title": "Written",
+                        "type": "integer"
+                    },
+                    "skipped": {
+                        "default": 0,
+                        "title": "Skipped",
+                        "type": "integer"
+                    },
+                    "record_ids": {
+                        "default": [],
+                        "items": {
+                            "type": "string"
+                        },
+                        "title": "Record Ids",
+                        "type": "array"
+                    },
+                    "error_type": {
+                        "default": "",
+                        "title": "Error Type",
+                        "type": "string"
+                    },
+                    "error_message": {
+                        "default": "",
+                        "title": "Error Message",
+                        "type": "string"
+                    }
+                },
+                "required": [],
+                "title": "Output"
+            },
+            "graph": {
+                "nodes": [
+                    {
+                        "id": "agent.py:260",
+                        "name": "main",
+                        "type": "function",
+                        "metadata": {
+                            "file": "agent.py"
+                        }
+                    },
+                    {
+                        "id": "agent.py:204",
+                        "name": "extract_record_ids",
+                        "type": "function",
+                        "metadata": {
+                            "file": "agent.py"
+                        }
+                    },
+                    {
+                        "id": "agent.py:233",
+                        "name": "run_ledger",
+                        "type": "function",
+                        "metadata": {
+                            "file": "agent.py"
+                        }
+                    },
+                    {
+                        "id": "agent.py:171",
+                        "name": "compose_audit_records",
+                        "type": "function",
+                        "metadata": {
+                            "file": "agent.py"
+                        }
+                    },
+                    {
+                        "id": "agent.py:139",
+                        "name": "_summary",
+                        "type": "function",
+                        "metadata": {
+                            "file": "agent.py"
+                        }
+                    },
+                    {
+                        "id": "agent.py:179",
+                        "name": "select_new",
+                        "type": "function",
+                        "metadata": {
+                            "file": "agent.py"
+                        }
+                    }
+                ],
+                "edges": [
+                    {
+                        "source": "agent.py:260",
+                        "target": "agent.py:204"
+                    },
+                    {
+                        "source": "agent.py:171",
+                        "target": "agent.py:139"
+                    },
+                    {
+                        "source": "agent.py:233",
+                        "target": "agent.py:171"
+                    },
+                    {
+                        "source": "agent.py:233",
+                        "target": "agent.py:179"
+                    },
+                    {
+                        "source": "agent.py:260",
+                        "target": "agent.py:233"
+                    }
+                ]
+            }
+        }
+    ]
+}

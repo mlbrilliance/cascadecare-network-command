@@ -89,7 +89,7 @@ Slides 1–5 are the *story* (≈90s), 6–11 the *proof* (≈75s), 12–14 the 
 ## Slide 6 — The solution in one picture (ARCHITECTURE — hero slide)
 - **Key message:** One living case file orchestrates the whole crisis, UiPath-native.
 - **On slide:** full-bleed `docs/images/architecture.png`. Minimal text overlay: "One evolving
-  Maestro Case · 3 nested levels · 11 agents · governed by the Trust Layer."
+  Maestro Case · 3 nested levels · 12 agents · governed by the Trust Layer."
 - **Visual:** the architecture diagram itself (already on-brand).
 - **Notes:** "Here's the whole system. The Maestro Case canvas *is* the orchestrator — no
   external harness. Master crisis case at the top, agents plugged into stages, the data and
@@ -115,14 +115,14 @@ Slides 1–5 are the *story* (≈90s), 6–11 the *proof* (≈75s), 12–14 the 
 - **Notes:** "Five times, new information changes the master goal, and the case re-routes itself —
   including re-opening a settled stage at Reversal 5."
 
-## Slide 9 — 11 agents, 2 frameworks, all governed
+## Slide 9 — 12 agents, 2 frameworks, all governed
 - **Key message:** A multi-framework agent layer, every call through the Trust Layer.
-- **On slide:** "**11 agents** — 6 Agent Builder (Claude Sonnet 4.6 BYO-LLM) + 5 Coded (Python
+- **On slide:** "**12 agents** — 6 Agent Builder (Claude Sonnet 4.6 BYO-LLM) + 6 Coded (Python
   SDK), one a **LangGraph `StateGraph`** via `uipath-langchain`." Banner: *"Every LLM call →
   UiPath LLM Gateway → Trust Layer (PHI/PII guardrails). PHI never leaves the governance
   boundary."*
 - **Visual:** agent roster grid colored by type (violet/cyan), with the amber Trust Layer bar.
-- **Notes:** "Eleven agents across two frameworks — and crucially, every single LLM call routes
+- **Notes:** "Twelve agents across two frameworks — and crucially, every single LLM call routes
   through UiPath's Trust Layer."
 
 ## Slide 10 — Humans stay accountable (2 HITL gates)
@@ -161,7 +161,7 @@ Slides 1–5 are the *story* (≈90s), 6–11 the *proof* (≈75s), 12–14 the 
 
 ## Slide 13 — Built with Claude Code (+2 bonus) + open-source give-back
 - **Key message:** A coding agent authored 100% of it — and shipped reusable tooling for the platform.
-- **On slide:** "Claude Code authored **every one of 37 UiPath artifacts** and every test,
+- **On slide:** "Claude Code authored **every one of 38 UiPath artifacts** and every test,
   test-first — the +2 coding-agent bonus (max score 27)." Then: "**Above & beyond:** we extracted
   our hardest-won UiPath discoveries into **Maestro Case Kit** — an open-source, offline CLI +
   MCP server + agent skills (`pip install maestro-case-kit`) UiPath could dogfood."
@@ -175,7 +175,7 @@ Slides 1–5 are the *story* (≈90s), 6–11 the *proof* (≈75s), 12–14 the 
   Closing line: **"The crisis is the demo. The orchestration pattern is the product."** Footer:
   repo / live dashboard / demo-video links (`[HUMAN: paste]`).
 - **Visual:** the architecture diagram thumbnail + the "all Completed" proof badge.
-- **Notes:** "Three nested case levels, eleven agents, five reversals, two human gates, thirteen
+- **Notes:** "Three nested case levels, twelve agents, five reversals, two human gates, thirteen
   product surfaces, governed end to end — live, and built with Claude Code. CascadeCare is the
   crisis orchestrator for the healthcare agents UiPath already ships."
 
@@ -183,7 +183,7 @@ Slides 1–5 are the *story* (≈90s), 6–11 the *proof* (≈75s), 12–14 the 
 
 ## Appendix — assets & facts to keep exact (do not drift)
 - Live deploy: **`clearflow-solution` 1.0.32 → `Shared/CascadeCare-v110`**; full cascade Completed.
-- Counts: **11 agents** (6 Agent Builder + 5 Coded; 1 LangGraph), **37 runtime artifacts**, **13
+- Counts: **12 agents** (6 Agent Builder + 6 Coded; 1 LangGraph), **38 runtime artifacts**, **13
   UiPath product surfaces**, **5 reversals**, **3 case levels**, **13 live instances** at fan-out,
   **2 HITL gates**.
 - Architecture image: `docs/images/architecture.png` (schematic — *not* live footage; never label

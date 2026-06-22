@@ -14,6 +14,10 @@ compliance ledger that complements Maestro's Action History. The per-instance
 case variables are transient (global-variables blob 404s after completion), so
 the ledger's detail is sourced from the canonical deterministic scenario bound
 to the real run's case_ref.
+
+The deterministic core lives in the deployed Coded Agent at
+``agents/audit-ledger-writer/agent.py`` (single source of truth — the ops runner
+``scripts/populate_audit_ledger.py`` loads the same module by path).
 """
 
 from __future__ import annotations
@@ -28,7 +32,7 @@ if TYPE_CHECKING:
     from types import ModuleType
 
 REPO_ROOT = Path(__file__).parents[4]
-AGENT_PY = REPO_ROOT / "src" / "cascadecare" / "audit_ledger.py"
+AGENT_PY = REPO_ROOT / "agents" / "audit-ledger-writer" / "agent.py"
 
 CASE_REF = "CFCS-67598194"
 RECORDED_AT = "2026-06-20T03:38:40Z"
@@ -116,6 +120,44 @@ class TestComposeAuditRecords:
         a = agent.compose_audit_records(CASE_REF, agent.OBLIGATION_CATALOG, RECORDED_AT)
         b = agent.compose_audit_records(CASE_REF, agent.OBLIGATION_CATALOG, RECORDED_AT)
         assert a == b
+
+
+class _FakeRecord:
+    """Stand-in for a pydantic EntityRecord (has model_dump)."""
+
+    def __init__(self, data: dict[str, Any]) -> None:
+        self._data = data
+
+    def model_dump(self) -> dict[str, Any]:
+        return self._data
+
+
+class TestExtractRecordIds:
+    """Idempotency depends on reading existing ids back from the DF list response.
+
+    The live SDK returns an ``EntityRecordsListResponse`` (a ``list`` subclass) of
+    pydantic ``EntityRecord`` rows, and Data Fabric PascalCases field names on read
+    (``AuditRecordId``) even though we insert camelCase (``auditRecordId``). A
+    regression here silently writes duplicate rows (verified live 2026-06-21).
+    """
+
+    def test_reads_pascalcase_from_dicts(self, agent: ModuleType) -> None:
+        rows = [{"AuditRecordId": "AUD-x-alpha"}, {"AuditRecordId": "AUD-x-beta"}]
+        assert agent.extract_record_ids(rows) == {"AUD-x-alpha", "AUD-x-beta"}
+
+    def test_reads_camelcase_from_dicts(self, agent: ModuleType) -> None:
+        rows = [{"auditRecordId": "AUD-x-alpha"}]
+        assert agent.extract_record_ids(rows) == {"AUD-x-alpha"}
+
+    def test_reads_from_pydantic_like_rows(self, agent: ModuleType) -> None:
+        rows = [_FakeRecord({"AuditRecordId": "AUD-x-alpha", "CaseRef": "x"}),
+                _FakeRecord({"AuditRecordId": "AUD-x-beta"})]
+        assert agent.extract_record_ids(rows) == {"AUD-x-alpha", "AUD-x-beta"}
+
+    def test_empty_and_missing_field(self, agent: ModuleType) -> None:
+        assert agent.extract_record_ids([]) == set()
+        assert agent.extract_record_ids(None) == set()
+        assert agent.extract_record_ids([{"CaseRef": "x"}]) == set()
 
 
 class TestSelectNew:

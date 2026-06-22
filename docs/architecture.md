@@ -28,7 +28,7 @@
 +------------------------------------------------------------------+
 |                    INTELLIGENCE LAYER                             |
 |  UiPath Agent Builder × 6  (Claude BYO-LLM via LLM Gateway)    |
-|  UiPath Coded Agents × 5  (Python SDK, UiPath first-party LLM)  |
+|  UiPath Coded Agents × 6  (Python SDK, UiPath first-party LLM)  |
 |  UiPath Trust Layer  (PHI/PII detection on every LLM call)       |
 +------------------------------------------------------------------+
 |                    DATA LAYER                                     |
@@ -97,10 +97,12 @@ Role in demo: cold-open cut (0–20s). Shows the expected happy path. When Rever
 
 ## Agents (planned — Agent Builder agents Slice 008, Coded Agents Slice 009)
 
-> **Current count: 6 Agent Builder + 5 Coded.** The tables below are the original design (4 + 3).
+> **Current count: 6 Agent Builder + 6 Coded.** The tables below are the original design (4 + 3).
 > The shipped system adds `assess-claim-disruption` + `classify-obligation` (Agent Builder) and
 > `forensic-self-exam-agent-langgraph` (a **LangGraph `StateGraph`**, LIVE) + `case-job-janitor`
-> (Coded). The README "Agent inventory" table is the authoritative current list.
+> + `audit-ledger-writer` (a Coded **Function** agent, job-invoked standalone like the janitor —
+> not in any caseplan — writing an immutable, idempotent `AuditRecord` ledger row per dispositioned
+> obligation to Data Fabric) (Coded). The README "Agent inventory" table is the authoritative current list.
 
 ### Agent Builder (original design: 4 agents — UiPath Agent Builder, low-code LLM + tools)
 

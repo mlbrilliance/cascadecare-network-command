@@ -29,7 +29,7 @@ offline `uip solution pack` probes). Diagnoses were empirical, not guessed — e
 - [`docs/prompt-logs/`](docs/prompt-logs/) and [`docs/coding-agents/screenshots/`](docs/coding-agents/screenshots/)
   — session-capture channels (status tracked per their READMEs).
 
-## Authorship table — 37 UiPath artifacts
+## Authorship table — 38 UiPath artifacts
 
 | # | Artifact(s) | Type | Authoring agent + skill | Evidence |
 |---|---|---|---|---|
@@ -45,11 +45,12 @@ offline `uip solution pack` probes). Diagnoses were empirical, not guessed — e
 | 12 | `multi-customer-pattern-detector` | Coded Agent | Claude Code + `uipath-agents` (TDD) | [agents-coded](docs/coding-agents/agents-coded.md) |
 | 13 | `forensic-self-exam-agent` (original; superseded by #10) | Coded Agent | Claude Code + `uipath-agents` (TDD) | [agents-coded](docs/coding-agents/agents-coded.md) |
 | 14 | `case-job-janitor` (ops; hourly Orchestrator trigger) | Coded Agent | Claude Code + `uipath-agents` (TDD) | [agents-coded](docs/coding-agents/agents-coded.md) |
-| 15–33 | `api_workflows/*` (**19 slugs**, incl. 3 ViVE Healthcare bridges) | **API Workflow** (`Type:"Api"`, CNCF Serverless 1.0.0) | Claude Code + `uipath-api-workflow` | [api-workflows](docs/coding-agents/api-workflows.md) |
-| 34 | `clearflow-ideal-incident-response` | Maestro **BPMN** | Claude Code + `uipath-maestro-bpmn` | [bpmn](docs/coding-agents/bpmn.md) |
-| 35 | `case-closed-notification` | Maestro BPMN | Claude Code + `uipath-maestro-bpmn` | [bpmn](docs/coding-agents/bpmn.md) |
-| 36 | `clearflow-demo-driver` | Maestro **Flow** (Demo Driver) | Claude Code + `uipath-maestro-flow` | [flow](docs/coding-agents/flow.md) |
-| 37 | `clearflow-network-command` | UiPath **Apps** (Coded Web App dashboard) | Claude Code + `uipath-coded-apps` | [apps](docs/coding-agents/apps.md) |
+| 15 | `audit-ledger-writer` (ops; standalone Orchestrator job, v0.1.2; immutable Data Fabric `AuditRecord` ledger, idempotent) | **Coded · Function** (Python SDK) | Claude Code + `uipath-agents` (TDD) | [agents-coded](docs/coding-agents/agents-coded.md) |
+| 16–34 | `api_workflows/*` (**19 slugs**, incl. 3 ViVE Healthcare bridges) | **API Workflow** (`Type:"Api"`, CNCF Serverless 1.0.0) | Claude Code + `uipath-api-workflow` | [api-workflows](docs/coding-agents/api-workflows.md) |
+| 35 | `clearflow-ideal-incident-response` | Maestro **BPMN** | Claude Code + `uipath-maestro-bpmn` | [bpmn](docs/coding-agents/bpmn.md) |
+| 36 | `case-closed-notification` | Maestro BPMN | Claude Code + `uipath-maestro-bpmn` | [bpmn](docs/coding-agents/bpmn.md) |
+| 37 | `clearflow-demo-driver` | Maestro **Flow** (Demo Driver) | Claude Code + `uipath-maestro-flow` | [flow](docs/coding-agents/flow.md) |
+| 38 | `clearflow-network-command` | UiPath **Apps** (Coded Web App dashboard) | Claude Code + `uipath-coded-apps` | [apps](docs/coding-agents/apps.md) |
 
 Plus the connective tissue Claude Code authored: the `clearflow-solution` `.uipx` packaging
 (`scripts/pack-solution.sh`), Data Fabric entity schemas + seeding (`scripts/seed_data_fabric.py`),
@@ -108,11 +109,11 @@ platform itself**, not just one submission.
 
 - **Criterion 1 (real-world applicability):** a regulated-vertical crisis — payment-intermediary
   cyberattack with BAA/PHI boundaries and Trust-Layer guardrails — not a generic orchestration toy.
-- **Criterion 2 (orchestration & agents):** 11 agents across 3 nested case levels; the Reversal-3
+- **Criterion 2 (orchestration & agents):** 12 agents across 3 nested case levels; the Reversal-3
   6-way fan-out spawns 13 coordinated instances.
 - **Criterion 3 (exceptions):** four-layer defense-in-depth, authored test-first (see README
   "Exception, Failure & Edge-Case Handling").
-- **Criterion 4 (component variety):** 13 UiPath product surfaces / 37 artifacts (table above).
+- **Criterion 4 (component variety):** 13 UiPath product surfaces / 38 artifacts (table above).
 - **Criterion 5 (presentation):** live ≤5-min run + the Criterion-3 supplemental clip
   (`docs/submission/DEMO-criterion3-and-fanout.md`).
 - **Coding-agent bonus (+2):** this document + `CLAUDE_CODE_USAGE.md` + `docs/coding-agents/` —

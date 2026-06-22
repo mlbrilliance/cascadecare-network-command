@@ -65,7 +65,7 @@ Your project is a **bundle of files in this repo**. To make it real, that bundle
   Devpost page, deck. Everything below this block is the **2026-06-04 historical snapshot**.
 
 ### ✅ Done / built (offline, machine-verified)
-- All **runtime artifacts authored**: 3 Maestro Cases, 4 Agent Builder agents, 3 Coded Agents, 14 API Workflows, 1 BPMN, 1 Maestro Flow, 1 App.
+- All **runtime artifacts authored**: 3 Maestro Cases, 6 Agent Builder agents, 6 Coded Agents, 19 API Workflows, 2 BPMN, 1 Maestro Flow, 1 App (total 38).
 - **Full solution packs clean** (`clearflow-solution`, 9 projects).
 - **Case diagrams render** live (the "Unable to load diagram" bug is fixed).
 - **BPMN Error 1654 fixed** (canonical `processorchestration` shape).

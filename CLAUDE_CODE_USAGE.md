@@ -1,16 +1,17 @@
 # Claude Code Usage — AgentHack 2026 Coding-Agent Bonus
 
 This project was built end-to-end with **Claude Code** (Anthropic's official CLI). This page is
-the concise bonus-submission summary; the full 37-artifact authorship table and methodology are
+the concise bonus-submission summary; the full 38-artifact authorship table and methodology are
 in [`CODING_AGENTS.md`](CODING_AGENTS.md).
 
 **(a) Which coding agent.** Claude Code (Claude Opus / Sonnet), driving the UiPath `uip` CLI and
 the official `uipath-*` authoring skills.
 
 **(b) How it contributed.** Claude Code authored 100% of the runtime artifacts — 3 Maestro Case
-definitions, 6 Agent Builder agents (Claude Sonnet 4.6 BYO-LLM), 5 Coded Agents (one a LangGraph
-`StateGraph` via `uipath-langchain`), 19 API Workflows, 2 BPMN models, 1 Maestro Flow, 1 UiPath App
-(**37 artifacts**) — plus the solution packaging, Data Fabric seeding, and **680** offline test
+definitions, 6 Agent Builder agents (Claude Sonnet 4.6 BYO-LLM), 6 Coded Agents (one a LangGraph
+`StateGraph` via `uipath-langchain`; one a Coded Function — `audit-ledger-writer` — writing an
+immutable Data Fabric `AuditRecord` ledger), 19 API Workflows, 2 BPMN models, 1 Maestro Flow,
+1 UiPath App (**38 artifacts**) — plus the solution packaging, Data Fabric seeding, and **680** offline test
 gates. It worked in test-gated slices under a spec-kit workflow (`/speckit.plan → analyze →
 tasks → implement`), Spec-Gate-per-function, TDD (tests before source), and a zero-tolerance
 IP-safety audit on every commit. Diagnoses were empirical: e.g. Orchestrator **Error 2005** was

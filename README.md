@@ -29,10 +29,10 @@ A <b>UiPath Maestro Case</b> command center that manages a multi-hospital cyber-
 </p>
 
 <p align="center">
-  <img src="docs/images/architecture.png" width="900" alt="CascadeCare architecture — three nested Maestro Case levels, 11 agents under their stages, Trust Layer, and platform foundation" />
+  <img src="docs/images/architecture.png" width="900" alt="CascadeCare architecture — three nested Maestro Case levels, 12 agents, Trust Layer, and platform foundation" />
 </p>
 
-<p align="center"><sub><i>Schematic architecture diagram — three nested Maestro Case levels, 11 agents under their stages, the Trust Layer governing every LLM call, and the data / integration foundation. Not live-tenant footage.</i></sub></p>
+<p align="center"><sub><i>Schematic architecture diagram — three nested Maestro Case levels, 12 agents, the Trust Layer governing every LLM call, and the data / integration foundation. Not live-tenant footage.</i></sub></p>
 
 <!-- TODO(human, high-impact): a real live-run screen-capture (the actual UiPath canvas — Reversal-3 fan-out / forensic agent firing / HITL gate) would be even stronger when the tenant is up. -->
 
@@ -69,12 +69,12 @@ simultaneously** on the Maestro Case canvas.
 |---|---|
 | 🧱 **3-level native case nesting** | master crisis → 6 stakeholder parents → 6 obligation grandchildren, wired with the native `case-management` task |
 | 🔀 **5 mid-flight goal reversals** | the case re-routes *itself* across a simulated 90-day timeline; Reversal 3 fans out **13 live case instances** in one beat |
-| 🤖 **11 agents, 2 frameworks** | 6 Agent Builder (Claude Sonnet 4.6 BYO-LLM) + 5 Coded (Python SDK) — one a **LangGraph `StateGraph`** via `uipath-langchain` |
+| 🤖 **12 agents, 2 frameworks** | 6 Agent Builder (Claude Sonnet 4.6 BYO-LLM) + 6 Coded (Python SDK) — one a **LangGraph `StateGraph`** via `uipath-langchain` |
 | 🛡️ **Governed by default** | every LLM call routes through the UiPath **LLM Gateway + Trust Layer** (PHI/PII guardrails) |
 | 🧯 **Fails safe (Criterion 3)** | 4-layer exception handling — agents degrade instead of crashing; the case keeps moving |
 | 🏥 **Regulated-vertical realism** | a real class of healthcare payment-network cyberattack — orchestrating UiPath's own **ViVE-2026** healthcare agents |
 | 🟢 **Live on Automation Cloud** | full cascade proven end-to-end — master + 6 + 6 all reach **Completed** |
-| 🛠️ **Built with Claude Code** | 37 UiPath artifacts + 683 offline tests, authored test-first |
+| 🛠️ **Built with Claude Code** | 38 UiPath artifacts + 683 offline tests, authored test-first |
 
 ---
 
@@ -83,9 +83,9 @@ simultaneously** on the Maestro Case canvas.
 | Criterion | How CascadeCare addresses it | Jump to |
 |---|---|---|
 | **1 · Real-world applicability** | A regulated-vertical crisis — a healthcare payment-network cyberattack with BAA/PHI boundaries — orchestrating UiPath's own ViVE-2026 healthcare agents under fire | [Why this matters](#why-this-matters--healthcare-is-uipaths-2026-vertical) |
-| **2 · Orchestration & multi-agent** | 11 agents across 3 nested case levels; the case progresses *itself*; Reversal 3 fans out 13 coordinated instances | [Component inventory](#uipath-component-inventory) |
+| **2 · Orchestration & multi-agent** | 12 agents across 3 nested case levels; the case progresses *itself*; Reversal 3 fans out 13 coordinated instances | [Component inventory](#uipath-component-inventory) |
 | **3 · Exception & edge-case handling** | 4-layer defense-in-depth, authored test-first — agents degrade, the case never crashes | [Exception handling](#exception-failure--edge-case-handling-criterion-3) |
-| **4 · Component variety** | 13 UiPath product surfaces · 37 runtime artifacts | [13 surfaces](#uipath-component-inventory) |
+| **4 · Component variety** | 13 UiPath product surfaces · 38 runtime artifacts | [13 surfaces](#uipath-component-inventory) |
 | **5 · Presentation** | Live ≤5-min run + a Criterion-3 supplemental clip; this README + architecture diagram | [Demo video](#demo-video) |
 | **Bonus · Coding agents (+2)** | Claude Code authored 100% — every artifact and every test, test-first | [Built with Claude Code](#built-with-coding-agents) |
 
@@ -296,7 +296,7 @@ The human decision changes the response, and the case records who decided, why, 
 
 ## UiPath Component Inventory
 
-Every runtime asset is a UiPath artifact. **37 core artifacts** plus the Data Fabric, Context
+Every runtime asset is a UiPath artifact. **38 core artifacts** plus the Data Fabric, Context
 Grounding, and Trust Layer surfaces below.
 
 **At a glance — 13 UiPath product surfaces:**
@@ -307,7 +307,7 @@ Grounding, and Trust Layer surfaces below.
 | **Maestro BPMN** | 2 process models (incident-response playbook, case-closed notification) |
 | **Maestro Flow** | Demo Driver — paces the 90-day timeline to wall-clock |
 | **Agent Builder** | 6 low-code Claude Sonnet 4.6 (BYO-LLM) reasoning agents |
-| **Coded Agents** (Python SDK) | 5 agents — 1 via **LangGraph** (`uipath-langchain`) |
+| **Coded Agents** (Python SDK) | 6 agents — 1 via **LangGraph** (`uipath-langchain`) |
 | **LLM Gateway → Trust Layer** | Every LLM call; PHI/PII + content guardrails |
 | **Context Grounding** | 2 indexes (`BAA-corpus` bound to the BAA Boundary Reasoner) |
 | **Data Fabric** | 9 entities (~4,320 claim-telemetry rows) |
@@ -338,7 +338,7 @@ Wired with the native `case-management` task type — no Postgres mirror, no lev
 
 Per-agent Agent Memory is a deploy-time toggle, not fabricated offline config; cross-timeline state is carried by the master's root variables + Data Fabric (see `docs/adr/0004-agent-memory-is-deploy-time-not-fabricated-config.md`).
 
-### Agent inventory (11 — 6 Agent Builder low-code + 5 Coded)
+### Agent inventory (12 — 6 Agent Builder low-code + 6 Coded)
 
 | Agent | Type | Framework / model | Grounding | Wired into (case · stage) | Role |
 |-------|------|-------------------|-----------|---------------------------|------|
@@ -353,6 +353,7 @@ Per-agent Agent Memory is a deploy-time toggle, not fabricated offline config; c
 | `multi-customer-pattern-detector` | Coded | UiPath Python SDK — deterministic | — | master · detection (Phase 1) | Cross-provider correlation → cascade signal (Reversal 1) |
 | `forensic-self-exam-agent` | Coded | UiPath Python SDK — deterministic | — | superseded by the LangGraph version | Original forensic routing agent — kept as a documented reference implementation |
 | `case-job-janitor` | Coded · ops | UiPath Python SDK — no LLM | — | standalone · hourly Orchestrator trigger | Sweeps zombie "Running" Maestro job rows the platform never flips to Successful |
+| `audit-ledger-writer` | Coded · Function | UiPath Python SDK — no LLM | — | standalone · Orchestrator process (like the janitor) | Persists one immutable, queryable `AuditRecord` row per dispositioned obligation into Data Fabric — a survey-ready compliance ledger complementing Maestro's Action History; idempotent (keyed on `auditRecordId` per `case_ref`) |
 
 > **Models & governance.** The 6 Agent Builder agents run **Claude Sonnet 4.6 (BYO-LLM)**; the Coded
 > agents are deterministic Python whose *optional* advisory enrichment calls the UiPath LLM Gateway
@@ -369,9 +370,10 @@ Per-agent Agent Memory is a deploy-time toggle, not fabricated offline config; c
 **Case utilities (2)** — `register-stakeholder` (parent-case onboarding: registers the stakeholder
 and pulls its BAA) and `generate-audit-record` (records a per-obligation audit entry into the
 case's Action History). Each dispositioned obligation is also persisted as an immutable,
-queryable row in the `AuditRecord` **Data Fabric** entity by a build-time audit-ledger writer
-(`scripts/populate_audit_ledger.py`, core in `src/cascadecare/audit_ledger.py`) — a
-survey-ready compliance export that complements the Maestro Action History.
+queryable row in the `AuditRecord` **Data Fabric** entity by the deployed `audit-ledger-writer`
+Coded Function agent (core at `agents/audit-ledger-writer/agent.py`; ops runner
+`scripts/populate_audit_ledger.py`) — a survey-ready compliance ledger that complements the
+Maestro Action History.
 
 **UiPath Healthcare Agentic Solutions (3)** — the *vertical bridge*: CascadeCare orchestrates
 UiPath's own ViVE-2026 Healthcare Solutions as case-invoked tasks inside the stakeholder-parent's
@@ -423,7 +425,7 @@ cascade_command/
   maestro_case/         # 3 caseplan.json definitions + clearflow-solution/ (.uipx packaging)
   maestro_bpmn/         # clearflow-ideal-incident-response.bpmn + case-closed-notification.bpmn
   maestro_flow/         # clearflow-demo-driver.flow (Demo Driver)
-  agents/               # 6 Agent Builder (agent.json) + 5 Coded Agents (agent.py)
+  agents/               # 6 Agent Builder (agent.json) + 6 Coded Agents (agent.py)
     prompts/            # 9 agent system prompts (Markdown — never inlined in Python)
   api_workflows/        # 19 Integration Service API Workflows
   apps/                 # clearflow-network-command UiPath App
@@ -471,7 +473,7 @@ This entire repository — every UiPath artifact, test, spec, and build script �
 skills, under a test-gated spec-kit workflow. The AgentHack coding-agent bonus evidence
 ((a) which tool, (b) how it contributed, (c) verifiable evidence) is consolidated in:
 
-- [`CODING_AGENTS.md`](CODING_AGENTS.md) — canonical authorship table for all 37 artifacts.
+- [`CODING_AGENTS.md`](CODING_AGENTS.md) — canonical authorship table for all 38 artifacts.
 - [`CLAUDE_CODE_USAGE.md`](CLAUDE_CODE_USAGE.md) — the Devpost bonus write-up.
 - [`docs/coding-agents/`](docs/coding-agents/) — per-artifact-type evidence pages + prompt logs.
 

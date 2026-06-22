@@ -91,7 +91,7 @@ If you only have 20 seconds, say these three:
 > Maestro Case layer that makes them work as a team when a crisis hits.** We picked the hardest
 > crisis in healthcare — a payment-network cyberattack that freezes claims across six hospital
 > systems — and built a single living case that manages the whole cascade: it spawns a case per
-> stakeholder and per legal obligation (three levels of native case nesting), runs eleven AI
+> stakeholder and per legal obligation (three levels of native case nesting), runs twelve AI
 > agents through UiPath's governed LLM Gateway, reshapes its own goal five times as the crisis
 > evolves, and pauses for a human at the two decisions a machine shouldn't make alone. Every
 > case completes, and every decision is recorded. It's the crisis orchestrator for the
@@ -294,8 +294,8 @@ disconnected agent runs and a war room. With it, it's one auditable case that co
   live proof is the video + the tenant.
 - ❌ Overstate Context Grounding. → ✅ It's **live + retrieval-verified** (BAA-corpus); claim
   retrieval, not fine-tuning.
-- Numbers to keep consistent everywhere: **11 agents** (6 Agent Builder + 5 Coded, 1 LangGraph),
-  **37 runtime artifacts**, **13 product surfaces**, **5 reversals**, **3 case levels**, **13
+- Numbers to keep consistent everywhere: **12 agents** (6 Agent Builder + 6 Coded, 1 LangGraph),
+  **38 runtime artifacts**, **13 product surfaces**, **5 reversals**, **3 case levels**, **13
   live instances** at fan-out, **2 HITL gates**, live deploy **1.0.32 → CascadeCare-v110**.
 
 ---
@@ -303,7 +303,7 @@ disconnected agent runs and a war room. With it, it's one auditable case that co
 ## 14. FAQ — answer the confusions head-on
 
 **Q: Is CascadeCare an agent?**
-No. It's the **orchestration layer** (a UiPath Maestro Case) that *runs* agents. Eleven agents
+No. It's the **orchestration layer** (a UiPath Maestro Case) that *runs* agents. Twelve agents
 plug into it as tasks.
 
 **Q: So what does it actually *do*?**

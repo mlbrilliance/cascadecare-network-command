@@ -1,0 +1,18 @@
+[project]
+name = "audit-ledger-writer"
+version = "0.1.2"
+description = "Persists one immutable, detailed audit row per dispositioned obligation into the AuditRecord Data Fabric entity: a survey-ready compliance ledger that complements the Maestro Action History (CascadeCare Network Command)."
+authors = [{ name = "CascadeCare Network Command contributors" }]
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic>=2.0",
+    "uipath>=2.10",
+]
+
+[dependency-groups]
+dev = [
+    "uipath-dev",
+]
+
+[tool.uipath]
+type = "agent"

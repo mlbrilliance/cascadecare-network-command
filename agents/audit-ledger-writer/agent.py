@@ -26,7 +26,7 @@ on the run's case reference, so re-running over the same case writes nothing new
 
 from __future__ import annotations
 
-from typing import Any, Callable
+from typing import Any, Callable, Iterable
 
 from pydantic import BaseModel, Field
 
@@ -179,6 +179,31 @@ def select_new(
     return [r for r in records if r["auditRecordId"] not in existing_ids]
 
 
+def extract_record_ids(rows: Iterable[Any] | None) -> set[str]:
+    """Pull ``auditRecordId`` values from a Data Fabric list response (pure, testable).
+
+    The SDK's ``list_records`` returns an ``EntityRecordsListResponse`` that
+    **subclasses ``list``** (iterate it directly — it has no ``.records``/``.value``),
+    whose rows are pydantic ``EntityRecord`` objects. Data Fabric also PascalCases
+    field names on read (``AuditRecordId``) even though inserts use camelCase
+    (``auditRecordId``). Getting either of these wrong reads back zero existing ids
+    and silently writes duplicate rows — verified live 2026-06-21. This helper is
+    robust to pydantic rows (``model_dump``), plain dicts, and both casings.
+    """
+    ids: set[str] = set()
+    for row in rows or []:
+        if hasattr(row, "model_dump"):
+            data = row.model_dump()
+        elif isinstance(row, dict):
+            data = row
+        else:
+            data = getattr(row, "__dict__", {}) or {}
+        value = data.get("AuditRecordId") or data.get("auditRecordId")
+        if value:
+            ids.add(str(value))
+    return ids
+
+
 def run_ledger(
     inp: Input,
     list_existing_ids: Callable[[], set[str]],
@@ -214,20 +239,20 @@ def main(input: Input) -> Output:  # noqa: A002 — UiPath entrypoint signature 
         from uipath.platform import UiPath  # noqa: PLC0415 — lazy, auth-gated.
 
         sdk = UiPath()
-        entity = sdk.entities.retrieve_by_name(input.entity_name, folder_key=input.folder_key)
+        # AuditRecord is a tenant/default Data Fabric entity (FolderId is all-zeros),
+        # so it is resolved WITHOUT a folder_key — passing the run's Orchestrator
+        # folder scopes the lookup to that folder's DF environment, where the
+        # tenant entity does not exist (verified live 2026-06-21: HTTP 400
+        # "Entity 'AuditRecord' not found in folder ..."). folder_key stays on the
+        # Input as run-context metadata only.
+        entity = sdk.entities.retrieve_by_name(input.entity_name)
         entity_key = getattr(entity, "key", None) or getattr(entity, "id", "")
     except Exception as exc:
         return Output(case_ref=input.case_ref, error_type="AUTH_FAILED", error_message=str(exc))
 
     def list_existing_ids() -> set[str]:
-        resp = sdk.entities.list_records(entity_key, select=["auditRecordId"], limit=1000)
-        rows = getattr(resp, "records", None) or getattr(resp, "value", None) or []
-        ids: set[str] = set()
-        for row in rows:
-            value = row.get("auditRecordId") if isinstance(row, dict) else getattr(row, "auditRecordId", None)
-            if value:
-                ids.add(str(value))
-        return ids
+        # EntityRecordsListResponse subclasses ``list`` — iterate it directly.
+        return extract_record_ids(sdk.entities.list_records(entity_key, limit=1000))
 
     def insert_records(rows: list[dict[str, Any]]) -> None:
         sdk.entities.insert_records(entity_key, records=rows)

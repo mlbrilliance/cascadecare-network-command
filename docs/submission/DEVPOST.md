@@ -14,7 +14,7 @@ slugs — proven 2026-06-10); do not claim Context Grounding is wired unless `[V
 ## Elevator pitch (Devpost tagline, ≤200 chars)
 
 A UiPath Maestro Case command center that manages a multi-hospital cyber-payment crisis as one
-living, three-level case — 10 AI agents, 5 goal reversals, human gates, all on Automation Cloud.
+living, three-level case — 12 AI agents, 5 goal reversals, human gates, all on Automation Cloud.
 
 ## The business problem
 
@@ -63,18 +63,21 @@ implement any accreditation standard.*
 
 All running live on UiPath Automation Cloud (`clearflow-solution` 1.0.32, folder
 `Shared/CascadeCare-v110`); full cascade proven end-to-end — master + 6 children +
-6 grandchildren all reach **Completed**. **13 UiPath product surfaces, 37 runtime artifacts.**
+6 grandchildren all reach **Completed**. **13 UiPath product surfaces, 38 runtime artifacts.**
 
 - **3 Maestro Cases** (V20): `clearflow-master-crisis` → `clearflow-stakeholder-parent` →
   `clearflow-obligation-grandchild`, nested via the native `case-management` task
 - **6 Agent Builder agents** (**Claude Sonnet 4.6** BYO-LLM through UiPath LLM Gateway):
   vector-hypothesis-agent, baa-boundary-reasoner, fiduciary-conflict-detector,
   negligent-monitoring-risk-agent, assess-claim-disruption, classify-obligation
-- **5 Coded Agents** (Python SDK): claim-flow-anomaly-detector, multi-customer-pattern-detector,
+- **6 Coded Agents** (Python SDK): claim-flow-anomaly-detector, multi-customer-pattern-detector,
   **forensic-self-exam-agent-langgraph** (a **LangGraph `StateGraph`** deployed via
   `uipath-langchain` — the live forensic agent, proving the agent layer is framework-agnostic
-  under Maestro Case), forensic-self-exam-agent (original, superseded), and case-job-janitor
-  (ops — sweeps platform job-state drift hourly)
+  under Maestro Case), forensic-self-exam-agent (original, superseded), case-job-janitor
+  (ops — sweeps platform job-state drift hourly), and **audit-ledger-writer** (a Coded
+  **Function** agent deployed standalone like the janitor — *not* in-case / not under a stage —
+  that persists one immutable, queryable `AuditRecord` row per dispositioned obligation to Data
+  Fabric: a survey-ready compliance ledger complementing Maestro's Action History; idempotent)
 - **19 Integration Service API Workflows** — one mock front per external party (6 providers,
   4 payers, regulator, insurer, counsel, vendor, audit) + the 3 ViVE healthcare-solution bridges
 - **2 Maestro BPMN** (ideal-response playbook that spawns the master case; closure
@@ -130,17 +133,17 @@ changes the response, not just the audit log.
 
 ## Built with coding agents (bonus)
 
-**Claude Code** (Anthropic's CLI) authored 100% of this submission — **37 UiPath runtime
+**Claude Code** (Anthropic's CLI) authored 100% of this submission — **38 UiPath runtime
 artifacts**, **680 offline test gates** (written test-first, before each artifact), and **9
 externalized agent prompts** — driving the `uip` CLI and the official `uipath-*` authoring skills
 under a test-gated spec-kit workflow. Diagnoses were empirical, not guessed (e.g. Orchestrator
 Error 2005 root-caused by inspecting the offline-packed `package-descriptor.json`). The Criterion-3
 exception handling above was authored test-first: a failing test proved the forensic agent was
-silently swallowing an LLM-Gateway failure *before* the fix landed. One of the five Coded Agents is
+silently swallowing an LLM-Gateway failure *before* the fix landed. One of the six Coded Agents is
 a **LangGraph `StateGraph`** (via `uipath-langchain`) — a self-contained, specialized coded agent
 that anchors our coding-agent bonus evidence.
 
-Evidence: `CODING_AGENTS.md` (full 37-artifact authorship table), `CLAUDE_CODE_USAGE.md`,
+Evidence: `CODING_AGENTS.md` (full 38-artifact authorship table), `CLAUDE_CODE_USAGE.md`,
 `docs/coding-agents/` (per-type evidence pages + prompt logs + screenshots
 `[HUMAN: capture during demo session]`).
 

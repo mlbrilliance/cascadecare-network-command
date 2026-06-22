@@ -30,7 +30,7 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-AGENT_PY = REPO_ROOT / "src" / "cascadecare" / "audit_ledger.py"
+AGENT_PY = REPO_ROOT / "agents" / "audit-ledger-writer" / "agent.py"
 
 
 def _load_core() -> Any:

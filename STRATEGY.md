@@ -103,13 +103,14 @@ Three-level Maestro Case nesting: `clearflow-master-crisis` → `clearflow-stake
 beat re-opens the Multi-Customer Investigation stage via a `return-to-origin` exit (targeted
 re-entry). Hero moment at Reversal 3 (Day 30): 6 grandchild spawns fan out on the canvas.
 
-### Agent layer (5 Coded + 6 Agent Builder = 11; see README "Agent inventory" table)
-- 5 Coded Agents (Python SDK, UiPath LLM Gateway / Trust Layer):
+### Agent layer (6 Coded + 6 Agent Builder = 12; see README "Agent inventory" table)
+- 6 Coded Agents (Python SDK, UiPath LLM Gateway / Trust Layer):
   - `claim-flow-anomaly-detector` — classifies payment anomalies (deterministic + advisory enrich)
   - `multi-customer-pattern-detector` — cross-provider pattern analysis
   - `forensic-self-exam-agent-langgraph` — **LIVE** LangGraph StateGraph routing (Vector Isolation `tFSEXam01`)
   - `forensic-self-exam-agent` — original Python-SDK forensic agent, superseded by the LangGraph version
   - `case-job-janitor` — ops utility; hourly trigger, sweeps zombie Orchestrator jobs (not in any caseplan)
+  - `audit-ledger-writer` — Coded **Function** agent; job-invoked standalone (like the janitor, not in any caseplan), writes one immutable, idempotent, queryable `AuditRecord` row per dispositioned obligation to Data Fabric — a survey-ready compliance ledger complementing Maestro's Action History
 - 6 Agent Builder agents (low-code, **Claude Sonnet 4.6 BYO-LLM** via UiPath LLM Gateway):
   - `baa-boundary-reasoner` — Context Grounding on BAA-corpus; PHI/PII compliance routing (R3)
   - `vector-hypothesis-agent` — attack-vector hypothesis (Vector Isolation)

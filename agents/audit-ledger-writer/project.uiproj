@@ -1,0 +1,6 @@
+{
+  "ProjectType": "Function",
+  "Name": "audit-ledger-writer",
+  "Description": "Persists one immutable, detailed audit row per dispositioned obligation into the AuditRecord Data Fabric entity: a survey-ready compliance ledger that complements the Maestro Action History (CascadeCare Network Command).",
+  "MainFile": null
+}
