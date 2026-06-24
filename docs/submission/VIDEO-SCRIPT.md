@@ -31,7 +31,11 @@ exact URL from your browser once you navigate there, so a click during recording
 Pre-flight (before recording):
 1. `docs/DEMO-RUNBOOK.md` auth + the A6 zombie sweep so window ② shows a clean Case Instances view (no stale Running rows). The hero run is `CFCS-67730745` (its 6 ledger rows are already in DF/window ⑤).
 2. Sign in to window ⑤ (dashboard) **once now** so the Compliance Ledger is already loaded when you cut to it (fresh sign-in carries the `DataFabric.Data.Read` scope).
-3. Window ③ (Action Center) logged in as the assignee for the two HITL gates.
+3. Window ③ (Action Center) logged in as the assignee for the two HITL gates. ⚠️ The
+   **Tri-Party Fiduciary Conflict** gate may appear as **several identical AppTasks** (a known
+   1.0.36 residual — the gate is re-dispatched once per spawn-fan event). Approving any **one**
+   advances the master; the duplicates are harmless. On camera, click into one and complete it —
+   don't draw attention to the list count (or frame the shot on the single task you action).
 4. OBS/recorder at 1080p+; a visible system clock is fine (proves live).
 
 Timing assumes the proven wall-clock pacing (R3 at t+150s). Speed up dead air 4–8× in post;
@@ -177,6 +181,11 @@ Agent Builder (6 · Claude BYO-LLM):
   (`reviewerDecision` consumed downstream), NOT a stage rework. Never narrate Deny as "rewinding"
   a stage. **Never delete/Remove a gate task** to advance it — that Faults the case; always Approve/Deny
   (or File/Withdraw).
+- **Tri-Party gate may show as duplicate AppTasks** (1.0.36 residual — the gate is re-dispatched once
+  per spawn-fan event, with non-fatal `450007` "duplicate subscription" incidents in Monitoring).
+  Approving any one advances the master; the rest are harmless. Don't narrate or zoom the list count —
+  action a single task. This is platform-level agentic re-dispatch, not a defect in our case logic;
+  see `docs/DEMO-RUNBOOK.md` (A4 caveat) and `docs/changelog.md` (1.0.36).
 - **Maestro Case Kit framing:** it's a **define-once Python** toolkit (CLI + MCP server + agent
   skills) — do NOT call it "printing-press-generated" (a spike proved printing-press only wraps
   external APIs, not static validators). v1 is offline/credential-free; the auth operators are a
