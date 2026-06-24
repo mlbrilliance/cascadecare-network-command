@@ -136,6 +136,19 @@ The case pauses at two human-approval gates. Open **Action Center → Tasks** in
 > These gates *must* be approved by a human — that's the demo's HITL story. There is no CLI
 > shortcut (the AppTask completion API is undocumented/SPA-only).
 
+> ⚠️ **Known caveat — the Tri-Party Fiduciary Conflict gate may appear as several identical
+> tasks** (same master job id, created within seconds of each other). **Approving any one of
+> them advances the master** — the duplicates are harmless and can be ignored. Cause: Maestro's
+> agentic orchestration re-dispatches a *pending* HITL gate on each task-lifecycle event emitted
+> by the 6-child spawn fan that completes while the gate is the active frontier (a separate,
+> platform-level issue from the Regulatory-Response double-entry, which **is** fixed in 1.0.36 —
+> the spawn fan is now exactly 6, not 12). `shouldRunOnlyOnce` does not prevent this (it only
+> suppresses re-dispatch *after* completion; a pending HITL task never completes between ticks),
+> and the platform's own dedup (`CancelTaskBoundaryEvent`) fails under the burst. Proven via
+> `uip maestro case instance element-executions <id>` — the gate's UserTask shows N `ElementRuns`
+> for a single Fiduciary stage entry. Not yet resolved at the caseplan layer; see the session
+> handoff for the full diagnosis.
+
 ### A5. Confirm closure
 
 > ⚠️ **Do NOT use the Orchestrator Jobs view/API to confirm completion.** On this tenant a
