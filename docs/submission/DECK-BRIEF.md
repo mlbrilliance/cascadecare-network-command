@@ -225,7 +225,7 @@ stand without narration.
 ---
 
 ## Appendix — facts to keep exact (do not drift)
-- **Live deploy:** `clearflow-solution` **1.0.35** → `Shared/CascadeCare-v110`; full cascade
+- **Live deploy:** `clearflow-solution` **1.0.36** → `Shared/CascadeCare-v110`; full cascade
   Completed (preserved runs `CFCS-67730745`, `CFCS-67767069`). Dashboard Coded Web App **v1.0.15**.
 - **Counts:** **12 agents** (6 Agent Builder + 6 Coded; **2 LangGraph**), **38 runtime artifacts**,
   **13 UiPath product surfaces**, **5 reversals**, **3 case levels**, **13 live instances** at

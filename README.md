@@ -52,9 +52,9 @@ The hero moment: **Reversal 3** (a state DOI subpoena) fans out **six grandchild
 simultaneously** on the Maestro Case canvas.
 
 > [!IMPORTANT]
-> **Live status (2026-06-22).** Every UiPath artifact below is authored, validated against its UiPath
+> **Live status (2026-06-24).** Every UiPath artifact below is authored, validated against its UiPath
 > contract (V20 / CNCF Serverless 1.0.0 / Agent Builder), and **running live on UiPath Automation
-> Cloud** — `clearflow-solution` **1.0.35** deployed to `Shared/CascadeCare-v110`, with a full
+> Cloud** — `clearflow-solution` **1.0.36** deployed to `Shared/CascadeCare-v110`, with a full
 > cascade run proven end-to-end (master auto-walks all agent stages → 6 child + 6 grandchild cases →
 > two HITL gates → master **Completed**). The **LangGraph** Forensic Self-Exam agent fires in-case at
 > Vector Isolation and surfaces structured errors on LLM-Gateway failure without faulting (Criterion-3
@@ -332,7 +332,7 @@ Wired with the native `case-management` task type — no Postgres mirror, no lev
 **Canonical case surfaces** — the Maestro Case patterns Devpost judges are trained to recognize, built into the caseplans:
 
 - **SLA + escalation → Maestro Notification**, at case and stage level across all three nesting levels — on-track / at-risk / breached, firing notification actions on breach and at-risk.
-- **Agent-driven progression** — the master advances itself: the **LangGraph** Forensic Self-Exam agent (`forensic-self-exam-agent-langgraph`, wired into the Vector Isolation stage task `tFSEXam01`) drives the Vector Isolation → Regulatory Response exit when ClearFlow's vector status clears (`=js:vars.var_clearflow_vector_status === 'cleared'`). Proven live end-to-end (v1.0.35): the agent fires in-case and returns `vector_status="cleared"`, `route_to="baa-boundary"`, the master auto-walks all agent stages, fans out 6 children + 6 grandchildren (three levels), and closes after the HITL gates.
+- **Agent-driven progression** — the master advances itself: the **LangGraph** Forensic Self-Exam agent (`forensic-self-exam-agent-langgraph`, wired into the Vector Isolation stage task `tFSEXam01`) drives the Vector Isolation → Regulatory Response exit when ClearFlow's vector status clears (`=js:vars.var_clearflow_vector_status === 'cleared'`). Proven live end-to-end (v1.0.36): the agent fires in-case and returns `vector_status="cleared"`, `route_to="baa-boundary"`, the master auto-walks all agent stages, fans out 6 children + 6 grandchildren (three levels), and closes after the HITL gates.
 - **Targeted re-entry** — at Reversal 5 (ClearFlow → co-defendant), the master re-opens the Multi-Customer Investigation stage via an interrupting entry condition (`=js:vars.var_reversal_number >= 5`) and a `return-to-origin` exit, re-running **only** the cross-provider correlation while the settled anomaly classification is skipped (`shouldRunOnlyOnce`).
 - **Agent Evaluations** — eval sets for the reasoning agents (low-code under `agents/<name>/evals/`, coded under `agents/<name>/evaluations/`).
 

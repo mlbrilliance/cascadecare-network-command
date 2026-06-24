@@ -3,7 +3,7 @@
 > **Who this is for:** someone who has never touched UiPath, Maestro, Orchestrator, or Studio Web.
 > Every step says **who does it**, **exactly what to do**, **what you should see**, and **what to do if it goes wrong**.
 >
-> **Last updated:** 2026-06-22 (v1.0.35 → `Shared/CascadeCare-v110`; **full cascade live-proven** — master + 6 children + 6 grandchildren all Completed; in-case **LangGraph audit-ledger** write live; dashboard **v1.0.15** Compliance Ledger live; current step = **record the demo video + submit**) · **Branch:** `master` · **Tenant:** `staging.uipath.com/hackathon26_042/DefaultTenant`
+> **Last updated:** 2026-06-24 (v1.0.36 → `Shared/CascadeCare-v110`; Action Center runaway fixed — clean 1 → 6 → 6 fan re-proven; **full cascade live-proven** — master + 6 children + 6 grandchildren all Completed; in-case **LangGraph audit-ledger** write live; dashboard **v1.0.15** Compliance Ledger live; current step = **record the demo video + submit**) · **Branch:** `master` · **Tenant:** `staging.uipath.com/hackathon26_042/DefaultTenant`
 >
 > Operational run procedure now lives in [`docs/DEMO-RUNBOOK.md`](../DEMO-RUNBOOK.md) (auth, deploy recipe, A5 closure check, A6 zombie sweep). Sections below marked with a date are historical snapshots.
 >
@@ -55,7 +55,7 @@ Your project is a **bundle of files in this repo**. To make it real, that bundle
 ## 2. Where things stand right now (snapshot)
 
 ### ✅ Status update (2026-06-22) — the build is live-proven
-- **`clearflow-solution` 1.0.35** deployed + active on **`Shared/CascadeCare-v110`**.
+- **`clearflow-solution` 1.0.36** deployed + active on **`Shared/CascadeCare-v110`**.
 - **Full cascade proven live**: master + all 6 child cases + all 6 grandchild cases reached
   **Completed** (first fully-draining run 2026-06-12; latest preserved runs `CFCS-67730745` + `CFCS-67767069`).
 - HITL gates pause correctly at master (Reversal 4) and grandchild (File/Withdraw).
@@ -428,7 +428,7 @@ bash scripts/cleanup_deployments.sh --confirm    # actually uninstall the stale 
 | 1 | Public GitHub repo (MIT) + README naming every component | ✅ DONE | — |
 | 2 | Devpost project page (Track 1) | ⬜ PENDING | 🔴 you (🟢 I draft) |
 | 3 | Demo video ≤5 min, **live**, names each agent | ⬜ PENDING | 🔴 you (🟢 I script) |
-| 4 | Solution running **live** on Automation Cloud | ✅ DONE (1.0.35 on `Shared/CascadeCare-v110`, full cascade live-proven; latest preserved runs 2026-06-22) | — |
+| 4 | Solution running **live** on Automation Cloud | ✅ DONE (1.0.36 on `Shared/CascadeCare-v110`, full cascade live-proven; latest preserved runs 2026-06-24) | — |
 | Bonus | Coding-agent evidence (`CODING_AGENTS.md`, `CLAUDE_CODE_USAGE.md`) | ✅ DONE | — |
 | Bonus | 1-min coding-agent reel | ⬜ PENDING | 🔴 you |
 | 5 (req.) | Slides deck — **mandatory** ([AgentHack template](https://bit.ly/3R0MsHU); host with public access) | ⬜ PENDING | 🔴 you |

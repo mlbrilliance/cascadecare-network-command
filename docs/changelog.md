@@ -1,5 +1,26 @@
 # CascadeCare Network Command — Changelog
 
+## Solution 1.0.36 — Action Center runaway fix (2026-06-24)
+
+Removed the Vector Isolation exit-only condition (`Condition_vClear`) on stage `Stage_TJUXJV`
+that double-entered the Regulatory Response stage (`Stage_JM1SVs`), which had been producing
+12 parent spawns and 23+ duplicate "Tri-Party Fiduciary Conflict" AppTasks from a single master
+run. With the condition removed the case fans out cleanly — **1 master → 6 children → 6
+grandchildren** — re-proven live on two fresh runs (validation run `CFCS-67990682`). The Slack
+close-out (`=js:` / `${metadata.ExternalId}`) remains intact.
+
+Deployed live to `Shared/CascadeCare-v110`. Commit `0cd24d4`; runbook caveat `fae2a83`.
+
+> **Known residual (deferred, accepted for demo):** the Tri-Party Fiduciary Conflict HITL gate is
+> still re-dispatched once per spawn-fan event, so it can surface as several identical AppTasks
+> (+ non-fatal `450007` "duplicate message subscription" incidents). Approving any one of them
+> advances the master; the duplicates are harmless. This is platform-level agentic re-dispatch
+> behavior, not caused by this fix — see `docs/DEMO-RUNBOOK.md` (A4 caveat).
+
+Gates green: `uv run pytest` (768 passed / 7 skipped), `mypy` clean, IP-safe.
+
+---
+
 ## Solution 1.0.34 → 1.0.35 — in-case audit ledger + Slack close-out fix (2026-06-22)
 
 Two solution ships landed on `Shared/CascadeCare-v110`, both live-proven end-to-end:

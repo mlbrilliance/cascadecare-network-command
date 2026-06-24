@@ -1,6 +1,6 @@
 # AgentHack 2026 — Submission Package Checklist
 
-Status as of 2026-06-22 (solution 1.0.35 live; dashboard v1.0.15 live). The build artifacts are
+Status as of 2026-06-24 (solution 1.0.36 live; dashboard v1.0.15 live). The build artifacts are
 DONE — including the **live deployment** (artifact #4) — and the remaining **human-capture**
 artifacts (video, Devpost page, deck) are carried forward. Honest status only — no fabricated links.
 
@@ -11,7 +11,7 @@ artifacts (video, Devpost page, deck) are carried forward. Honest status only �
 | 1 | Public GitHub repo (MIT) + README | ✅ DONE | — | [`README.md`](../../README.md) names every UiPath component; [`LICENSE`](../../LICENSE) MIT; gate `tests/unit/docs/test_readme_completeness.py` |
 | 2 | Devpost project page | ⬜ PENDING (human) | — | Paste-ready copy drafted: [`DEVPOST.md`](DEVPOST.md) (fill `[HUMAN]` links/screenshots; clear `[VERIFY]` items live first) |
 | 3 | Demo video ≤5 min on YouTube/Vimeo | ⬜ PENDING (human) | — | Must show the solution running **live** (not slides); name each agent. Full shot-list + narration: [`VIDEO-SCRIPT.md`](VIDEO-SCRIPT.md); run procedure: [`docs/DEMO-RUNBOOK.md`](../DEMO-RUNBOOK.md). Hero (Reversal 3 fan-spawn) ~2:30 |
-| 4 | Solution running live on Automation Cloud | ✅ DONE (live) | — | `clearflow-solution` 1.0.35 deployed to `Shared/CascadeCare-v110`; full cascade live-proven (latest preserved runs 2026-06-22: `CFCS-67730745`, `CFCS-67767069` — master + 6 children + 6 grandchildren all Completed, incl. closure + in-case audit-ledger write). The former blockers (Error 2005, Maestro folder context, BPMN 1654) were resolved in slices 015–023 — see [`docs/DEMO-RUNBOOK.md`](../DEMO-RUNBOOK.md) |
+| 4 | Solution running live on Automation Cloud | ✅ DONE (live) | — | `clearflow-solution` 1.0.36 deployed to `Shared/CascadeCare-v110`; full cascade live-proven (Action Center runaway fixed — clean 1 → 6 → 6 fan re-proven on run `CFCS-67990682`; earlier preserved runs `CFCS-67730745`, `CFCS-67767069` — master + 6 children + 6 grandchildren all Completed, incl. closure + in-case audit-ledger write). The former blockers (Error 2005, Maestro folder context, BPMN 1654) were resolved in slices 015–023 — see [`docs/DEMO-RUNBOOK.md`](../DEMO-RUNBOOK.md) |
 | 5 | Completed presentation deck | ⬜ PENDING (human) | — | **Mandatory** per Devpost rules; AgentHack template at <https://bit.ly/3R0MsHU>. Host on Drive/OneDrive/Dropbox with public ("access to all") permission. Content brief: [`DECK-BRIEF.md`](DECK-BRIEF.md) |
 
 ## Bonus + supplementary
