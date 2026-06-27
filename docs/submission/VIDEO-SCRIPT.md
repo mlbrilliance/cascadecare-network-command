@@ -41,6 +41,14 @@ Pre-flight (before recording):
 Timing assumes the proven wall-clock pacing (R3 at t+150s). Speed up dead air 4–8× in post;
 keep agent runs and spawns at 1× so motion is visible.
 
+**Length budget (hard 5:00).** The narration below is trimmed to ≈ **700 words**. At the pace you
+measured on the prior cut (~895 words ran 6:20 ≈ **141 wpm**, pauses included), that's ≈ **4:55** —
+under 5:00 with a small margin for the three verdict-line pauses. Do **one timed read** before
+recording. The **optional closing tag is a SEPARATE supplemental clip — do not count it in the 5:00.**
+If a timed read still clears 5:00, cut these first, in order, without touching a reversal: (1) the
+*Grounded* beat's closing fragment "Real documents, real retrieval, genuinely conflicting law"; (2)
+"a UiPath Coded Web App" in the Close; (3) "fanning out in real time" in the HERO. Each is ~1–2s.
+
 ---
 
 ## 🎙️ Performance direction (read this once before you record)
@@ -48,7 +56,7 @@ keep agent runs and spawns at 1× so motion is visible.
 This is not a feature tour — it's an **opening statement**. Deliver it like a master litigator
 who happens to be unveiling a flagship product: calm authority on the facts, rising conviction on
 the payoffs. The facts here are genuinely extraordinary — **let specificity carry the awe** (the
-words "thirteen live instances" and "six conflicting answers" do more than any adjective). Your
+words "thirteen live cases" and "six different answers" do more than any adjective). Your
 job is to frame, not to oversell.
 
 - **Two crescendos. Find them, build to them.** ① the Reversal-3 cascade fan (`1:25–2:30`) and
@@ -61,6 +69,10 @@ job is to frame, not to oversell.
   on it, close on it. That through-line is what makes the ending feel earned, not listed.
 - **Never inflate.** Every claim below is true and survives scrutiny (see Honesty guardrails). The
   confidence comes from *knowing it's real and running* — say "live," mean it, and let the screen prove it.
+- **Write for the ear.** A listener with their eyes closed should follow the whole story — each beat
+  says *what is happening*, not just "watch this." The plot carries the sentence; the technical detail
+  rides cleanly behind it (never as an interruption mid-thought). The screen confirms the words; it
+  never has to carry them alone.
 
 ---
 
@@ -69,111 +81,103 @@ job is to frame, not to oversell.
 ### 0:00–0:25 — Cold open: the lights go out
 **▶ ON SCREEN → ① Studio Web · master case canvas, zoomed out (all 7 stages visible).**
 
-> "A healthcare payment network is invisible — until it goes dark. Then every hospital it touches
-> stops getting paid in days, and patient care is the next thing to break. This is **CascadeCare
-> Network Command**: one UiPath Maestro Case that runs an entire multi-party crisis as a single,
-> living case file. ClearFlow Health Network — our fictional payment intermediary — just went dark
-> across six hospital systems at once. No slides. Watch it run, live."
+> "A healthcare payment network is invisible — until it goes dark. Then, within days, the hospitals it
+> connects stop getting paid, and patient care breaks next. This is **CascadeCare Network Command**: one
+> UiPath Maestro Case running a multi-party crisis as a single living case file. Our fictional network,
+> ClearFlow, just went dark across six hospital systems at once. No slides — this is it, live."
 
 ### 0:25–0:55 — Reversal 1: the mission rewrites itself
 **▶ ON SCREEN → ② Maestro · Case Instances (case starting) — caption each agent as it fires.**
 
-> "Day one. The **Claim Flow Anomaly Detector** — a Python coded agent — reads the telemetry
-> collapse and classifies it in seconds. The **Multi-Customer Pattern Detector** correlates all
-> six providers and finds the *exact same signature* on every one. And here the case rewrites its
-> own mission: these aren't six support tickets — ClearFlow itself may be the breach vector. That
-> is Reversal One — and watch the canvas re-route the entire investigation around it, on its own."
+> "Day one. Two coded agents go to work: the **Claim Flow Anomaly Detector** reads the collapse in the
+> payment data and classifies it in seconds, and the **Multi-Customer Pattern Detector** lines up all six
+> hospitals and finds the *same fingerprint* on every one. These aren't six separate outages — ClearFlow
+> itself may be the breach. That's Reversal One: the case rewrites its own mission and re-routes the whole
+> investigation, on its own."
 
 ### 0:55–1:25 — Reversal 2: bend, don't break
 **▶ ON SCREEN → ① Studio Web · Vector Isolation stage + the agent run trace; optional quick cut to ⑦ Trust Layer policy panel.**
 
-> "Now the case turns the investigation on itself. The **Forensic Self-Exam Agent** — a **LangGraph**
-> state machine on UiPath's Python SDK — runs the internal sweep, while the **Vector Hypothesis
-> Agent** — Claude, every call routed through UiPath's LLM Gateway under Trust Layer PHI policy —
-> clears ClearFlow and names the real source: the Nimbus patient-engagement vendor. And it never
-> gambles: if the Gateway drops mid-call, the agent surfaces the failure and *still routes correctly.*
-> The case bends — it does not break. That's Reversal Two."
+> "Now the case turns the investigation on itself. The prime suspect is ClearFlow — so the **Forensic
+> Self-Exam Agent**, a **LangGraph** agent on UiPath's Python SDK, sweeps ClearFlow from the inside and
+> clears it. So the hunt widens: the **Vector Hypothesis Agent** — Claude, routed through UiPath's LLM
+> Gateway under Trust Layer — names the real culprit, a vendor called Nimbus. And it never gambles: if
+> the Gateway drops mid-call, it flags the failure and *still routes correctly.* The case bends — it
+> does not break. That's Reversal Two."
 
 ### 1:25–2:30 — **HERO: Reversal 3 — the cascade fan**
 **▶ ON SCREEN → split ① Studio Web (Regulatory Response stage) + ② Maestro Case Instances. This is the money shot — let the 6 spawns land at 1×.**
 
-> "Day thirty. A Tennessee Department of Insurance subpoena lands — and this is the moment
-> everything has been building toward. **Watch.** The master case spawns **six stakeholder cases
-> at once** — one for every hospital system, each seeded with its own provider identity — through
-> Maestro's *native* case-management task. Not a script. Not a loop. And before those even settle,
-> every single parent spawns its own obligation case beneath it. **Thirteen live case instances.
-> Three levels of real, native case nesting.** Fanning out across one screen, in real time. This
-> is orchestration most platforms can only *draw on a whiteboard* — and here it is, running. Inside
-> each of the six parents, the **Assess Claim Disruption** agent scores that provider's liquidity
-> risk, and the **BAA Boundary Reasoner** rules on exactly what ClearFlow is legally allowed to
-> disclose. Six providers. Six independent investigations. Six different answers — at the same instant."
+> "Day thirty. A Tennessee Department of Insurance subpoena lands — the moment everything's been building
+> toward. In a single stroke, the master case spawns **six stakeholder cases at once** — one for every
+> hospital, each with its own identity — through Maestro's *native* case-management task. Not a script.
+> Not a loop. And before those settle, every one spawns its own obligation case beneath it. **Thirteen
+> live cases. Three real levels of case nesting** — fanning out in real time. This is orchestration most
+> platforms can only *sketch on a whiteboard* — and here it's running. Inside each of the six, the
+> **Assess Claim Disruption** agent scores that hospital's liquidity risk, while the **BAA Boundary
+> Reasoner** rules on what ClearFlow may legally share. Six hospitals, six investigations, six different
+> answers — at the very same moment."
 
 ### 2:30–2:50 — Grounded, not guessed
 **▶ ON SCREEN → ② Maestro · the BAA Boundary Reasoner's run trace for Northstar — scroll the rationale so the §-cited corpus text and the cross-BAA conflicts are visible. (Live-proven 2026-06-13: job 77c506d8 quotes the corpus section-by-section and flags Alpha + Delta conflicts.)**
 
-> "And none of this is the model guessing. The **BAA Boundary Reasoner** pulls each provider's
-> *actual* Business Associate Agreement from a UiPath Context Grounding index and anchors every
-> line to the retrieved text. For Northstar — a **conditional** disclosure that catches the same
-> production would *violate* Alpha's and Delta's agreements. Real documents. Real retrieval.
-> Genuinely conflicting law."
+> "None of this is the model guessing. The **BAA Boundary Reasoner** pulls each hospital's *actual*
+> data-sharing contract from a UiPath Context Grounding index and anchors every ruling to the real text.
+> For Northstar, disclosure is allowed only conditionally — yet the same sharing would *violate* two other
+> hospitals' contracts. Real documents, real retrieval, genuinely conflicting law."
 
 ### 2:50–3:20 — The command layer for UiPath's own agents
 **▶ ON SCREEN → ① Studio Web · one stakeholder parent's Impact Assessment stage (the 3 ViVE solution tasks).**
 
-> "And look *where* this is happening. Inside every stakeholder case, CascadeCare is conducting
-> UiPath's own ViVE-2026 healthcare solutions — Medical Records Summarization quantifies the PHI
-> exposure, Claim Denial Prevention and Resolution defends revenue, Prior Authorization keeps patient
-> care moving. This is revenue cycle management under fire — the exact payer-and-provider workflows
-> UiPath ships today, now governed by one living case. CascadeCare doesn't replace the healthcare
-> agents UiPath already runs — it's the **crisis command layer** that puts every one of them to work
-> when the whole network is burning."
+> "And look *where* this happens. Inside every hospital's case, CascadeCare runs UiPath's own healthcare
+> solutions — summarizing medical records, defending revenue against claim denials, keeping prior
+> authorizations moving. This is revenue cycle management under fire — the exact payer-and-provider
+> workflows UiPath ships today, now run by one living case. CascadeCare doesn't replace those agents;
+> it's the **crisis command layer** that puts every one of them to work when the network is burning."
 
 ### 3:20–4:00 — Reversal 4: the machine asks a human
 **▶ ON SCREEN → ① Studio Web (master pauses at Fiduciary Review) → cut to ③ Action Center; complete the tri-party form on camera.**
 
-> "Day forty-five. The payers demand data the BAAs forbid — and the machine reaches its limit. The
-> **Fiduciary Conflict Detector** maps a genuine three-way conflict, and then the case does what most
-> automation never dares: **it stops, and asks a human.** A tri-party ruling, in Action Center. I
-> decide as counsel — with my reasoning — and the case captures *who* ruled, *why*, and *when*. Not
-> ceremony: that ruling is read downstream, framing ClearFlow as cooperative or contesting into
-> litigation. One level down, the **Classify Obligation** agent has already triaged every obligation —
-> each with its own file-or-withdraw gate. **Agents think, robots do — and people lead.** Judgment,
-> exactly where it belongs."
+> "Day forty-five. The payers demand data those contracts forbid — and the machine reaches its limit.
+> The **Fiduciary Conflict Detector** maps a three-way conflict, and the case does what most automation
+> never dares: **it stops, and asks a human.** A tri-party ruling, in Action Center. I weigh in as
+> counsel — and the case records *who* ruled, *why*, and *when*. That ruling is read downstream, shaping
+> whether ClearFlow cooperates or contests into litigation. One level deeper, the **Classify Obligation**
+> agent has already triaged every obligation, each with its own file-or-withdraw gate. **Agents think,
+> robots do — and people lead.**"
 
 ### 4:00–4:30 — Reversal 5: everything closes
 **▶ ON SCREEN → ① Studio Web (Litigation Defense stage) → ② Maestro Case Instances as everything drains to Completed. Optional B-roll: ④ Orchestrator Jobs.**
 
-> "Day ninety. The litigation cascade hits, and the **Negligent Monitoring Risk Agent** re-scores
-> ClearFlow's co-defendant exposure — privilege reshuffles, the posture shifts one final time. And
-> then the thing case-management demos almost never dare to show you: **everything closes.** Master,
-> six children, six grandchildren — every case, Completed. Even the cleanup runs itself: a coded
-> agent, the **Case Job Janitor**, sweeps job-state drift on an hourly Orchestrator trigger. No
-> loose ends. No human mop-up."
+> "Day ninety. The litigation hits, and the **Negligent Monitoring Risk Agent** re-scores ClearFlow's
+> exposure as a co-defendant — the legal posture shifts one final time. And then the thing case-management
+> demos almost never dare to show: **everything closes.** Master, six children, six grandchildren — every
+> single case, completed. Even the cleanup runs itself: the **Case Job Janitor**, a coded agent, sweeps
+> stray job records on an hourly trigger. No loose ends, no human mop-up."
 
 ### 4:30–5:00 — Close: the immutable ledger + the tally
 **▶ ON SCREEN → ⑤ Dashboard (Coded Web App). Land on the cascade + reversal timeline, then scroll to the *Compliance Ledger* panel showing the live AuditRecord rows + integrity-hash badges. (Optional B-roll: ⑥ Data Fabric AuditRecord entity.) End card with repo URL.**
 
-> "And the instant the case closes, the **eleventh** agent fires: **Audit Ledger Writer** — a
-> **second LangGraph agent**, wired straight into the closing stage — writing an **immutable,
-> append-only compliance ledger** to UiPath Data Fabric: one survey-ready row per obligation, each
-> carrying its disposition, its privilege call, and a content-integrity fingerprint. There it is —
-> live, on our command center, a UiPath Coded Web App.
+> "The instant the case closes, the **eleventh** agent fires — the **Audit Ledger Writer**, a **second
+> LangGraph agent** in the closing stage — writing an **immutable, append-only ledger** to UiPath Data
+> Fabric: one survey-ready row per obligation, each with its outcome and a content-integrity fingerprint.
+> Live, on our command center — a UiPath Coded Web App.
 >
-> Now count what just ran. Three nested case levels. Eleven named agents. Five goal reversals. Two
-> human gates. **Thirteen UiPath product surfaces.** Trust Layer on every single LLM call — and
-> graceful degradation the moment one fails. All UiPath-native. All live on Automation Cloud. All
-> built end-to-end with Claude Code. One living case file that took five shocks and never broke.
-> **CascadeCare Network Command — the living case layer for healthcare's financial shockwaves.**"
+> Now count what just ran: three nested case levels, eleven named agents, five reversals, two human gates,
+> **thirteen UiPath product surfaces** — Trust Layer on every AI call, graceful failure when one drops.
+> All UiPath-native, all live, all built end-to-end with Claude Code. One case file that took five shocks
+> and never broke. **CascadeCare Network Command — the living case layer for healthcare's financial
+> shockwaves.**"
 
 ### Optional closing tag (≤15s) — Above and beyond: the open-source contribution
 **▶ ON SCREEN → ⑧ Terminal. `maestro-case explain 400300` returns the cause + fix instantly, then a quick `maestro-case lint` on a caseplan directory.**
 
-> "One more thing. Building this live, we kept slamming into undocumented Maestro Case error codes —
-> the kind that return *zero* search results. So we packaged that hard-won knowledge into a free,
-> open-source toolkit, **Maestro Case Kit** — it explains those errors and lints caseplans in CI,
-> with no UiPath login. We even found this exact bug in UiPath's *own* official skills — since fixed
-> upstream — and shipped a guard that catches it. We didn't just build a demo. We left the platform
-> better than we found it."
+> "One more thing. Building this live, we kept hitting undocumented Maestro Case error codes — the
+> kind that return *zero* search results. So we packaged that hard-won knowledge into a free,
+> open-source toolkit, **Maestro Case Kit**: it explains those errors and checks your caseplans in CI,
+> with no UiPath login required. We even found one of these bugs in UiPath's *own* official skills —
+> since fixed upstream — and shipped a guard that catches it. We didn't just build a demo. We left the
+> platform better than we found it."
 
 ---
 
@@ -191,7 +195,7 @@ job is to frame, not to oversell.
 | **Business Impact & Adoption Potential** — real-world relevance, business case, scalability | Cold open (`0:00`): hospitals stop getting paid in days, patient care breaks next. Vertical bridge (`2:50`): "revenue cycle management under fire — the exact payer/provider workflows UiPath ships today." Close (`4:30`): live on Automation Cloud, production-ready, one reusable crisis layer. |
 | **Platform Usage** — depth + deliberateness (Agent Builder · Maestro · API Workflows · coded agents · external frameworks) · ⭐ **coding-agent bonus lands here** | Every agent beat names its surface (Coded Agents · Agent Builder · **LangGraph** · LLM Gateway · Trust Layer · Context Grounding · Data Fabric · Action Center · Coded Web App); the closing tally counts **thirteen UiPath product surfaces**; the closing tag = **built end-to-end with Claude Code** + the open-source Maestro Case Kit. |
 | **Technical Execution, Feasibility & Versatility** — architecture, code quality, production-readiness, **handling of exceptions/failures/edge cases** | Reversal 2 (`0:55`): graceful degradation when the LLM Gateway drops ("the case bends — it does not break"). Reversal 5 (`4:00`): *every* case Completes + the Case Job Janitor sweeps drift. Supplemental 90-sec exception-handling clip. |
-| **Creativity & Innovation** — novel design, unexpected orchestration patterns, creative framing | The HERO fan (`1:25`): three levels of **native** case nesting, 13 live instances on one screen. Grounded conflict (`2:30`): six BAAs → six conflicting answers. The in-case **second LangGraph** audit-ledger write (`4:30`). |
+| **Creativity & Innovation** — novel design, unexpected orchestration patterns, creative framing | The HERO fan (`1:25`): three levels of **native** case nesting, 13 live cases on one screen. Grounded conflict (`2:30`): six BAAs → six different answers. The in-case **second LangGraph** audit-ledger write (`4:30`). |
 | **Presentation** — clarity, structure, **problem → solution → impact arc**, confidence, accessible communication, Q&A | The script is built as that exact arc; the Performance-direction block tunes delivery and pacing; the closing tally makes total impact legible in ~10 seconds. (Rehearse Q&A — the finale scores it.) |
 | **Completeness of Delivery** *(Phase 1)* — functional end-to-end prototype, public GitHub + README + setup, demo ≤5 min | A real **live run**, no slides; ≤5:00 enforced (core narration ≈ 5:00); end card with the public repo URL. |
 
