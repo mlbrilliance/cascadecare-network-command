@@ -18,6 +18,12 @@ A <b>UiPath Maestro Case</b> command center that manages a multi-hospital cyber-
   <a href="https://github.com/langchain-ai/langgraph"><img src="https://img.shields.io/badge/agent-LangGraph%20StateGraph-1C3C3C?style=for-the-badge" alt="LangGraph StateGraph" /></a>
   <a href="https://www.anthropic.com/"><img src="https://img.shields.io/badge/LLM-Claude%20Sonnet%204.6%20BYO-D97757?style=for-the-badge&logo=anthropic&logoColor=white" alt="Claude Sonnet 4.6 BYO-LLM" /></a>
   <a href="https://claude.com/claude-code"><img src="https://img.shields.io/badge/built%20with-Claude%20Code-7C3AED?style=for-the-badge&logo=anthropic&logoColor=white" alt="Built with Claude Code" /></a>
+  <a href="https://openai.com/codex/"><img src="https://img.shields.io/badge/%2B-OpenAI%20Codex-10A37F?style=for-the-badge&logo=openai&logoColor=white" alt="and OpenAI Codex" /></a>
+</p>
+
+<p align="center">
+  <b>🤖 Built by coding agents on UiPath</b> — <b>Claude Code</b> (primary authorship) <b>+ OpenAI Codex</b> (assist) drove the UiPath <code>uip</code> CLI to author every artifact, test, and spec, test-first.<br/>
+  <sub><i>A working proof that UiPath is a first-class target for autonomous coding agents — the AgentHack 2026 coding-agent bonus.</i></sub>
 </p>
 
 <p align="center">
@@ -25,7 +31,7 @@ A <b>UiPath Maestro Case</b> command center that manages a multi-hospital cyber-
   <a href="#demo-five-reversals"><b>Five reversals</b></a> &nbsp;·&nbsp;
   <a href="#exception-failure--edge-case-handling-criterion-3"><b>Exception handling</b></a> &nbsp;·&nbsp;
   <a href="#uipath-component-inventory"><b>Component inventory</b></a> &nbsp;·&nbsp;
-  <a href="#built-with-coding-agents"><b>Built with Claude Code</b></a>
+  <a href="#built-with-coding-agents"><b>Built with coding agents</b></a>
 </p>
 
 <p align="center">
@@ -37,7 +43,7 @@ A <b>UiPath Maestro Case</b> command center that manages a multi-hospital cyber-
 <!-- TODO(human, high-impact): a real live-run screen-capture (the actual UiPath canvas — Reversal-3 fan-out / forensic agent firing / HITL gate) would be even stronger when the tenant is up. -->
 
 
-> Three nested Maestro Case levels orchestrate the crisis end-to-end. Agents plug into stages as `type:"agent"` tasks — every LLM call routed through the UiPath LLM Gateway + Trust Layer — while Data Fabric, Context Grounding, and 19 API Workflows feed the case. Authored end-to-end with Claude Code. ([editable SVG source](docs/images/architecture.svg))
+> Three nested Maestro Case levels orchestrate the crisis end-to-end. Agents plug into stages as `type:"agent"` tasks — every LLM call routed through the UiPath LLM Gateway + Trust Layer — while Data Fabric, Context Grounding, and 19 API Workflows feed the case. Authored end-to-end by coding agents — Claude Code (primary) + OpenAI Codex (assist). ([editable SVG source](docs/images/architecture.svg))
 
 ## What This Is
 
@@ -74,7 +80,7 @@ simultaneously** on the Maestro Case canvas.
 | 🧯 **Fails safe (Criterion 3)** | 4-layer exception handling — agents degrade instead of crashing; the case keeps moving |
 | 🏥 **Regulated-vertical realism** | a real class of healthcare payment-network cyberattack — orchestrating UiPath's own **ViVE-2026** healthcare agents |
 | 🟢 **Live on Automation Cloud** | full cascade proven end-to-end — master + 6 + 6 all reach **Completed** |
-| 🛠️ **Built with Claude Code** | 38 UiPath artifacts + 768 offline tests, authored test-first |
+| 🛠️ **Built with coding agents** | **Claude Code** (primary authorship) + **OpenAI Codex** (assist) — 38 UiPath artifacts + 768 offline tests, authored test-first |
 
 ---
 
@@ -87,7 +93,7 @@ simultaneously** on the Maestro Case canvas.
 | **3 · Exception & edge-case handling** | 4-layer defense-in-depth, authored test-first — agents degrade, the case never crashes | [Exception handling](#exception-failure--edge-case-handling-criterion-3) |
 | **4 · Component variety** | 13 UiPath product surfaces · 38 runtime artifacts | [13 surfaces](#uipath-component-inventory) |
 | **5 · Presentation** | Live ≤5-min run + a Criterion-3 supplemental clip; this README + architecture diagram | [Demo video](#demo-video) |
-| **Bonus · Coding agents (+2)** | Claude Code authored 100% — every artifact and every test, test-first | [Built with Claude Code](#built-with-coding-agents) |
+| **Bonus · Coding agents (+2)** | Two coding agents on UiPath — **Claude Code** (primary authorship) + **OpenAI Codex** (assist) drove the `uip` CLI; every artifact and test authored test-first | [Built with coding agents](#built-with-coding-agents) |
 
 ---
 
@@ -472,9 +478,13 @@ bash scripts/pack-solution.sh
 ## Built with Coding Agents
 
 This entire repository — every UiPath artifact, test, spec, and build script — was authored by
-**Claude Code** (Anthropic's CLI) driving the `uip` CLI and the official `uipath-*` authoring
-skills, under a test-gated spec-kit workflow. The AgentHack coding-agent bonus evidence
-((a) which tool, (b) how it contributed, (c) verifiable evidence) is consolidated in:
+**coding agents driving UiPath**: **Claude Code** (Anthropic's CLI, primary authorship) carried
+the bulk of the build via the `uip` CLI and the official `uipath-*` authoring skills under a
+test-gated spec-kit workflow, with **OpenAI Codex** as a secondary coding agent (cross-review,
+alternative generations, and assists on selected pieces). Together they make the point the bonus
+rewards: **UiPath is a first-class target for autonomous coding agents.** The AgentHack
+coding-agent bonus evidence ((a) which tool, (b) how it contributed, (c) verifiable evidence) is
+consolidated in:
 
 - [`CODING_AGENTS.md`](CODING_AGENTS.md) — canonical authorship table for all 38 artifacts.
 - [`CLAUDE_CODE_USAGE.md`](CLAUDE_CODE_USAGE.md) — the Devpost bonus write-up.

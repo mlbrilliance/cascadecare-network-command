@@ -19,7 +19,7 @@
 
 ---
 
-![CascadeCare architecture — three nested Maestro Case levels, 12 agents, Trust Layer, platform foundation](`[HUMAN: public image URL for docs/images/architecture.png — e.g. the GitHub raw link]`)
+![CascadeCare architecture — three nested Maestro Case levels, 12 agents, Trust Layer, platform foundation](https://raw.githubusercontent.com/mlbrilliance/cascadecare-network-command/master/docs/images/architecture.png)
 
 ### TL;DR
 
@@ -82,7 +82,7 @@ maestro-case lint path/to/caseplan-dir
 ### See it / try it
 
 - 🎬 **Demo video (≤5 min, live run):** `[HUMAN: YouTube/Vimeo URL]`
-- 💻 **Code (MIT):** `[HUMAN: GitHub repo URL]`
+- 💻 **Code (MIT):** https://github.com/mlbrilliance/cascadecare-network-command
 - 🏆 **Devpost project:** `[HUMAN: Devpost project URL]`
 - 📊 **Live operator dashboard:** https://hackathon26_042.staging.uipath.host/clearflow-network-command
 

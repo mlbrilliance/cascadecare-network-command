@@ -136,10 +136,13 @@ changes the response, not just the audit log.
 
 ## Built with coding agents (bonus)
 
-**Claude Code** (Anthropic's CLI) authored 100% of this submission — **38 UiPath runtime
-artifacts**, **768 offline test gates** (written test-first, before each artifact), and **9
-externalized agent prompts** — driving the `uip` CLI and the official `uipath-*` authoring skills
-under a test-gated spec-kit workflow. Diagnoses were empirical, not guessed (e.g. Orchestrator
+This submission was built **by coding agents on UiPath** — the bonus made literal. **Claude Code**
+(Anthropic's CLI) was the **primary** coding agent and authored the bulk of the work — **38 UiPath
+runtime artifacts**, **768 offline test gates** (written test-first, before each artifact), and
+**9 externalized agent prompts** — driving the `uip` CLI and the official `uipath-*` authoring
+skills under a test-gated spec-kit workflow, with **OpenAI Codex** as a **secondary** coding agent
+(cross-review, alternative generations, assists on selected pieces). Two independent coding agents
+both working productively against UiPath is the point this bonus rewards. Diagnoses were empirical, not guessed (e.g. Orchestrator
 Error 2005 root-caused by inspecting the offline-packed `package-descriptor.json`). The Criterion-3
 exception handling above was authored test-first: a failing test proved the forensic agent was
 silently swallowing an LLM-Gateway failure *before* the fix landed. Two of the six Coded Agents are
@@ -209,7 +212,7 @@ shipped a **`check-cli` guard** (`maestro-case check-cli <path>`) that flags bar
 
 ## Links
 
-- GitHub (MIT): `[HUMAN: repo URL]`
+- GitHub (MIT): https://github.com/mlbrilliance/cascadecare-network-command
 - Demo video (≤5 min, live run): `[HUMAN: YouTube/Vimeo URL]`
 - Live tenant for judges: `staging.uipath.com/hackathon26_042/DefaultTenant`,
   folder `Shared/CascadeCare-v110` (UiPath Labs access `[HUMAN: confirm Labs request]`)

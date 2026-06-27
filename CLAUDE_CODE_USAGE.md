@@ -4,10 +4,12 @@ This project was built end-to-end with **Claude Code** (Anthropic's official CLI
 the concise bonus-submission summary; the full 38-artifact authorship table and methodology are
 in [`CODING_AGENTS.md`](CODING_AGENTS.md).
 
-**(a) Which coding agent.** Claude Code (Claude Opus / Sonnet), driving the UiPath `uip` CLI and
-the official `uipath-*` authoring skills.
+**(a) Which coding agent.** Claude Code (Claude Opus / Sonnet) as the **primary** coding agent,
+driving the UiPath `uip` CLI and the official `uipath-*` authoring skills, with **OpenAI Codex**
+as a **secondary** coding agent (cross-review, alternative generations, assists on selected
+pieces).
 
-**(b) How it contributed.** Claude Code authored 100% of the runtime artifacts — 3 Maestro Case
+**(b) How it contributed.** Claude Code (primary) authored the runtime artifacts — 3 Maestro Case
 definitions, 6 Agent Builder agents (Claude Sonnet 4.6 BYO-LLM), 6 Coded Agents (two LangGraph
 `StateGraph` agents via `uipath-langchain`, one of them `audit-ledger-writer-langgraph` writing an
 immutable Data Fabric `AuditRecord` ledger in-case at the master's Closed stage), 19 API Workflows, 2 BPMN models, 1 Maestro Flow,

@@ -87,7 +87,7 @@ stand without narration.
   Maestro Case, live on Automation Cloud.*
 - **On slide:** keep the template's "UiPath AgentHack · Build the AI agents of tomorrow" lockup.
   Add a small chip row: `Track 1 · UiPath Maestro Case` · `Live on Automation Cloud` ·
-  `Built with Claude Code`.
+  `Built with Claude Code + OpenAI Codex`.
 - **Notes:** "CascadeCare Network Command — a UiPath Maestro Case for Track 1, running live on
   Automation Cloud, built end to end with Claude Code."
 - **Visual:** the template's title styling; optionally a dimmed crop of the architecture spine.
@@ -192,20 +192,22 @@ stand without narration.
   `[capture: all-Completed Case Instances]` (shot 6).
 - **Design:** keep the template's field layout; orange `#FA4616` on the "all Completed" outcome.
 
-## Slide 8 — Adoptable tomorrow + built with a coding agent  ·  *layout: Miscellaneous (duplicate)*
+## Slide 8 — Adoptable tomorrow + built by coding agents  ·  *layout: Miscellaneous (duplicate)*
 - **Title:** **The crisis orchestrator for the agents UiPath already ships**
 - **On slide (left — vertical bridge):** *"Inside each stakeholder case, CascadeCare invokes
   UiPath's ViVE-2026 agents — Medical Records Summarization · Claim Denial Prevention · Prior
   Authorization. In the demo these are API-workflow mocks; swapping in the live solutions is a
   connector change, not a redesign."*
-- **On slide (right — built with Claude Code, +2 bonus):** *"Claude Code authored **every one of 38
-  UiPath artifacts** and every test, test-first — the +2 coding-agent bonus. **Above & beyond:** we
+- **On slide (right — built by coding agents, +2 bonus):** *"Two coding agents on UiPath — **Claude
+  Code** (primary) authored **every one of 38 UiPath artifacts** and every test, test-first, with
+  **OpenAI Codex** assisting — the +2 coding-agent bonus. **Above & beyond:** we
   packaged our hardest-won UiPath discoveries into **Maestro Case Kit** — an open-source, offline
   CLI + MCP server + agent skills (`pip install maestro-case-kit`) UiPath could dogfood."*
 - **Notes:** "This isn't a science project — it's the missing coordination layer over the agents
   UiPath just launched, and it produces the accreditation-grade record their customers are audited
-  against. And the whole thing was built with Claude Code under a test-gated workflow — which also
-  shipped reusable open-source tooling for Maestro Case itself."
+  against. And the whole thing was built by coding agents — Claude Code (primary) with OpenAI Codex
+  assisting — under a test-gated workflow, which also shipped reusable open-source tooling for
+  Maestro Case itself."
 - **Visual:** the vertical-bridge bar + three ViVE chips (left); a terminal mock of
   `maestro-case explain 400300` + the PyPI badge (right).
 - **Design:** cyan `#0BA2B3` for the tooling callout; orange `#FA4616` for "+2 bonus".
@@ -214,10 +216,10 @@ stand without narration.
 - **On slide:** five compact ticked rows (one per Phase-1 criterion, from [`STORY.md`](STORY.md) §12):
   **Business Impact**, **Platform Usage**, **Technical Execution**, **Completeness**, **Creativity**.
   Closing line: **"The crisis is the demo. The orchestration pattern is the product."**
-  Footer links: `[HUMAN: GitHub repo]` · `[HUMAN: live dashboard]` · `[HUMAN: demo video]`.
+  Footer links: https://github.com/mlbrilliance/cascadecare-network-command · https://hackathon26_042.staging.uipath.host/clearflow-network-command · `[HUMAN: demo video]`.
 - **Notes:** "Three nested case levels, twelve agents, five reversals, two human gates, thirteen
-  product surfaces, governed end to end — live, and built with Claude Code. CascadeCare is the
-  crisis orchestrator for the healthcare agents UiPath already ships."
+  product surfaces, governed end to end — live, and built by coding agents (Claude Code + OpenAI
+  Codex). CascadeCare is the crisis orchestrator for the healthcare agents UiPath already ships."
 - **Visual:** the template's closing layout; a small architecture thumbnail + the "all Completed"
   badge.
 - **Design:** UiPath orange `#FA4616` on the closing line; keep the template's Thank-You styling.

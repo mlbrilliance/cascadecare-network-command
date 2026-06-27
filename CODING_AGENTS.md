@@ -5,10 +5,13 @@
 
 ## The bonus triad
 
-**(a) Which coding agent** — **Claude Code** (Anthropic's CLI), running Claude Opus/Sonnet,
-authored 100% of this repository. Every UiPath artifact, every test, every spec, and every
-build script was written by Claude Code driving the UiPath `uip` CLI and the official
-`uipath-*` authoring skills.
+**(a) Which coding agents** — **Claude Code** (Anthropic's CLI), running Claude Opus/Sonnet, was
+the **primary** coding agent and authored the bulk of this repository: every UiPath artifact,
+test, spec, and build script was written by Claude Code driving the UiPath `uip` CLI and the
+official `uipath-*` authoring skills. **OpenAI Codex** served as a **secondary** coding agent —
+cross-reviewing artifacts, generating alternative implementations, and assisting on selected
+pieces. Two independent coding agents both operating productively on UiPath is itself the point
+the bonus rewards.
 
 **(b) How it contributed** — Claude Code ran the entire build as a sequence of test-gated
 slices (004 → 017) under a spec-kit workflow (`/speckit.plan → analyze → tasks → implement`),
