@@ -3,7 +3,7 @@
 > **Who this is for:** someone who has never touched UiPath, Maestro, Orchestrator, or Studio Web.
 > Every step says **who does it**, **exactly what to do**, **what you should see**, and **what to do if it goes wrong**.
 >
-> **Last updated:** 2026-06-24 (v1.0.36 → `Shared/CascadeCare-v110`; Action Center runaway fixed — clean 1 → 6 → 6 fan re-proven; **full cascade live-proven** — master + 6 children + 6 grandchildren all Completed; in-case **LangGraph audit-ledger** write live; dashboard **v1.0.15** Compliance Ledger live; current step = **record the demo video + submit**) · **Branch:** `master` · **Tenant:** `staging.uipath.com/hackathon26_042/DefaultTenant`
+> **Last updated:** 2026-06-24 (v1.0.36 → `Shared/CascadeCare-v110`; Action Center runaway fixed — clean 1 → 6 → 6 fan re-proven; **full cascade live-proven** — master + 6 children + 6 grandchildren all Completed; in-case **LangGraph audit-ledger** write live; dashboard **v1.0.15** Compliance Ledger live; current step = **submit** (demo video published: https://youtu.be/J2gMR2DrzAY)) · **Branch:** `master` · **Tenant:** `staging.uipath.com/hackathon26_042/DefaultTenant`
 >
 > Operational run procedure now lives in [`docs/DEMO-RUNBOOK.md`](../DEMO-RUNBOOK.md) (auth, deploy recipe, A5 closure check, A6 zombie sweep). Sections below marked with a date are historical snapshots.
 >
@@ -64,8 +64,9 @@ Your project is a **bundle of files in this repo**. To make it real, that bundle
   `case-job-janitor` runs the hourly sweep of zombie "Running" job rows.
 - **Live dashboard** (Coded Web App **v1.0.15**) renders the Compliance Ledger from those `AuditRecord` rows.
 - Suite **768 passed / 0 failed / 7 skipped**; `mypy` clean; IP audit clean.
-- Both Context Grounding indexes are **live + retrieval-verified**. Still open (human): demo video,
-  Devpost page, deck. Everything below this block is the **2026-06-04 historical snapshot**.
+- Both Context Grounding indexes are **live + retrieval-verified**. Demo video published
+  (https://youtu.be/J2gMR2DrzAY). Still open (human): Devpost page, deck. Everything below this
+  block is the **2026-06-04 historical snapshot**.
 
 ### ✅ Done / built (offline, machine-verified)
 - All **runtime artifacts authored**: 3 Maestro Cases, 6 Agent Builder agents, 6 Coded Agents, 19 API Workflows, 2 BPMN, 1 Maestro Flow, 1 App (total 38).
@@ -427,7 +428,7 @@ bash scripts/cleanup_deployments.sh --confirm    # actually uninstall the stale 
 |---|---|---|---|
 | 1 | Public GitHub repo (MIT) + README naming every component | ✅ DONE | — |
 | 2 | Devpost project page (Track 1) | ⬜ PENDING | 🔴 you (🟢 I draft) |
-| 3 | Demo video ≤5 min, **live**, names each agent | ⬜ PENDING | 🔴 you (🟢 I script) |
+| 3 | Demo video ≤5 min, **live**, names each agent | ✅ DONE — https://youtu.be/J2gMR2DrzAY | — |
 | 4 | Solution running **live** on Automation Cloud | ✅ DONE (1.0.36 on `Shared/CascadeCare-v110`, full cascade live-proven; latest preserved runs 2026-06-24) | — |
 | Bonus | Coding-agent evidence (`CODING_AGENTS.md`, `CLAUDE_CODE_USAGE.md`) | ✅ DONE | — |
 | Bonus | 1-min coding-agent reel | ⬜ PENDING | 🔴 you |

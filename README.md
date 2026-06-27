@@ -27,6 +27,7 @@ A <b>UiPath Maestro Case</b> command center that manages a multi-hospital cyber-
 </p>
 
 <p align="center">
+  <a href="https://youtu.be/J2gMR2DrzAY"><b>▶ Watch the 5-min demo</b></a> &nbsp;·&nbsp;
   <a href="#what-this-is"><b>What it does</b></a> &nbsp;·&nbsp;
   <a href="#demo-five-reversals"><b>Five reversals</b></a> &nbsp;·&nbsp;
   <a href="#exception-failure--edge-case-handling-criterion-3"><b>Exception handling</b></a> &nbsp;·&nbsp;
@@ -530,8 +531,15 @@ operators are deferred to v2; v1 stays credential-free by design.
 
 ## Demo Video
 
-_Carried forward to final submission capture — a ≤5-minute video showing the solution running live
-on UiPath Automation Cloud, hero moment (Reversal 3 subpoena fan-spawn) at ~2:30._
+<p align="center">
+  <a href="https://youtu.be/J2gMR2DrzAY">
+    <img src="docs/images/thumbnail-youtube.png" width="900" alt="Watch the CascadeCare Network Command demo — a ≤5-minute live run on UiPath Automation Cloud" />
+  </a>
+</p>
+
+<p align="center"><b>▶ <a href="https://youtu.be/J2gMR2DrzAY">Watch the ≤5-minute live demo on YouTube</a></b></p>
+
+<p align="center"><sub>The solution running live on UiPath Automation Cloud — hero moment (Reversal 3 subpoena fan-spawn) at ~2:30.</sub></p>
 
 ## IP Safety Notice
 

@@ -81,7 +81,7 @@ maestro-case lint path/to/caseplan-dir
 
 ### See it / try it
 
-- 🎬 **Demo video (≤5 min, live run):** `[HUMAN: YouTube/Vimeo URL]`
+- 🎬 **Demo video (≤5 min, live run):** https://youtu.be/J2gMR2DrzAY
 - 💻 **Code (MIT):** https://github.com/mlbrilliance/cascadecare-network-command
 - 🏆 **Devpost project:** `[HUMAN: Devpost project URL]`
 - 📊 **Live operator dashboard:** https://hackathon26_042.staging.uipath.host/clearflow-network-command

@@ -213,7 +213,7 @@ shipped a **`check-cli` guard** (`maestro-case check-cli <path>`) that flags bar
 ## Links
 
 - GitHub (MIT): https://github.com/mlbrilliance/cascadecare-network-command
-- Demo video (≤5 min, live run): `[HUMAN: YouTube/Vimeo URL]`
+- Demo video (≤5 min, live run): https://youtu.be/J2gMR2DrzAY
 - Live tenant for judges: `staging.uipath.com/hackathon26_042/DefaultTenant`,
   folder `Shared/CascadeCare-v110` (UiPath Labs access `[HUMAN: confirm Labs request]`)
 - Executive dashboard (Coded Web App, live):

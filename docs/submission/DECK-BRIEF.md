@@ -216,7 +216,7 @@ stand without narration.
 - **On slide:** five compact ticked rows (one per Phase-1 criterion, from [`STORY.md`](STORY.md) §12):
   **Business Impact**, **Platform Usage**, **Technical Execution**, **Completeness**, **Creativity**.
   Closing line: **"The crisis is the demo. The orchestration pattern is the product."**
-  Footer links: https://github.com/mlbrilliance/cascadecare-network-command · https://hackathon26_042.staging.uipath.host/clearflow-network-command · `[HUMAN: demo video]`.
+  Footer links: https://github.com/mlbrilliance/cascadecare-network-command · https://hackathon26_042.staging.uipath.host/clearflow-network-command · https://youtu.be/J2gMR2DrzAY.
 - **Notes:** "Three nested case levels, twelve agents, five reversals, two human gates, thirteen
   product surfaces, governed end to end — live, and built by coding agents (Claude Code + OpenAI
   Codex). CascadeCare is the crisis orchestrator for the healthcare agents UiPath already ships."
