@@ -28,6 +28,7 @@ A <b>UiPath Maestro Case</b> command center that manages a multi-hospital cyber-
 
 <p align="center">
   <a href="https://youtu.be/J2gMR2DrzAY"><b>▶ Watch the 5-min demo</b></a> &nbsp;·&nbsp;
+  <a href="#-for-judges--start-here"><b>For judges</b></a> &nbsp;·&nbsp;
   <a href="#what-this-is"><b>What it does</b></a> &nbsp;·&nbsp;
   <a href="#demo-five-reversals"><b>Five reversals</b></a> &nbsp;·&nbsp;
   <a href="#exception-failure--edge-case-handling-criterion-3"><b>Exception handling</b></a> &nbsp;·&nbsp;
@@ -45,6 +46,106 @@ A <b>UiPath Maestro Case</b> command center that manages a multi-hospital cyber-
 
 
 > Three nested Maestro Case levels orchestrate the crisis end-to-end. Agents plug into stages as `type:"agent"` tasks — every LLM call routed through the UiPath LLM Gateway + Trust Layer — while Data Fabric, Context Grounding, and 19 API Workflows feed the case. Authored end-to-end by coding agents — Claude Code (primary) + OpenAI Codex (assist). ([editable SVG source](docs/images/architecture.svg))
+
+---
+
+## 📋 For Judges — Start Here
+
+> A four-point summary covering exactly what AgentHack judging asks for: **what it does**, **which UiPath components it uses**, **which agent types**, and **how to configure and run it**. Each point links to the full detail further down.
+
+### 1 · Project Description — what it does and the problem it solves
+
+**The problem.** When a U.S. healthcare clearinghouse / payment intermediary suffers a cyberattack, the shockwave is not one incident — it is a *cascade*: dozens of hospitals stop getting paid, regulators issue subpoenas, payers demand records, BAAs collide with disclosure demands, and litigation spreads. No two stakeholders face the same obligations, deadlines, or legal exposure, and the situation **mutates** as new facts arrive. Handling this with isolated bots or one-shot agents loses the shared state, the SLA clock, the legal boundaries, and the audit trail.
+
+**What CascadeCare does.** CascadeCare Network Command manages that entire cyber-payment cascade as **one living UiPath Maestro Case** for the fictional **ClearFlow Health Network**. A master crisis case spawns per-stakeholder parent cases, which spawn per-obligation grandchild cases — **three levels of native case nesting** — while **five mid-flight goal reversals** re-route the response across a simulated 90-day timeline. Twelve agents reason inside the case stages, every LLM call governed by the UiPath Trust Layer, with two human-approval gates for the high-stakes decisions. The hero moment: **Reversal 3** (a state DOI subpoena) fans out **six grandchild cases simultaneously** on the canvas. → [What This Is](#what-this-is) · [Five reversals](#demo-five-reversals)
+
+### 2 · UiPath Components — comprehensive list
+
+**13 UiPath product surfaces · 38 runtime artifacts**, all running live on Automation Cloud:
+
+| # | UiPath component | Used for |
+|---|------------------|----------|
+| 1 | **Maestro Case** (V20, 3-level nesting) | The runtime orchestrator — master → stakeholder-parent → obligation-grandchild (3 `caseplan.json` definitions) |
+| 2 | **Maestro BPMN** | 2 process models — incident-response playbook + case-closed notification |
+| 3 | **Maestro Flow** | Demo Driver — paces the 90-day reversal timeline to wall-clock |
+| 4 | **Agent Builder** (low-code) | 6 reasoning agents, Claude Sonnet 4.6 via BYO-LLM |
+| 5 | **Coded Agents** | 6 agents — 4 UiPath Python SDK + **2 LangGraph `StateGraph`** via `uipath-langchain` |
+| 6 | **LLM Gateway → Trust Layer** | Governs **every** LLM call; PHI/PII + content guardrails |
+| 7 | **Context Grounding** | 2 indexes (`BAA-corpus` bound to the BAA Boundary Reasoner) |
+| 8 | **Data Fabric** | 9 entities (~4,320 claim-telemetry rows) + immutable `AuditRecord` ledger |
+| 9 | **Action Center** (AppTask) | 2 human-in-the-loop gates (fiduciary review + obligation response) |
+| 10 | **UiPath Apps** (Coded Web App) | Live operator command-center dashboard + compliance-ledger panel |
+| 11 | **Orchestrator** | Case/agent jobs, hourly janitor trigger, bulk job sweep |
+| 12 | **Integration Service** (API Workflows) | 19 mock-front + ViVE-bridge workflows |
+| 13 | **Solution** (`.uipx`) | One deployable bundle of every project |
+
+→ Full breakdown: [UiPath Component Inventory](#uipath-component-inventory)
+
+### 3 · Agent Type — Coded Agents **and** Low-Code Agents (both)
+
+CascadeCare uses **both agent types** — **12 agents total**:
+
+- **6 Low-Code Agents** (UiPath **Agent Builder**, `agent.json`) — running **Claude Sonnet 4.6 (BYO-LLM)** through the LLM Gateway: `baa-boundary-reasoner`, `vector-hypothesis-agent`, `fiduciary-conflict-detector`, `negligent-monitoring-risk-agent`, `assess-claim-disruption`, `classify-obligation`.
+- **6 Coded Agents** (UiPath **Python SDK**, `agent.py`) — of which **2 are LangGraph `StateGraph` agents** deployed via `uipath-langchain` (`forensic-self-exam-agent-langgraph`, `audit-ledger-writer-langgraph`) and 4 are deterministic Python SDK agents (`claim-flow-anomaly-detector`, `multi-customer-pattern-detector`, `forensic-self-exam-agent`, `case-job-janitor`).
+
+→ Full agent table: [Agent inventory](#agent-inventory-12--6-agent-builder-low-code--6-coded)
+
+### 4 · Setup & Run Instructions — configure and run for judging
+
+There are **two ways to judge this**, easiest first:
+
+#### Option A — Just watch it (no setup, recommended first pass)
+
+- **▶ [Watch the ≤5-minute live demo](https://youtu.be/J2gMR2DrzAY)** — the full three-level cascade running on Automation Cloud, hero fan-out at ~2:30.
+- **Live operator dashboard:** [`clearflow-network-command` Coded Web App](https://hackathon26_042.staging.uipath.host/clearflow-network-command) — fire reversals and approve the HITL gate live from the console.
+
+#### Option B — Run it yourself on UiPath Automation Cloud
+
+Everything is already deployed: `clearflow-solution` **1.0.36** → folder `Shared/CascadeCare-v110`. You only ever **start one process** — the master crisis case — and it cascades to *everything else automatically* (children, grandchildren, all agents, all API workflows). Full step-by-step with troubleshooting: **[`docs/DEMO-RUNBOOK.md`](docs/DEMO-RUNBOOK.md)**.
+
+**Reference values (staging tenant):**
+
+| Thing | Value |
+|---|---|
+| Tenant | `staging.uipath.com` / `hackathon26_042` / `DefaultTenant` |
+| Deployment folder | `Shared/CascadeCare-v110` (folder key `de7b7c18-d743-4c8c-b555-9bd3b96fe524`) |
+| Master process key | `AC365BA5-C807-4DFC-A009-00F3EA61E497` |
+
+**B1 — Run from the Orchestrator UI (no CLI needed):**
+1. Sign in to **`staging.uipath.com`** → org `hackathon26_042` → **DefaultTenant**.
+2. Open folder **`Shared/CascadeCare-v110`** → **Automations → Processes**.
+3. Find **`clearflow-master-crisis`** and click **Run**. *(This is the only process you start by hand — do not start children, grandchildren, agents, or API workflows; they expect to be spawned with parent context.)*
+4. Optionally also run **`clearflow-demo-driver`** (Maestro Flow) alongside it to fire the scripted 5-reversal timeline.
+5. Watch the cascade in **Maestro → Monitoring** (master walks 5 agent stages → 6 child cases → 6 grandchild cases).
+6. In **Action Center → Tasks** (same folder), click **Approve** on the two HITL gates: **Tri-Party Fiduciary Conflict Review** (master, Reversal 4) and **Prepare & File Obligation Response** (grandchild). The master then reaches **Closed** and fires a Slack close-out.
+7. Confirm closure in **Maestro → Monitoring** (the source of truth — *not* the Orchestrator Jobs view, which never flips Maestro case jobs to Successful on this tenant).
+
+**B2 — Run via the `uip` CLI:**
+```bash
+# 1. Authenticate against the STAGING tenant (plain `uip login` hits the wrong cloud)
+uip login --authority https://staging.uipath.com --organization hackathon26_042 --interactive
+# (pick DefaultTenant when prompted)
+
+export FK=de7b7c18-d743-4c8c-b555-9bd3b96fe524
+
+# 2. Start ONLY the master crisis case — it cascades to everything else
+uip or jobs start AC365BA5-C807-4DFC-A009-00F3EA61E497 --folder-key $FK --output json
+
+# 3. (optional) also start the Demo Driver flow to fire the scripted reversals
+#    look up its key, then: uip or jobs start <demo-driver-key> --folder-key $FK
+
+# 4. Watch the three levels come live (MASTER → CHILD → GRANDCHILD jobs)
+uip or jobs list --folder-key $FK --output json | grep -c clearflow
+
+# 5. Approve the two HITL gates in Action Center → Tasks (human approval; no CLI shortcut)
+
+# 6. Confirm every instance reached Completed (case instance = source of truth)
+uip maestro case instance list --folder-key $FK
+```
+
+**Rebuild from source / deploy to a fresh tenant?** See **Path B** in [`docs/DEMO-RUNBOOK.md`](docs/DEMO-RUNBOOK.md) (pack → publish → deploy → activate) and [Prerequisites](#prerequisites) + [Quickstart (build-time)](#quickstart-build-time) below.
+
+---
 
 ## What This Is
 
